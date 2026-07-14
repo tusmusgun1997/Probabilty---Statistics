@@ -22,15 +22,11 @@ If that feels wrong, good — your intuition is about to get upgraded. The resol
 
 Before any information, the two-children sample space has four equally likely outcomes:
 
-```
-BB   BG   GB   GG
-```
+> **BB** &nbsp;·&nbsp; **BG** &nbsp;·&nbsp; **GB** &nbsp;·&nbsp; **GG**
 
 Now the information lands: *at least one is a boy*. This **kills GG**. The universe shrinks to three survivors:
 
-```
-BB   BG   GB        (GG is gone)
-```
+> **BB** &nbsp;·&nbsp; **BG** &nbsp;·&nbsp; **GB** &nbsp;·&nbsp; ~~GG~~ *(gone)*
 
 Among the survivors, exactly one is BB. So P(both boys | at least one boy) = **1/3**. That's all conditioning is:
 
