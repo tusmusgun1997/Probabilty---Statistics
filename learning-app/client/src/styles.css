@@ -225,8 +225,8 @@ button { font-family: inherit; cursor: pointer; }
 .content {
   flex: 1;
   min-width: 0;
-  padding: 40px clamp(20px, 4.5vw, 64px) 110px;
-  max-width: 1010px;
+  padding: 40px clamp(20px, 4.5vw, 72px) 110px;
+  max-width: 1240px;
 }
 .loading, .fatal { padding: 60px 24px; color: var(--mut); }
 .fatal { color: var(--ink); max-width: 620px; }
@@ -382,39 +382,134 @@ button { font-family: inherit; cursor: pointer; }
 .tab:hover { color: var(--ink); }
 .tab.active { color: var(--ink); border-bottom-color: var(--red); }
 
-/* ---- learn: rail + sections ---------------------------------------------------- */
-.learn { display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: 40px; }
-.rail {
-  position: sticky;
-  top: calc(var(--topbar-h) + 28px);
-  align-self: start;
+/* ---- learn: section slider ----------------------------------------------------- */
+/* Styles for the reusable <SectionSlider>. `--c` on .slider is the current
+   section's accent color; each .slider-step carries its own --c. */
+.slider { --c: var(--red); }
+
+/* stepper: a row of clickable dots (emoji) + labels */
+.slider-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.slider-step {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-.rail-item {
-  display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 7px;
   background: none;
   border: none;
-  padding: 6px 2px;
-  font-size: 13.5px;
-  color: var(--mut);
-  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
 }
-.rail-item .sq {
-  width: 12px;
-  height: 12px;
-  border: 1.5px solid var(--c, var(--mut));
+.slider-step-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  background: var(--surface-2);
+  border: 2px solid var(--line);
+  transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.slider-step.seen .slider-step-dot { border-color: var(--c); }
+.slider-step:hover .slider-step-dot { border-color: var(--c); }
+.slider-step.current .slider-step-dot {
+  border-color: var(--c);
+  background: color-mix(in srgb, var(--c) 15%, var(--bg));
+  transform: scale(1.14);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 20%, transparent);
+}
+.slider-step-label {
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--mut);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.slider-step.current .slider-step-label { color: var(--c); font-weight: 700; }
+
+/* overall progress bar */
+.slider-progress {
+  height: 3px;
+  background: var(--line);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+.slider-progress span {
+  display: block;
+  height: 100%;
+  background: var(--c);
+  border-radius: 99px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* animated stage — key change remounts .slider-card so it re-animates */
+.slider-stage { min-height: 220px; }
+.slider-card { animation: sliderIn 0.34s cubic-bezier(0.22, 0.61, 0.36, 1); }
+@keyframes sliderIn {
+  from { opacity: 0; transform: translateX(var(--dx, 30px)); }
+  to { opacity: 1; transform: none; }
+}
+
+/* footer nav */
+.slider-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.slider-btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 20px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  max-width: 62%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: filter 0.15s, background 0.15s, color 0.15s;
+}
+.slider-btn.ghost {
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+.slider-btn.ghost:hover:not(:disabled) { background: var(--ink); color: var(--bg); }
+.slider-btn.primary { background: var(--red); color: #fff; }
+.slider-btn.primary:hover:not(:disabled) { filter: brightness(0.92); }
+.slider-btn:disabled { opacity: 0.4; cursor: default; }
+.slider-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
-.rail-item.on { color: var(--c, var(--ink)); font-weight: 700; }
-.rail-item.on .sq { background: var(--c); border-color: var(--c); }
-.rail-item:hover { color: var(--ink); }
+.slider-count .of { color: var(--mut); }
 
-.sections { min-width: 0; }
-.section-block { margin-bottom: 52px; scroll-margin-top: calc(var(--topbar-h) + 20px); }
+@media (prefers-reduced-motion: reduce) {
+  .slider-card { animation: none; }
+  .slider-progress span { transition: none; }
+  .slider-step-dot { transition: none; }
+}
+
+/* ---- section card (rendered inside the slider) --------------------------------- */
+.section-block { margin-bottom: 0; }
 .section-band {
   background: color-mix(in srgb, var(--c) 11%, var(--bg));
   border-top: 4px solid var(--c);
@@ -440,19 +535,6 @@ button { font-family: inherit; cursor: pointer; }
   margin: 0;
   line-height: 1.1;
 }
-
-/* CTA at the end of Learn */
-.cta-row { margin-top: -8px; }
-.cta {
-  background: var(--red);
-  color: #fff;
-  border: none;
-  font-weight: 700;
-  font-size: 15px;
-  padding: 13px 24px;
-  letter-spacing: -0.01em;
-}
-.cta:hover { filter: brightness(0.92); }
 
 /* ---- questions ------------------------------------------------------------------ */
 .questions-intro {
@@ -677,9 +759,12 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ---- mobile ------------------------------------------------------------------------- */
 .scrim { display: none; }
-@media (max-width: 1120px) {
-  .learn { grid-template-columns: 1fr; }
-  .rail { display: none; }
+@media (max-width: 680px) {
+  /* compact the stepper: dots only, drop the per-step labels */
+  .slider-step-label { display: none; }
+  .slider-step-dot { width: 34px; height: 34px; font-size: 16px; }
+  .slider-btn { font-size: 13px; padding: 10px 14px; max-width: 56%; }
+  .slider-btn.primary { text-overflow: ellipsis; }
 }
 @media (max-width: 860px) {
   .menu-btn { display: grid; }

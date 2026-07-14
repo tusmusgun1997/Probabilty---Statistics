@@ -22,12 +22,10 @@ That bridge — from outcomes to numbers — is the **random variable**, and it'
 
 A random variable (RV) is **a rule that attaches a number to every outcome** of an experiment.
 
-```
-Outcome (Ω):   TTT   TTH   THT   HTT   THH   HTH   HHT   HHH
-                │     │     │     │     │     │     │     │
-X = # heads:    0     1     1     1     2     2     2     3
-Winnings 100X:  0    100   100   100   200   200   200   300
-```
+| Outcome (Ω) | TTT | TTH | THT | HTT | THH | HTH | HHT | HHH |
+|---|---|---|---|---|---|---|---|---|
+| **X = # heads** | 0 | 1 | 1 | 1 | 2 | 2 | 2 | 3 |
+| **Winnings (100·X)** | ₹0 | ₹100 | ₹100 | ₹100 | ₹200 | ₹200 | ₹200 | ₹300 |
 
 The randomness lives in *which outcome happens*; the variable just relabels it. Same experiment, new lens. (And note: several outcomes can map to the same number — three different outcomes all give X = 1.)
 

@@ -24,14 +24,13 @@ If a number can be this counterintuitive to trained doctors, there's a missing m
 
 Forget formulas. Imagine 1,000 people taking the test:
 
-```
-1,000 people
-├── 1 is sick        → test catches them:            ~1 true positive
-└── 999 are healthy  → 1% false alarm rate:          ~10 false positives
+| Out of 1,000 people… | The test says… | Positives produced |
+|---|---|---|
+| **1** is sick | caught 99% of the time | **~1 true positive** |
+| **999** are healthy | false alarm on 1% of them | **~10 false positives** |
 
-Positives in total: ~11.   Actually sick among them: 1.
-P(sick | positive) ≈ 1/11 ≈ 9%
-```
+> Total positives ≈ **11** — and only **1** of them is actually sick.
+> $P(\text{sick} \mid \text{positive}) \approx 1/11 \approx \textbf{9\%}$
 
 That's the whole computation. The false positives **outnumber** the true positives ten to one — not because the test is bad, but because **healthy people are so much more numerous** that even a small error rate on them produces a crowd. The rare-disease prior (1/1000) drags the answer down, and ignoring it is called **base-rate neglect** — one of the most consequential reasoning errors in medicine, law, and data science.
 

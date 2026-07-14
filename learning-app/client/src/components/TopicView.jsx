@@ -1,55 +1,17 @@
-import { useState, useEffect, useRef } from "react";
-import Section from "./Section.jsx";
+import { useState, useEffect } from "react";
+import SectionSlider from "./SectionSlider.jsx";
 import Question from "./Question.jsx";
-
-// Map section ids → their accent color variable (the 7-stage learning loop).
-export const SECTION_COLOR = {
-  hook: "var(--c-hook)",
-  intuition: "var(--c-intuition)",
-  formalism: "var(--c-formalism)",
-  simulate: "var(--c-simulate)",
-  "ds-payoff": "var(--c-ds-payoff)",
-  pitfalls: "var(--c-pitfalls)",
-  recall: "var(--c-recall)",
-};
 
 export default function TopicView({ data, isDone, onToggleDone, onNavigate }) {
   const { module, topic, prev, next } = data;
   const [tab, setTab] = useState("learn");
-  const [activeSection, setActiveSection] = useState(topic.sections[0]?.id);
-  const sectionRefs = useRef({});
 
-  // reset when the topic changes
-  useEffect(() => {
-    setTab("learn");
-    setActiveSection(topic.sections[0]?.id);
-  }, [topic.id]);
-
-  // track which section is in view → drives the rail's filled square
-  useEffect(() => {
-    if (tab !== "learn") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActiveSection(visible[0].target.dataset.sid);
-      },
-      { rootMargin: "-15% 0px -65% 0px" }
-    );
-    Object.values(sectionRefs.current).forEach(
-      (el) => el && observer.observe(el)
-    );
-    return () => observer.disconnect();
-  }, [tab, topic.id]);
-
-  const scrollToSection = (id) => {
-    sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
-  };
+  // reset to the Learn tab whenever we open a different topic
+  useEffect(() => setTab("learn"), [topic.id]);
 
   const goPractice = () => {
     setTab("questions");
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -65,18 +27,6 @@ export default function TopicView({ data, isDone, onToggleDone, onNavigate }) {
 
       <h1 className="topic-title">{topic.title}</h1>
       {topic.oneLiner && <p className="topic-oneliner">{topic.oneLiner}</p>}
-
-      <div className="meta-row">
-        <span className="meta">⏱ ~45 min</span>
-        <span className="meta">{topic.sections.length} sections</span>
-        <span className="meta">{topic.questions.length} exercises</span>
-        <button
-          className={`done-btn ${isDone ? "is-done" : ""}`}
-          onClick={onToggleDone}
-        >
-          {isDone ? "✓ Completed" : "Mark complete"}
-        </button>
-      </div>
 
       <div className="tabs">
         <button
@@ -94,45 +44,17 @@ export default function TopicView({ data, isDone, onToggleDone, onNavigate }) {
       </div>
 
       {tab === "learn" ? (
-        <div className="learn">
-          <div className="rail">
-            {topic.sections.map((s) => (
-              <button
-                key={s.id}
-                className={`rail-item ${activeSection === s.id ? "on" : ""}`}
-                style={{ "--c": SECTION_COLOR[s.id] }}
-                onClick={() => scrollToSection(s.id)}
-              >
-                <span className="sq" />
-                {s.title}
-              </button>
-            ))}
-          </div>
-          <div className="sections">
-            {topic.sections.map((s, i) => (
-              <div
-                key={s.id}
-                data-sid={s.id}
-                ref={(el) => (sectionRefs.current[s.id] = el)}
-              >
-                <Section section={s} index={i + 1} total={topic.sections.length} />
-              </div>
-            ))}
-            {topic.questions.length > 0 && (
-              <div className="cta-row">
-                <button className="cta" onClick={goPractice}>
-                  Ready? Try the exercises →
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <SectionSlider
+          sections={topic.sections}
+          resetKey={topic.id}
+          onFinish={topic.questions.length > 0 ? goPractice : undefined}
+          finishLabel="Try the exercises"
+        />
       ) : (
         <div className="questions">
           <p className="questions-intro">
-            Try each one <strong>before</strong> revealing the solution. For
-            anything computational, write the simulation first — that struggle
-            is where the learning happens.
+            Try each one <strong>before</strong> revealing the solution. Work it
+            through on paper first — that struggle is where the learning happens.
           </p>
           {topic.questions.map((q, i) => (
             <Question key={q.id} question={q} index={i + 1} />
