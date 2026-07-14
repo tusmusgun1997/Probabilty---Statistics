@@ -1,0 +1,613 @@
+{
+  "title": "Probability & Statistics",
+  "tagline": "Built for intuition. Aimed at data science.",
+  "generatedAt": "2026-07-14T09:13:00.648Z",
+  "modules": [
+    {
+      "id": "00-foundations",
+      "number": "00",
+      "phase": "Phase I — The Language of Uncertainty",
+      "title": "Foundations: The Language of Uncertainty",
+      "summary": "The mindset shift from certainties to graded belief, the vocabulary of sets and events, the three axioms everything is built on, and the simulation workflow you'll use for the rest of the course.",
+      "topics": [
+        {
+          "id": "what-is-probability",
+          "number": "00.1",
+          "title": "What Is Probability, Really?",
+          "oneLiner": "A probability is a number in [0, 1] that measures uncertainty — and there are two legitimate ways to read it.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The coin already landed",
+              "body": "I flip a fair coin, catch it, and slap it onto the back of my hand — **covered**. It has already landed. It is *definitely* either heads or tails right now.\n\n**What is the probability it's heads?**\n\nMost people say \"1/2\" without hesitation. But notice something weird: nothing is random anymore. The outcome is already fixed. So what does \"1/2\" even *mean* for an event that has already happened?\n\nHold that discomfort. Answering it properly is the difference between someone who plugs into formulas and someone who *understands*."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A number for how sure you are",
+              "body": "A **probability is a number between 0 and 1 that measures how uncertain we are about something.**\n\n- `0` = \"impossible / I'm certain it won't happen\"\n- `1` = \"certain / it will definitely happen\"\n- `0.5` = \"maximally unsure — could go either way\"\n\nThat's it. Probability is the mathematics of *not knowing*. And here's the punchline to the coin puzzle: there are **two legitimate ways to read that number**, and they resolve the paradox differently.\n\n### View A — Frequentist: \"probability = long-run frequency\"\n\nA probability is the fraction of times an event happens **if you could repeat the experiment forever**. \"Heads has probability 1/2\" means: flip this coin a billion times, and about half will be heads. Probability is a property of *the repeatable process*.\n\n🖼️ *Picture:* a giant tally sheet. You keep flipping, and the running fraction of heads settles down toward 0.5 — wild and jumpy for the first few dozen flips, then tightening onto 0.5 like a marble settling into a bowl.\n\n### View B — Bayesian: \"probability = degree of belief\"\n\nA probability is a measure of **your personal certainty**, given what you know. The covered coin *has* a fixed value, but *you* don't know it — so from your state of knowledge, heads is a 50/50 belief. Probability is a property of *your information*, not of the object.\n\n🖼️ *Picture:* a dial in your head labeled \"how much do I believe this?\" New evidence turns the dial.\n\n### Which is right?\n\n**Both.** They're two lenses, not two teams to pick between.\n- The frequentist lens is perfect when you *can* repeat things: dice, servers handling requests, users clicking buttons.\n- The Bayesian lens is perfect for one-off, \"already determined but unknown\" situations: *Will this specific startup succeed? Is this particular email spam?* You can't rerun history, but you can hold a belief and update it.\n\nModern data science uses **both**, constantly. Knowing which lens you're wearing is a genuine professional skill."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Pinning the number down",
+              "body": "We give a name to \"the number attached to an event.\" A **probability** is a function `P` that takes an event and returns a number, satisfying:\n\n$$0 \\le P(A) \\le 1$$\n\n- $P(A) = 0$ → $A$ is (effectively) impossible\n- $P(A) = 1$ → $A$ is (effectively) certain\n\nThe frequentist reading defines this number as the limit of a frequency; the Bayesian reading defines it as a coherent degree of belief. **The math that follows is identical either way** — which is why the whole field works regardless of which lens you prefer.\n\nA concrete anchor for the frequentist view: imagine tallying heads as you flip. After 10 flips you might have 7 heads (0.70 — noisy!). After 1,000 flips you're around 0.505. After 100,000 you're at 0.4998. The *destination* of that running fraction — not any single stretch of it — is the probability. That settling-down has a name, the **Law of Large Numbers**, and it gets a full treatment later in the course."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "What a model's 0.92 really promises",
+              "body": "Every classifier you'll ever build outputs probabilities:\n\n- A spam filter says an email is spam with probability **0.92**.\n- A fraud model scores a transaction at **0.03**.\n- A recommendation model rates three items **0.1, 0.7, 0.2**.\n\n**What do those numbers mean?** The frequentist reading gives you a testable promise: *of all the emails my model scored around 0.92, about 92% should truly be spam.* When that's true, we say the model is **calibrated** — a hugely important, often-ignored property. When a model says \"0.92\" but is right only 60% of the time, it's *miscalibrated*, and you now have the vocabulary to diagnose that.\n\nThe Bayesian reading, meanwhile, is the entire foundation of honest uncertainty estimates, A/B-test analysis, and Bayesian machine learning later in the course. Both lenses, both essential."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "Where the number fools people",
+              "body": "- **\"Probability is a property of the object.\"** No — it's a property of *the process* (frequentist) or *your knowledge* (Bayesian). The covered coin has no \"0.5\" painted on it; the 0.5 lives in the repetition or in you.\n- **The gambler's fallacy.** \"Five heads in a row, so tails is due.\" False. A fair coin has no memory; the next flip is still 0.5. Convergence to 0.5 happens because early noise gets *diluted* by later volume, not because the coin \"corrects\" itself.\n- **Confusing \"probability 0\" with \"impossible.\"** For quantities that vary continuously (a person's exact height), a specific value can have probability 0 yet still be possible. File that away for later.\n- **Small-sample overconfidence.** Ten flips giving 7 heads does **not** mean the coin is biased. Short runs are wildly noisy. This mistake, at scale, is most bad data analysis."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. In one sentence each, define probability the frequentist way and the Bayesian way.\n2. The covered-coin puzzle: which view most comfortably assigns it a probability of 0.5, and why?\n3. Why does the running fraction of heads get *smoother* as flips increase, even though each individual flip stays perfectly random?\n4. What does it mean for a spam classifier to be \"calibrated\"?\n5. A friend says \"the roulette wheel hit red 6 times, so black is due.\" Name the fallacy and explain the flaw in two sentences.\n\n> ✍️ **Explain it back:** Your friend, who has never studied probability, asks \"what does it even mean to say there's a 70% chance of rain tomorrow — it either rains or it doesn't?\" Answer them in plain English using *both* lenses. If you can do this convincingly, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "A weather app says \"70% chance of rain tomorrow.\" Interpret this once with the frequentist lens and once with the Bayesian lens.",
+              "solution": "- **Frequentist:** across many days with atmospheric conditions like tomorrow's, it rains on about 70% of them.\n- **Bayesian:** given the forecaster's current information (models, sensors), their degree of belief that it rains tomorrow is 0.70. Tomorrow happens only once, so this lens fits the one-off nature more naturally."
+            },
+            {
+              "id": "A2",
+              "difficulty": "warm-up",
+              "prompt": "A fair coin has just landed *heads* five times in a row. A gambler bets heavily on tails next, sure it's \"due.\" What's P(heads) on the next flip, and what's the fallacy called?",
+              "solution": "P(heads) = **0.5**, unchanged — a fair coin has no memory. The error is the **gambler's fallacy**. Convergence to 0.5 happens because early streaks get *diluted* by future flips, not because the coin compensates."
+            },
+            {
+              "id": "A3",
+              "difficulty": "core",
+              "prompt": "A model outputs \"spam with probability 0.9\" on many emails, but only 55% of those flagged emails are truly spam. Is the model well-calibrated? What word describes it, and why does it matter?",
+              "solution": "Not calibrated — it's **miscalibrated (overconfident)**. A calibrated model that says 0.9 should be right ~90% of the time; this one is right 55% of the time. It matters because downstream decisions (auto-deleting mail, blocking a transaction) rely on the number *meaning* what it claims. Same idea underlies trusting any probabilistic classifier."
+            }
+          ]
+        },
+        {
+          "id": "language-of-sets-and-events",
+          "number": "00.2",
+          "title": "The Language of Sets & Events",
+          "oneLiner": "Every probability question is secretly a question about sets: outcomes, events, unions, and intersections.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The \"or\" that breaks addition",
+              "body": "Roll a single die. What's the probability you get **\"an even number OR a number greater than 3\"**?\n\nIf your instinct is to add P(even) = 3/6 and P(>3) = 3/6 to get 6/6 = *certain*... try it. Roll a 1. That's neither even nor greater than 3. So the answer **can't** be 1. Something about naive adding is broken.\n\nThe fix isn't a formula to memorize. It's learning to *see the question as a picture of overlapping sets*. Once you can draw it, you can never get it wrong again."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Every question is secretly about sets",
+              "body": "Here's the secret that makes probability click: **every probability question is really a question about sets.**\n\n- The **sample space** is the bag of *all possible outcomes*. For a die: `{1, 2, 3, 4, 5, 6}`.\n- An **event** is just a *subset* of that bag — a group of outcomes you care about. \"Even\" is the subset `{2, 4, 6}`.\n- Probability, then, is just **measuring the size of a subset relative to the whole bag.**\n\nAnd the words \"and,\" \"or,\" \"not\" are just set operations:\n\n| English | Set idea | Picture |\n|---------|----------|---------|\n| \"A **and** B\" (both happen) | **Intersection** — the overlap | the middle slice |\n| \"A **or** B\" (at least one) | **Union** — everything covered by either circle | both circles combined |\n| \"**not** A\" | **Complement** — everything *outside* A | the rest of the box |\n| \"A and B **can't both happen**\" | **Disjoint / mutually exclusive** — circles don't touch | no overlap |\n\n🖼️ **The master picture — a Venn diagram:** draw a rectangle (that's the whole sample space Ω). Draw two overlapping circles inside it (A and B). *Every* \"and/or/not\" question is now just: *which regions do I shade?*\n\nBack to the hook: \"even OR >3\" is the **union** of `{2,4,6}` and `{4,5,6}`. Writing out the union without double-counting: `{2, 4, 5, 6}` — that's **4** outcomes, so the answer is **4/6**, not 6/6. The naive add double-counted the overlap `{4, 6}`. *Seeing the overlap* is the whole game."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Naming the pieces",
+              "body": "- **Sample space** $\\Omega$ (Omega): the set of all possible outcomes.\n- **Outcome** $\\omega$: a single element of $\\Omega$.\n- **Event** $A$: any subset, $A \\subseteq \\Omega$.\n\nThe operations:\n\n| Name | Notation | Meaning |\n|------|----------|---------|\n| Union | $A \\cup B$ | outcomes in A **or** B (or both) |\n| Intersection | $A \\cap B$ | outcomes in A **and** B |\n| Complement | $A^c$ (or $\\bar{A}$) | outcomes **not** in A |\n| Empty set | $\\varnothing$ | the impossible event (no outcomes) |\n| Subset | $A \\subseteq B$ | every outcome of A is also in B |\n| Disjoint | $A \\cap B = \\varnothing$ | A and B share no outcomes |\n\nTwo identities worth knowing cold (**De Morgan's laws**) — they let you swap \"and ↔ or\" by flipping to complements:\n\n$$(A \\cup B)^c = A^c \\cap B^c \\qquad (A \\cap B)^c = A^c \\cup B^c$$\n\nIn English: *\"not (A or B)\" = \"not-A and not-B.\"* (\"It's not the case that it's raining or snowing\" = \"it's not raining AND it's not snowing.\") You'll use this constantly to rewrite awkward probabilities into easy ones."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "This is how you slice a dataset",
+              "body": "The set language isn't abstract — it's exactly how you carve up data every single day.\n\n- Filtering a table to the rows where **age > 30 AND country = \"IN\"** is an **intersection of two events**. The \"and / or / not\" you use to subset data are the intersection, union, and complement from this page.\n- A query condition like **age > 30 OR spend > 1000** is a **union**.\n- \"What fraction of rows satisfy the condition?\" is the definition of probability from the intuition section, applied to real data.\n\nWhen you compute \"what fraction of users who churned had *also* filed a support ticket?\", you are computing a probability over the **intersection** of two events — whether or not anyone calls it that. Fluency here means you reason about data filters *correctly*, especially the overlaps, instead of double-counting like the broken hook."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Adding probabilities that overlap.** The hook's whole lesson: $P(A \\cup B) \\ne P(A) + P(B)$ *unless A and B are disjoint*. The correct rule (next topic) subtracts the overlap. Double-counting the intersection is the #1 beginner error.\n- **Confusing \"mutually exclusive\" with \"independent.\"** They sound similar and are *completely different* (independence comes later). Mutually exclusive = *can't happen together*. Keep them in separate mental boxes from day one.\n- **Forgetting the sample space.** \"Probability of an even number\" is meaningless until you say *even out of what?* A die? A roulette wheel? Always pin down Ω first.\n- **Vague \"or\".** In everyday speech \"or\" sometimes means \"one or the other but not both.\" In probability, \"A or B\" **includes** both unless you say otherwise. Precision prevents errors."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define *sample space*, *outcome*, and *event*. How does an event relate to the sample space?\n2. Translate to set notation: \"neither A nor B happens.\"\n3. State both of De Morgan's laws and give a plain-English example of one.\n4. When *does* $P(A \\cup B) = P(A) + P(B)$ hold? What's the name for that situation?\n5. \"What fraction of users who churned had also filed a support ticket?\" — which set operation is hiding inside that question?\n\n> ✍️ **Explain it back:** Draw (on paper) a Venn diagram of two overlapping events A and B inside a box Ω. Shade the region for \"A or B but not both,\" and write it in set notation. If the picture and the notation agree, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "With $\\Omega = \\{1,2,3,4,5,6\\}$, $A = \\{1,2,3\\}$, $B = \\{2,4,6\\}$, list $A \\cup B$, $A \\cap B$, $A^c$, and $A^c \\cap B$.",
+              "solution": "- $A \\cup B = \\{1,2,3,4,6\\}$\n- $A \\cap B = \\{2\\}$\n- $A^c = \\{4,5,6\\}$\n- $A^c \\cap B = \\{4,6\\}$"
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "Translate to set notation: \"exactly one of A or B occurs\" (i.e., A or B but not both).",
+              "solution": "$(A \\cap B^c) \\cup (A^c \\cap B)$ — this is the *symmetric difference*, sometimes written $A \\triangle B$. Equivalently $(A \\cup B) \\cap (A \\cap B)^c$."
+            },
+            {
+              "id": "B3",
+              "difficulty": "core",
+              "prompt": "Use De Morgan's law to rewrite $P(A^c \\cap B^c)$ in terms of $P(A \\cup B)$.",
+              "solution": "$A^c \\cap B^c = (A \\cup B)^c$, so $P(A^c \\cap B^c) = 1 - P(A \\cup B)$ (also using the complement rule). In words: \"neither happens\" = 1 − \"at least one happens.\""
+            }
+          ]
+        },
+        {
+          "id": "axioms-and-rules",
+          "number": "00.3",
+          "title": "The Three Axioms & the Rules They Give You",
+          "oneLiner": "All of probability is derived from just three simple rules Kolmogorov wrote down in 1933.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The whole subject from three rules",
+              "body": "Here's a claim: **every formula in this entire course — Bayes' theorem, the binomial distribution, the machinery behind p-values, all of it — is squeezed out of just three short rules a Russian mathematician wrote down in 1933.**\n\nThat sounds like marketing. It isn't. Andrey Kolmogorov found the *minimum* set of assumptions that make probability behave sensibly, and everything else is a logical consequence. If you truly own these three rules, you can *rederive* forgotten formulas instead of frantically searching for them. That's the difference between renting knowledge and owning it."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Three statements you already believe",
+              "body": "Forget the word \"axiom\" — it just means \"a rule so basic we agree to start from it.\" Here's the intuition for each, using the picture from the last topic (probability = *how much of the sample-space box a region covers*).\n\n1. **Probabilities aren't negative.** You can't have \"less than none\" of the box shaded. The smallest is zero (empty region). ✅ Obvious.\n2. **The whole box has probability 1.** *Something* in the sample space must happen. If you shade everything, you've shaded 100%. ✅ Obvious.\n3. **For non-overlapping regions, areas add.** If two events can't happen together (disjoint circles that don't touch), the chance of \"one or the other\" is just their areas summed. ✅ Obvious.\n\nThat's the whole foundation. It's *deliberately* boring — that's the point. From these three \"obvious\" statements, a tower of non-obvious, powerful results follows.\n\n### The rules that fall out (this is where it gets useful)\n\n**Complement rule** — from rules 2 & 3, since A and \"not A\" are disjoint and together fill the box:\n$$P(A^c) = 1 - P(A)$$\n🔑 *This is a superpower.* Whenever \"at least one\" is hard to compute directly, compute \"none\" and subtract. (\"At least one head in 10 flips\" is a nightmare head-on, but \"no heads\" = \"all tails\" is one easy multiplication.)\n\n**Addition rule (general)** — for events that *might* overlap, the fix for the last topic's hook:\n$$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$$\n🖼️ *Why subtract?* Because adding both circles counts the overlap **twice**. You subtract it once to fix the double-count. This is called **inclusion–exclusion**."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Kolmogorov's axioms, precisely",
+              "body": "For a sample space $\\Omega$ and events (subsets) $A$:\n\n$$\n\\textbf{(1)}\\quad P(A) \\ge 0\n\\qquad\n\\textbf{(2)}\\quad P(\\Omega) = 1\n\\qquad\n\\textbf{(3)}\\quad A \\cap B = \\varnothing \\;\\Rightarrow\\; P(A \\cup B) = P(A) + P(B)\n$$\n\n**Consequences** (each provable from the three above):\n\n| Rule | Formula |\n|------|---------|\n| Complement | $P(A^c) = 1 - P(A)$ |\n| Impossible event | $P(\\varnothing) = 0$ |\n| Monotonicity | $A \\subseteq B \\Rightarrow P(A) \\le P(B)$ |\n| General addition | $P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$ |\n| Bounds | $0 \\le P(A) \\le 1$ |\n\n> 🧠 **Do this once by hand:** prove the complement rule. $A$ and $A^c$ are disjoint (rule 3 applies) and their union is $\\Omega$ (rule 2). So $P(A) + P(A^c) = P(\\Omega) = 1$, therefore $P(A^c) = 1 - P(A)$. Two lines. *That's* what \"everything follows from the axioms\" feels like — do it yourself and it stops being a slogan.\n\n**A worked overlap.** A die roll, A = \"even\" = {2,4,6}, B = \">3\" = {4,5,6}. Naively $P(A)+P(B) = \\tfrac12 + \\tfrac12 = 1$ — impossible, since rolling a 1 satisfies neither. The overlap is {4,6}, probability $\\tfrac26$. Correct: $P(A\\cup B) = \\tfrac12 + \\tfrac12 - \\tfrac26 = \\tfrac46$. The subtraction is bookkeeping, not decoration."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where these rules pay off",
+              "body": "- **The complement trick is everywhere.** \"What's the probability a system with 20 redundant servers has *at least one* alive?\" Computing that directly is brutal. Computing \"all 20 dead\" and doing `1 − that` is one step. Reliability engineering, dropout analysis, \"at least one fraud in this batch\" — all lean on `P(at least one) = 1 − P(none)`.\n- **Inclusion–exclusion drives de-duplication and reach.** \"How many users did campaign A *or* B reach?\" You can't add the two audiences — you'd double-count everyone in both. Subtract the intersection. This is the exact logic behind unique reach, funnel overlap, and set-based metrics.\n- **Sanity-checking model outputs.** If a multi-class model's predicted probabilities don't sum to 1 (rule 2) or any is negative (rule 1), something is *broken*. The axioms are your smoke detector for buggy probability numbers."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Applying rule 3 to overlapping events.** The naive `P(A) + P(B)` is only valid when disjoint. When in doubt, assume there's an overlap and use the general addition rule.\n- **Probabilities that don't sum to 1.** Over a set of *mutually exclusive and exhaustive* outcomes, they must total exactly 1. If your distribution sums to 1.2, you've made an error — the axioms just caught it.\n- **Forgetting the complement shortcut.** Any time a problem says \"at least one,\" your first thought should be *\"...so let me compute 'none' and subtract.\"* Beginners grind through the hard direct sum and make arithmetic errors.\n- **Treating axioms as arbitrary trivia.** They're not a list to memorize and discard — they're the *engine*. Re-deriving the complement rule by hand is worth more than reading this whole page twice."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State Kolmogorov's three axioms from memory.\n2. Derive the complement rule $P(A^c) = 1 - P(A)$ using only the axioms. (Two lines.)\n3. Why does the general addition rule *subtract* $P(A \\cap B)$? Answer with the double-counting picture.\n4. A model outputs class probabilities `0.5, 0.4, 0.3`. Which axiom does this violate, and why is that a red flag?\n5. \"Probability of at least one defect in a batch of 50, if each is defective with probability 0.02.\" Set up the calculation using the complement trick (you don't have to finish the arithmetic).\n\n> ✍️ **Explain it back:** In your own words, defend the claim \"all of probability follows from three rules\" to a skeptic. Use the complement rule as your worked example of something non-obvious falling out of something obvious. If your explanation holds together, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "If $P(A) = 0.6$, $P(B) = 0.5$, and $P(A \\cap B) = 0.2$, find $P(A \\cup B)$.",
+              "solution": "General addition rule: $P(A \\cup B) = 0.6 + 0.5 - 0.2 = \\mathbf{0.9}$. (Note that naive addition would give 1.1 > 1, an impossible probability — the overlap subtraction is what keeps it legal.)"
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "A component works with probability 0.95. You wire **3 independent copies** in parallel; the system works if *at least one* copy works. Find P(system works) using the complement trick. *(You'll formally meet independence in Module 01; here just multiply the failure probabilities.)*",
+              "solution": "$P(\\text{all 3 fail}) = (1 - 0.95)^3 = 0.05^3 = 0.000125$.\n$P(\\text{at least one works}) = 1 - 0.000125 = \\mathbf{0.999875}$.\nThis is *why* redundancy works, and why the complement trick is the natural tool: \"at least one\" → \"1 − none.\""
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "Prove the general addition rule $P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$ using only the axioms. *Hint: split $A \\cup B$ into three disjoint pieces.*",
+              "solution": "Partition $A \\cup B$ into three **disjoint** events: $(A \\cap B^c)$, $(A \\cap B)$, $(A^c \\cap B)$. By axiom 3 (disjoint additivity):\n$$P(A\\cup B) = P(A\\cap B^c) + P(A\\cap B) + P(A^c\\cap B).$$\nAlso $P(A) = P(A\\cap B^c) + P(A\\cap B)$ and $P(B) = P(A^c\\cap B) + P(A\\cap B)$. Add these two:\n$$P(A)+P(B) = P(A\\cap B^c) + P(A^c\\cap B) + 2P(A\\cap B).$$\nSo $P(A)+P(B) - P(A\\cap B) = P(A\\cap B^c)+P(A^c\\cap B)+P(A\\cap B) = P(A\\cup B)$. ∎"
+            }
+          ]
+        },
+        {
+          "id": "reading-chance-in-the-real-world",
+          "number": "00.4",
+          "title": "Reading Chance in the Real World",
+          "oneLiner": "Probabilities, odds, percentages, and natural frequencies are four dialects of the same idea — and one of them makes hard problems easy.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Same fact, four disguises",
+              "body": "A doctor tells you a treatment \"works 4 times out of 5.\" A bookmaker lists the rival team \"at 4-to-1.\" A dashboard reports a \"17% conversion rate.\" A news article says a side effect hits \"1 in 2,000 people.\"\n\nEvery one of those is a probability wearing a costume. And here's the catch: **the costume changes how easy the problem is to reason about.** Dressed one way, a famous medical puzzle fools most doctors. Dressed another, the same puzzle becomes so obvious a child can solve it. Learning to change the costume at will is a genuine superpower — and it's the last piece of foundation you need before the real machinery begins."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Four dialects of one idea",
+              "body": "There are four common ways to say \"how likely,\" and they all describe the same underlying number.\n\n**1. Probability** — a number from 0 to 1 (or 0% to 100%). \"0.8\" or \"80%.\" The workhorse.\n\n**2. Percentages** — probability × 100. Friendlier to say (\"80%\"), identical in meaning. Watch for *percentage points* vs *percent* — going from 10% to 12% is +2 percentage points but a +20% relative increase. This confusion is a reporting classic.\n\n**3. Odds** — the ratio of *for* to *against*, not out of the whole. \"4-to-1 in favor\" means 4 winning outcomes for every 1 losing one → 5 outcomes total → probability 4/5 = 0.8. Odds compare the two sides directly; probability compares one side to the total.\n\n$$\\text{odds for} = \\frac{P}{1 - P} \\qquad\\qquad P = \\frac{\\text{odds}}{\\text{odds} + 1}$$\n\n**4. Natural frequencies** — \"how many out of a fixed crowd.\" Instead of \"0.8,\" say \"**8 out of 10 people**.\" Instead of \"0.0005,\" say \"**1 in 2,000**.\" This sounds like the least mathematical option. It is secretly the most powerful, and section 3 shows why.\n\n🖼️ *Picture:* one dial, four labels. Sliding the dial to the same spot, you can read off 0.8, or 80%, or 4-to-1, or \"8 in 10.\" Nothing about the world changed — only the words."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Where the numbers come from — and why counts beat fractions",
+              "body": "We've *defined* probability (last three topics). But in practice, where does an actual number like \"0.17\" come from? Two honest sources:\n\n- **Counting equally likely outcomes:** probability = favorable ÷ total. A fair die shows even with probability 3/6. (This is the whole engine of the next module.)\n- **Relative frequency from data:** watch the thing many times, take the fraction. If 1,700 of 10,000 visitors converted, the estimated probability is 0.17. The more observations, the more trustworthy the estimate — the Law of Large Numbers again.\n\nNow the payoff of natural frequencies. Consider a fact stated two ways:\n\n> *Probabilities:* \"A disease has probability 0.001. A test detects it with probability 0.99 and false-alarms with probability 0.01. Given a positive test, what's the probability of disease?\"\n\nMost people — including trained professionals — freeze or guess \"about 99%.\" Now the **same fact** in natural frequencies:\n\n> *Counts:* \"Picture 1,000 people. **1** has the disease and tests positive. Of the other 999, about **10** false-alarm. So **11** people test positive, and only **1** is truly sick.\"\n\nRead that second version and the answer — about **1 in 11**, roughly 9% — is almost impossible to get wrong. Nothing changed but the costume. **Translating probabilities into \"out of a fixed crowd\" turns multiplication-heavy reasoning into simple counting.** Hold onto this; the next module's crown jewel (Bayes' theorem) is exactly this puzzle, and natural frequencies are the reason it will feel easy instead of terrifying."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Why this literacy pays off",
+              "body": "- **Reading metrics without being fooled.** \"Conversion rose 2%\" — two percentage points, or 2% of the old rate? \"The model is 99% accurate\" — accurate how, and on what base rate? Fluency in these dialects is what keeps a dashboard from lying to you.\n- **Odds are the native language of two huge tools.** Logistic regression predicts *log-odds*, not probability; its coefficients are read as odds ratios. And \"odds ratio\" is the headline number in most medical and social-science studies. You'll meet both; this is where the vocabulary starts.\n- **Communicating risk to humans.** Stakeholders understand \"about 1 in 20 users hit this bug\" far better than \"P = 0.048.\" Presenting probability as a natural frequency is a repeatedly-proven way to make an audience actually grasp it — a real communication skill, not a soft one.\n- **Estimating from data is the day job.** Almost every probability you'll use professionally is a relative frequency measured from a sample: click-through rate, churn rate, defect rate. Knowing these are *estimates* (noisier the smaller the sample) is the seed of all of statistics."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Odds ≠ probability.** \"4-to-1\" is *not* 4/1 or \"1 in 4.\" It's 4 *for* every 1 *against* → 4/5. Mixing these up mangles betting math and logistic-regression readings alike.\n- **Percentage points vs. percent.** Confusing the two is one of the most common — and most consequential — reporting errors. Always ask which is meant.\n- **Ignoring the base rate.** \"1 in 2,000\" of *whom*? A rate is meaningless without its denominator. A big scary count of events can be a tiny probability if the population is huge (and vice versa).\n- **Trusting a frequency from too little data.** \"3 of our last 5 users churned = 60% churn!\" Five users is noise, not a rate. Small samples give wild estimates — the same small-sample trap from the very first topic."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Convert: probability 0.75 into (a) a percentage, (b) odds for, (c) a \"so many out of 8\" natural frequency.\n2. A team is \"3-to-2 against\" winning. What's their probability of winning?\n3. In your own words, why do natural frequencies (\"11 out of 1,000\") make conditional-probability puzzles easier than the same facts as decimals?\n4. A report says signups went from 4% to 5%. State the change as both percentage points and a relative percent increase.\n5. A dashboard shows a 25% conversion rate based on 8 visitors. Why should you be cautious quoting that number?\n\n> ✍️ **Explain it back:** Take any probability from your own life (chance of rain, a sports result, a bug rate) and state it out loud in all four dialects — probability, percentage, odds, and \"so many out of a crowd.\" If you can move between them without hesitating, this topic — and the whole Foundations module — is ✅. You're ready for Module 01.\n\n---\n\n*Module complete. Consolidate with the [cheatsheet](cheatsheet.md) and [problems](problems.md), then advance to `01-probability-core/`.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "A weather service gives tomorrow \"odds of 3-to-1 against rain.\" Convert that to a probability of rain, and to a percentage.",
+              "solution": "\"3-to-1 against\" = 3 dry outcomes for every 1 rainy one → 4 outcomes total → P(rain) = 1/4 = **0.25 = 25%**. (Careful: \"against\" flips which side is on top.)"
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "A report says a metric \"increased by 3%.\" Give two genuinely different things this could mean, using a metric that started at 20%.",
+              "solution": "- **Percentage points:** 20% → 23% (an absolute +3 points).\n- **Relative percent:** 20% → 20.6% (3% *of* 20 is 0.6, so a +0.6-point rise).\n\nThese differ by a factor of 5 here. Whenever someone says \"up X%,\" pin down which one — the ambiguity has caused real, expensive misreadings."
+            },
+            {
+              "id": "D3",
+              "difficulty": "core",
+              "prompt": "Restate each as a natural frequency \"out of a fixed crowd,\" choosing a crowd size that makes the counts whole: (a) P = 0.2, (b) P = 0.005, (c) odds of 4-to-1 in favor.",
+              "solution": "- (a) 0.2 → **2 out of 10** (or 20 out of 100).\n- (b) 0.005 → **1 out of 200** (or 5 out of 1,000).\n- (c) 4-to-1 in favor → P = 4/5 → **8 out of 10**.\n\nPicking the denominator that clears the fractions is the whole trick — it's what makes the count easy to picture."
+            },
+            {
+              "id": "D4",
+              "difficulty": "stretch",
+              "prompt": "A rare condition affects 1 in 1,000 people. A test detects it 99% of the time and false-alarms on 1% of healthy people. Using **natural frequencies only** (no algebra), estimate the probability that a person who tests positive actually has the condition. Then say in one sentence why the \"obvious\" answer of ~99% is wrong.",
+              "solution": "Picture **1,000 people**. About **1** is sick and (99% of the time) tests positive → ~1 true positive. Of the **999** healthy people, 1% false-alarm → ~**10** false positives. Total positives ≈ 11, of whom 1 is truly sick.\n$$P(\\text{sick} \\mid \\text{positive}) \\approx \\frac{1}{11} \\approx \\mathbf{9\\%}.$$\nThe ~99% intuition confuses \"the test catches 99% of sick people\" (true) with \"99% of positives are sick\" (false) — because the healthy group is so much larger, its rare false alarms still *outnumber* the true positives. This exact puzzle is the crown jewel of the next module (Bayes' theorem); you just solved it with counting."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "01-probability-core",
+      "number": "01",
+      "phase": "Phase I — The Language of Uncertainty",
+      "title": "Probability Core: Conditioning, Bayes & Random Variables",
+      "summary": "How to count outcomes, how new information changes probabilities (conditioning), what independence really means, Bayes' theorem — the crown jewel — and the bridge to everything that follows: the random variable.",
+      "topics": [
+        {
+          "id": "counting-and-combinatorics",
+          "number": "01.1",
+          "title": "Counting & Combinatorics",
+          "oneLiner": "When outcomes are equally likely, probability is just counting — and counting has shortcuts.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "A shuffle nobody has ever seen",
+              "body": "Shuffle a deck of cards properly. Here's a claim that sounds absurd: **the exact ordering of the deck in your hands has almost certainly never existed before in human history** — not in any casino, not in any card game ever played.\n\nThe number of ways to order 52 cards is $52!$ — a number with **68 digits**. If every human who ever lived had shuffled a deck every second since the Big Bang, we'd have covered a laughably tiny fraction of the possibilities. Your shuffle is, with near certainty, a first.\n\nCounting is where probability gets its numbers. And as you just saw, human intuition about counting is *catastrophically* bad — which is exactly why we need a system."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Three shortcuts for \"how many\"",
+              "body": "For equally likely outcomes, Module 00 gave us:\n\n$$P(A) = \\frac{\\text{outcomes in } A}{\\text{outcomes in } \\Omega}$$\n\nSo computing probabilities reduces to **counting two sets**. The problem: the sets are usually too big to list. Three shortcuts cover almost everything.\n\n### Shortcut 1 — The multiplication principle (the tree 🌳)\n\nIf a choice happens in stages — 3 shirts, then 2 pants — the total count is $3 \\times 2 = 6$ outfits. Picture a tree: 3 branches, each splitting into 2. **Stages multiply.** That's the whole principle, and it's the parent of everything below.\n\n### Shortcut 2 — Permutations: order matters (the podium 🥇🥈🥉)\n\nHow many ways can 10 sprinters fill gold–silver–bronze? Gold: 10 choices. Silver: 9 left. Bronze: 8 left. So $10 \\times 9 \\times 8 = 720$. An **arrangement where order matters** is a *permutation* — a falling product of choices.\n\n### Shortcut 3 — Combinations: order doesn't matter (the committee 🤝)\n\nHow many ways to pick a *committee* of 3 from 10 people? Committees have no gold/silver/bronze — picking {Asha, Ben, Chen} is the same committee in any order. The podium count of 720 counted each trio $3! = 6$ times (once per internal ordering). So divide the double-count away: $720 / 6 = 120$.\n\n> 🔑 **The master question:** *\"Does order matter?\"*\n> Order matters → permutation (just multiply falling choices).\n> Order doesn't → combination (permutation ÷ the orderings you over-counted)."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Factorials, permutations, choose",
+              "body": "| Object | Notation | Formula | Counts... |\n|--------|----------|---------|-----------|\n| Factorial | $n!$ | $n \\cdot (n-1) \\cdots 1$ | orderings of $n$ distinct things |\n| Permutations | $^nP_k$ | $\\dfrac{n!}{(n-k)!}$ | ordered arrangements of $k$ out of $n$ |\n| Combinations | $\\binom{n}{k}$ | $\\dfrac{n!}{k!\\,(n-k)!}$ | unordered selections of $k$ out of $n$ |\n\nThe combination symbol $\\binom{n}{k}$ is read **\"n choose k\"** and will follow you for the rest of this course (it's the heart of the binomial distribution in Module 02).\n\nClassical probability then becomes:\n\n$$P(A) = \\frac{|A|}{|\\Omega|} \\qquad \\text{(both counted with the shortcuts above)}$$\n\n**Worked example.** Draw 2 cards from a 52-card deck. $P(\\text{both aces})$?\n- Total 2-card hands: $\\binom{52}{2} = 1326$ (order doesn't matter).\n- Hands that are two aces: $\\binom{4}{2} = 6$.\n- $P = 6/1326 \\approx 0.0045$ — about 1 in 221.\n\nAnd the hook's claim, made honest: $52!$ has **68 digits**, while the number of seconds since the Big Bang has only about **18**. Even a hundred billion people shuffling once a second since the dawn of time wouldn't dent the space of orderings. The formula doesn't just answer the puzzle — it makes the impossible-sounding claim precise."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where counting earns its keep",
+              "body": "- **The binomial coefficient is about to become your daily bread.** \"Probability of exactly $k$ successes in $n$ trials\" — conversions, clicks, defects — is built directly on $\\binom{n}{k}$ (Module 02).\n- **Combinatorial explosion is why ML is hard.** Feature selection over 50 features has $2^{50}$ subsets; hyperparameter grids multiply (the multiplication principle working against you); trying all is impossible — which is *why* greedy algorithms, random search, and regularization exist. Recognizing \"this space is combinatorially huge\" is a core engineering instinct.\n- **Cross-validation and A/B assignment are counting problems.** \"How many ways to split 1000 users into two equal groups?\" — $\\binom{1000}{500}$, a number so large that random assignment is effectively never repeated.\n- **Careful counting = correct baselines.** \"What's the chance two users in a 30-person beta share a birthday?\" Intuition says tiny; counting says ~70%. Data scientists who can count don't get fooled by \"surprising\" coincidences in data."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Using permutations when order doesn't matter** (or vice versa). Always ask the master question first. A poker hand is a combination; a password is a permutation.\n- **Double-counting.** The committee example: 720 counts each committee 6 times. If your count feels too big by a suspiciously round factor, you've probably counted orderings of identical things.\n- **Factorials explode.** They grow faster than exponentials — $13!$ already passes 6 billion. Cancel them *before* multiplying (in $\\binom{n}{k}$, the $(n-k)!$ cancels most of the $n!$), rather than computing giant factorials just to divide them away.\n- **Assuming equally likely when it isn't.** Counting only gives probabilities when outcomes are *equally likely*. \"I either win the lottery or I don't — 50/50\" is the canonical abuse."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the multiplication principle and give a two-stage example of your own.\n2. What's the master question that decides permutation vs. combination?\n3. Why does the combination formula divide by $k!$? Explain with the committee story, not the formula.\n4. Compute: how many distinct 3-letter codes can you make from 26 letters (a) if letters can repeat, (b) if they can't?\n5. A colleague says \"we tested 8 features in all combinations of 3 — that's $8 \\times 7 \\times 6 = 336$ tests.\" What did they get wrong, and what's the right count?\n\n> ✍️ **Explain it back:** Your friend asks why a poker app says there are \"only\" 2,598,960 possible 5-card hands when 52 × 51 × 50 × 49 × 48 is over 300 million. Explain the gap in plain English. If you can name exactly what the big number over-counts, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "A password is 2 letters (A–Z) followed by 2 digits (0–9), repeats allowed. How many passwords exist? What principle did you use?",
+              "solution": "Stages multiply (the **multiplication principle**): $26 \\times 26 \\times 10 \\times 10 = \\mathbf{67{,}600}$."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "From a team of 10, count the ways to (a) choose a president, VP, and treasurer; (b) choose a 3-person committee. Why do the answers differ by exactly a factor of 6?",
+              "solution": "(a) Order matters (distinct roles): $10 \\times 9 \\times 8 = \\mathbf{720}$.\n(b) Order doesn't: $\\binom{10}{3} = \\mathbf{120}$.\nThe factor is $3! = 6$: each committee was counted once per internal ordering of its 3 members in (a). Combinations = permutations ÷ orderings you don't care about."
+            },
+            {
+              "id": "A3",
+              "difficulty": "stretch",
+              "prompt": "Poker: compute P(a 5-card hand is a *flush* — all five cards the same suit).",
+              "solution": "Count flushes: pick the suit ($4$ ways), then pick 5 of its 13 cards ($\\binom{13}{5} = 1287$): $4 \\times 1287 = 5148$ flushes.\n$$P = \\frac{5148}{\\binom{52}{5}} = \\frac{5148}{2{,}598{,}960} \\approx \\mathbf{0.00198}$$\nAbout 1 hand in 505. (This count *includes* straight flushes; the \"flush only\" casino definition subtracts the 40 straight flushes.)"
+            }
+          ]
+        },
+        {
+          "id": "conditional-probability",
+          "number": "01.2",
+          "title": "Conditional Probability",
+          "oneLiner": "New information shrinks your universe — conditioning is recomputing probability inside the survivors.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The two-children puzzle",
+              "body": "A family has two children. You learn one fact: **at least one of them is a boy.**\n\nWhat's the probability *both* are boys?\n\nAlmost everyone says 1/2 — \"the other kid is a boy or a girl, 50/50.\" The correct answer is **1/3**. Not approximately. Exactly.\n\nIf that feels wrong, good — your intuition is about to get upgraded. The resolution isn't a trick; it's the single most important skill in this course: **recomputing probabilities after information arrives.**"
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Shrinking the universe",
+              "body": "### Conditioning = shrinking the universe 🌍→🔍\n\nBefore any information, the two-children sample space has four equally likely outcomes:\n\n```\nBB   BG   GB   GG\n```\n\nNow the information lands: *at least one is a boy*. This **kills GG**. The universe shrinks to three survivors:\n\n```\nBB   BG   GB        (GG is gone)\n```\n\nAmong the survivors, exactly one is BB. So P(both boys | at least one boy) = **1/3**. That's all conditioning is:\n\n> **Throw away every outcome that contradicts what you learned, then recount inside what's left.**\n\nThe 1/2-answer fails because it silently answers a *different* question (\"the *first* child is a boy\" — which kills GG *and* GB, leaving BB out of {BB, BG} = 1/2). Precision about *what exactly you learned* is everything.\n\n### The Venn picture\n\nDraw events A and B as overlapping circles. Learning \"B happened\" means **B is your new universe**. The probability of A is now just: *what fraction of B's area does A∩B cover?*\n\n$$P(A \\mid B) = \\frac{\\text{area of } A \\cap B}{\\text{area of } B}$$\n\n### The data view (this one pays your salary)\n\nConditioning is a **filter**. \"P(churn | clicked twice)\" = *keep only the users who clicked twice, then compute the churn rate within that subset.* Every segmented rate you've ever computed — conversion among mobile users, defect rate for a supplier — was a conditional probability."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The formula, and two rules that flow from it",
+              "body": "For $P(B) > 0$:\n\n$$P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}$$\n\nRead \"$P(A \\mid B)$\" as *\"probability of A given B.\"* Rearranged, it gives the **chain rule** (multiplication rule):\n\n$$P(A \\cap B) = P(A \\mid B)\\, P(B)$$\n\n— \"for both to happen: B happens, then A happens *in B's world*.\" Chains extend: $P(A \\cap B \\cap C) = P(A)\\,P(B \\mid A)\\,P(C \\mid A \\cap B)$.\n\nAnd if events $B_1, \\dots, B_n$ split the world into disjoint pieces (a *partition*), the **law of total probability** rebuilds an overall probability from conditional slices:\n\n$$P(A) = \\sum_i P(A \\mid B_i)\\, P(B_i)$$\n\n— a weighted average of A's probability across the scenarios. (This is the denominator machine inside Bayes' theorem, next topic.)\n\n**Check with the hook:** $P(BB \\mid \\ge 1\\text{ boy}) = \\frac{P(BB)}{P(\\ge 1 \\text{ boy})} = \\frac{1/4}{3/4} = \\frac{1}{3}$ ✓\n\n**Contrast the two conditionings side by side.** \"At least one boy\" keeps {BB, BG, GB} → 1 of 3 is BB → **1/3**. \"The *first* child is a boy\" keeps only {BB, BG} → 1 of 2 is BB → **1/2**. Same family, same \"a boy,\" but a different *filter* — and that alone moves the answer. The paradox was never about probability; it was about which universe you shrank to."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "The `|` that runs data science",
+              "body": "- **Every supervised model outputs conditional probabilities.** A classifier *is* an estimate of $P(y \\mid \\text{features})$. The bar in that expression is the entire reason features help — each one shrinks the universe toward the answer.\n- **Segmenting data is conditioning.** \"Churn rate among users who clicked twice\" is $P(\\text{churn} \\mid \\text{clicked twice})$, literally. You already condition dozens of times a day — now you know its algebra (and its traps).\n- **The chain rule is how language models factor text:** $P(w_1, w_2, w_3, ...) = P(w_1) P(w_2 \\mid w_1) P(w_3 \\mid w_1,w_2)\\cdots$ — next-token prediction is the chain rule, industrialized.\n- **The law of total probability is the \"segment and reassemble\" move:** overall conversion = Σ (conversion per segment × segment share). Every weighted-average metric decomposition you've built is this law."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Confusing $P(A \\mid B)$ with $P(B \\mid A)$.** \"The test is 99% likely to be positive given the disease\" does *not* mean \"you're 99% likely to have the disease given a positive test.\" This single confusion has a body count (courtrooms, clinics). It's the entire subject of the next topic.\n- **Answering the wrong conditioning.** \"At least one boy\" vs. \"the first is a boy\" — different filters, different answers. Before computing, write down *exactly* what was learned.\n- **Conditioning on the event you're predicting** (data leakage). If a feature secretly encodes the label — like an \"account-closed date\" when predicting churn — you've conditioned on the future. Models with suspiciously perfect accuracy usually have a bar in the wrong place.\n- **Forgetting that conditioning changes everything downstream.** After filtering to B, *all* probabilities live in B's world — including the base rates you carried in from outside. Recompute them."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define $P(A \\mid B)$ two ways: as a formula, and as a picture/story.\n2. Solve the two-children puzzle from scratch, both conditionings (at least one boy / the first is a boy), and explain *why* they differ.\n3. State the chain rule and use it: P(drawing two aces from a deck, in two draws without replacement).\n4. State the law of total probability. Then: 30% of users are mobile with 2% conversion, 70% desktop with 4% — overall conversion?\n5. Describe, in words, the recipe for computing a conditional probability from a table of data.\n\n> ✍️ **Explain it back:** Explain to a friend why \"P(A given B)\" and \"P(B given A)\" are different numbers, using a concrete example (e.g., P(wet ground | rain) vs. P(rain | wet ground)). If your example makes the asymmetry *obvious*, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "One card is drawn from a standard deck. Given that it's a face card (J, Q, K), what's the probability it's a king?",
+              "solution": "Shrink the universe to the 12 face cards; 4 are kings: $P = 4/12 = \\mathbf{1/3}$."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "Two dice are rolled and you're told the sum is 8. What's the probability at least one die shows a 6?",
+              "solution": "Survivors (sum = 8): (2,6), (3,5), (4,4), (5,3), (6,2) — five equally likely outcomes. With a 6: (2,6) and (6,2) → $P = \\mathbf{2/5}$. (Not 11/36 — the universe shrank.)"
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "**Monty Hall.** Three doors, one car. You pick door 1. The host — who knows where the car is and always opens a *goat* door you didn't pick — opens door 3. Should you switch to door 2?",
+              "solution": "**Yes — switching wins with probability 2/3.** Your initial pick is right only 1/3 of the time (in which case staying wins) and wrong 2/3 of the time. Whenever your first pick is wrong, the host — forced to open the *other* goat door — leaves the car sitting behind the one remaining closed door, so switching wins. Switching therefore wins in exactly the 2/3 of cases where your first guess was wrong. The host's *knowledge* is what breaks the \"50/50\" intuition: his door was not opened at random, so it carries information."
+            }
+          ]
+        },
+        {
+          "id": "independence",
+          "number": "01.3",
+          "title": "Independence",
+          "oneLiner": "Independence means knowing one thing tells you nothing about the other — and it's rarer than it looks.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The coin vs. the deck",
+              "body": "Two quick questions. A fair coin and a fresh deck:\n\n1. You flip heads five times in a row. Does the sixth flip now favor tails?\n2. You draw an ace from the deck. Is the next card *more* or *less* likely to be an ace?\n\nQuestion 1: **no** — the coin has no memory (Module 00's gambler's fallacy). Question 2: **less likely** — 3 aces remain among 51 cards.\n\nSame setup — \"a repeat event\" — but completely different logic. The coin flips are **independent**; the card draws are **dependent**. Telling these two situations apart, instantly and reliably, is a superpower — because the *entire* toolkit of statistics changes depending on which one you're in."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Knowing B teaches you nothing about A",
+              "body": "### Independence = \"knowing B teaches you nothing about A\" 🧠🚫\n\nFormally we'll say $P(A \\mid B) = P(A)$: after learning B happened, your belief about A **doesn't move**. The information is useless. That's independence — not \"unrelated topics,\" not \"no physical connection\" — *zero information transfer*.\n\n- Coin flips: knowing flip 5 was heads tells you *nothing* about flip 6. Independent.\n- Card draws: knowing the first card was an ace *changes the deck*. Dependent.\n- Height and last digit of your phone number: independent (we'd bet).\n- Height and weight: dependent — learning one shifts your beliefs about the other.\n\n### The picture: proportional overlap\n\nIn the Venn view, independence means **A occupies the same fraction of B as it occupies of the whole box.** If A covers 30% of the world, it covers exactly 30% of B too. Conditioning on B (zooming into B) doesn't change A's share. The overlap is *perfectly proportional* — nothing special happens inside B.\n\n### ⚔️ The classic confusion: independent vs. mutually exclusive\n\nThey sound like cousins. They are **opposites**.\n\n- **Mutually exclusive** (disjoint): if B happened, A is *impossible*. That's not \"no information\" — that's **maximum information**! Knowing B happened tells you everything about A (it didn't).\n- **Independent:** knowing B happened tells you *nothing* about A.\n\nTwo events with positive probability can never be both. File this in permanent memory."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The product rule (and how to test it)",
+              "body": "Events A and B are **independent** iff:\n\n$$P(A \\cap B) = P(A)\\,P(B)$$\n\nEquivalent (when $P(B)>0$): $P(A \\mid B) = P(A)$. The definitions are symmetric — if B teaches nothing about A, A teaches nothing about B.\n\nTwo useful consequences:\n- If A, B independent, so are A and $B^c$, $A^c$ and B, $A^c$ and $B^c$.\n- For **multiple** events, we want *mutual* independence: every sub-collection must factor, e.g. $P(A\\cap B\\cap C) = P(A)P(B)P(C)$ *and* all pairs. **Pairwise independence does not imply mutual independence** (a problem in this module's problem set constructs the classic counterexample).\n\n**The workhorse:** for independent events, \"and\" becomes multiplication. P(10 fair coins all heads) $= (1/2)^{10} = 1/1024$. This product rule — only valid under independence — is what made Module 00's complement trick compute: $P(\\text{no defect in 50 parts}) = 0.98^{50}$.\n\n**How to check it, by comparison.** The product form is also a *test*: measure the true joint probability $P(A \\cap B)$ and compare it to $P(A)\\,P(B)$. Take two dice. Let A = \"die 1 is even\" ($P = \\tfrac12$) and B = \"die 2 is greater than 4\" ($P = \\tfrac13$). These live on *separate* dice, so the joint is $\\tfrac16$ — exactly $\\tfrac12 \\times \\tfrac13$. **Independent.** Now let B instead be \"the *sum* is greater than 7.\" Die 1 is baked into the sum, so knowing die 1 is even nudges the sum upward: the true joint works out to $\\tfrac14$, but $P(A)P(B) = \\tfrac12 \\times \\tfrac{5}{12} \\approx 0.208$. The numbers disagree → **dependent.** Whenever a shared ingredient links two events, the product rule fails, and the gap between \"joint\" and \"product\" is exactly that leaked information."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where independence rules (and ruins)",
+              "body": "- **\"Naive\" Bayes is named after this topic.** The spam filter assumes every word is independent given the class — false, but useful — and multiplies per-word probabilities with the product rule. Knowing exactly *what* assumption is being made (and when it breaks: repeated phrases, templates) is what separates using a model from understanding it.\n- **i.i.d. — the assumption under everything.** \"Independent and identically distributed\" is the fine print of nearly all of ML: train/test splits, cross-validation, confidence intervals. When rows are *not* independent (time series, users appearing in both splits, grouped data), naive metrics silently lie. Diagnosing dependence is a job skill.\n- **The product rule powers reliability math and power analysis:** P(pipeline of 12 independent stages all succeed) = product of the stages. One line — if independence holds. Correlated failures (shared server!) break it, which is precisely why real systems fail more than naive math predicts.\n- **Zero correlation ≠ independence** — a teaser: correlation (Module 04) only detects *linear* dependence. Independence is the stronger, more precious property."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Mutually exclusive ≠ independent.** They're opposites (maximum vs. zero information). If you catch yourself saying \"they can't both happen, so they're independent,\" stop and reread the intuition section.\n- **Assuming independence because it's convenient.** Multiplying probabilities is easy, so people do it everywhere — including where it's false (correlated user sessions, repeated measures, shared infrastructure). Ask: *does knowing one outcome tell me anything about the other?* If yes, no multiplying.\n- **Independence is model-relative.** Card draws are dependent; card draws *with replacement* are independent. Tiny protocol changes flip the property. Check the mechanism, not the vibes.\n- **Pairwise ≠ mutual.** All pairs factoring doesn't guarantee the triple factors. Rare in practice, classic on exams (and in this module's problem set)."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Give the definition of independence twice: the product form and the \"no information\" form.\n2. Why can two events with positive probability never be both mutually exclusive *and* independent?\n3. Coin: P(6 heads in a row)? Deck: P(two aces in two draws, no replacement)? Which used independence, which couldn't?\n4. Your A/B test assigned whole *offices* to variants, but you analyzed at the *employee* level. Which assumption broke, and why does it matter?\n5. You suspect two events are independent. What two quantities would you compute and compare to check?\n\n> ✍️ **Explain it back:** Explain to a friend why a casino can rely on the roulette wheel having no memory, while a card-counter at blackjack can genuinely gain an edge. If your explanation names the property that differs between the two games, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "Compute (a) P(two heads in two coin flips); (b) P(two aces in two cards drawn without replacement). Which computation used independence, and why can't the other?",
+              "solution": "(a) Flips are independent: $\\frac12 \\times \\frac12 = \\mathbf{1/4}$.\n(b) Draws are dependent (the deck changes): chain rule, $\\frac{4}{52} \\times \\frac{3}{51} = \\mathbf{1/221}$. Multiplying $\\frac{4}{52}\\times\\frac{4}{52}$ would be the independence mistake."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "Two dice: A = \"die 1 is even\", B = \"sum > 7\". Determine whether A and B are independent by counting P(A∩B) and comparing it to P(A)P(B).",
+              "solution": "$P(A) = 1/2$. Sum > 7 has 15 of 36 outcomes: $P(B) = 5/12$. Count A∩B (die 1 even *and* sum > 7): die1=2 → die2=6 (1 way); die1=4 → die2>3 (3 ways); die1=6 → die2>1 (5 ways) = 9 ways → $P(A \\cap B) = 9/36 = 1/4$.\nCompare: $P(A)P(B) = \\frac12 \\cdot \\frac{5}{12} = \\frac{5}{24} \\approx 0.208 \\ne 0.25$. **Dependent** — the sum contains die 1 inside it."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "Flip two fair coins. A = \"first is heads\", B = \"second is heads\", C = \"exactly one head\". Show A, B, C are **pairwise** independent but not **mutually** independent.",
+              "solution": "Each event has probability 1/2. Pairs: $P(A \\cap B) = 1/4 = P(A)P(B)$ ✓; $P(A \\cap C) = P(\\text{HT}) = 1/4$ ✓; $P(B \\cap C) = P(\\text{TH}) = 1/4$ ✓ — all pairs factor.\nTriple: $A \\cap B \\cap C$ = \"both heads *and* exactly one head\" = impossible → $P = 0 \\ne \\frac12 \\cdot \\frac12 \\cdot \\frac12 = \\frac18$. **Pairwise ≠ mutual.** Any two carry no information about each other, but two of them together *determine* the third."
+            }
+          ]
+        },
+        {
+          "id": "bayes-theorem",
+          "number": "01.4",
+          "title": "Bayes' Theorem",
+          "oneLiner": "The crown jewel: turn P(evidence | cause) into the thing you actually want — P(cause | evidence).",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The test that's usually wrong when it's right",
+              "body": "A disease affects **1 in 1,000** people. There's a test for it that is **99% accurate** — it catches 99% of sick people, and it only false-alarms on 1% of healthy people.\n\nYou take the test. It comes back **positive**.\n\nHow worried should you be? What's the probability you actually have the disease?\n\nMost people — including, in real published studies, **most physicians** — say somewhere around 99%. The correct answer is about **9%**. Not ninety. *Nine.* The test is positive and you are still more than 90% likely to be perfectly healthy.\n\nIf a number can be this counterintuitive to trained doctors, there's a missing mental tool. Here it is."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "The 1,000-people picture",
+              "body": "### The 1,000-people picture 🧑‍🤝‍🧑 (natural frequencies)\n\nForget formulas. Imagine 1,000 people taking the test:\n\n```\n1,000 people\n├── 1 is sick        → test catches them:            ~1 true positive\n└── 999 are healthy  → 1% false alarm rate:          ~10 false positives\n\nPositives in total: ~11.   Actually sick among them: 1.\nP(sick | positive) ≈ 1/11 ≈ 9%\n```\n\nThat's the whole computation. The false positives **outnumber** the true positives ten to one — not because the test is bad, but because **healthy people are so much more numerous** that even a small error rate on them produces a crowd. The rare-disease prior (1/1000) drags the answer down, and ignoring it is called **base-rate neglect** — one of the most consequential reasoning errors in medicine, law, and data science.\n\n### What Bayes' theorem *is*\n\nYou knew $P(\\text{positive} \\mid \\text{sick}) = 0.99$. You *wanted* $P(\\text{sick} \\mid \\text{positive})$. These are different numbers (topic 02's warning!), and **Bayes' theorem is the machine that converts one into the other** — at the price of supplying the base rate.\n\nIt's also a philosophy of learning:\n\n$$\\text{belief before} \\;\\xrightarrow{\\text{evidence}}\\; \\text{belief after}$$\n\nPrior → posterior. Evidence doesn't *replace* your prior belief; it *re-weights* it. A positive test moved you from 0.1% to 9% — a 90-fold update! — but 9% is still far from certain, because you started so low. Beliefs move *from where they were*."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Prior, likelihood, posterior",
+              "body": "$$P(H \\mid E) = \\frac{P(E \\mid H)\\, P(H)}{P(E)}$$\n\nwith names you'll use for the rest of your career:\n\n| Term | Name | In the disease story |\n|------|------|----------------------|\n| $P(H)$ | **prior** | 0.001 — belief before evidence |\n| $P(E \\mid H)$ | **likelihood** | 0.99 — how strongly the hypothesis predicts the evidence |\n| $P(H \\mid E)$ | **posterior** | ≈ 0.09 — belief after evidence |\n| $P(E)$ | **evidence** | total probability of a positive, from *all* causes |\n\nThe denominator is the law of total probability (topic 02) doing its job:\n\n$$P(E) = P(E \\mid H)P(H) + P(E \\mid H^c)P(H^c)$$\n\n**The full computation:**\n\n$$P(\\text{sick} \\mid +) = \\frac{0.99 \\times 0.001}{0.99 \\times 0.001 + 0.01 \\times 0.999} = \\frac{0.00099}{0.00099 + 0.00999} \\approx 0.090$$\n\nNote the structure: the numerator is *one path to a positive* (sick-and-caught); the denominator is *every path to a positive* (sick-and-caught + healthy-and-false-alarmed). Bayes = **your path / all paths**.\n\n**The prior is doing the heavy lifting — change it and watch.** Keep the *exact same test* (99% sensitive, 1% false alarms) and vary only the base rate:\n\n| Prevalence (prior) | P(sick given a positive) |\n|---|---|\n| 1 in 10,000 | about **1%** — a positive is almost always a false alarm |\n| 1 in 1,000 | about **9%** — the original puzzle |\n| 1 in 10 (high-risk clinic) | about **92%** — now a positive is alarming |\n\nSame test, three completely different meanings of the word \"positive.\" A test result has no fixed meaning on its own; it only *re-weights where you started*. This single table is why \"the model is 99% accurate\" tells you almost nothing until you also know the base rate."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where Bayes runs the show",
+              "body": "- **Precision vs. recall — you already know them by other names.** Recall *is* $P(+\\mid \\text{sick})$ (the likelihood, 99%); precision *is* $P(\\text{sick} \\mid +)$ (the posterior, 9%). The disease puzzle is literally the statement \"high recall does not imply high precision under class imbalance\" — the central headache of fraud detection, anomaly detection, and rare-event ML. You've now *derived* it.\n- **Naive Bayes spam filtering** is this formula run per word: prior = spam base rate, likelihood = word frequencies per class, posterior = spam score. It's in production at planet scale.\n- **Bayes is the backbone of modern ML reasoning:** MAP estimation (later in the course) is \"maximize posterior = likelihood × prior\"; regularization is a prior in disguise; A/B testing has a whole Bayesian school; even debates about fine-tuning a model are prior-vs-evidence debates.\n- **Base-rate thinking is a daily defense.** \"Model flags 2% of transactions, catches 90% of fraud\" — is a flag meaningful? You now reflexively ask: *what's the fraud base rate?* That reflex prevents entire categories of dashboard misreadings."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Transposing the conditional** — reading $P(E \\mid H)$ as $P(H \\mid E)$. In court it's the *prosecutor's fallacy* (\"the DNA match probability is 1 in a million, so he's guilty\" — ignoring how many people were in the database). It's the same bug as the doctors' 99%.\n- **Base-rate neglect.** Any time someone quotes a test/model accuracy without the prevalence, the number is uninterpretable. Demand the base rate.\n- **\"99% accurate\" is ambiguous.** Sensitivity? Specificity? Overall accuracy? These differ, and under imbalance the differences are enormous (a \"99.9% accurate\" fraud model that predicts \"never fraud\" exists and is useless).\n- **Priors are not optional.** Refusing to choose a prior just means silently choosing a uniform one — often the least defensible option. Make the prior explicit and argue about it in the open."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Write Bayes' theorem and name all four pieces (prior, likelihood, posterior, evidence).\n2. Recompute the disease puzzle from memory with the 1,000-people picture (no algebra allowed).\n3. Why does the same positive test mean 9% in general screening but ~92% in a high-risk clinic?\n4. Translate: which of precision/recall is the likelihood, and which is the posterior?\n5. A spam filter knows P(word \"lottery\" | spam) = 0.10, P(\"lottery\" | ham) = 0.001, and 50% of mail is spam. P(spam | \"lottery\")?\n\n> ✍️ **Explain it back:** Explain to a smart friend why a positive result from a \"99% accurate\" test for a rare condition usually means you're *probably fine* — using only the 1,000-people picture. If they walk away able to repeat it to someone else, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "Redo the star example by hand with natural frequencies: prevalence 1/1000, sensitivity 99%, false-positive rate 1%. Out of 100,000 people, build the counts and find P(sick | positive).",
+              "solution": "100,000 people → 100 sick, 99,900 healthy. Positives: 99 true (99% of 100) + 999 false (1% of 99,900) = 1098. $P(\\text{sick} \\mid +) = 99/1098 \\approx \\mathbf{9\\%}$. The false alarms outnumber the true alarms ten to one because healthy people are 999× more numerous."
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "40% of email is spam. \"FREE\" appears in 30% of spam and 2% of legitimate mail. An email contains \"FREE\" — what's the probability it's spam?",
+              "solution": "$$P(\\text{spam} \\mid \\text{FREE}) = \\frac{0.30 \\times 0.40}{0.30 \\times 0.40 + 0.02 \\times 0.60} = \\frac{0.12}{0.132} \\approx \\mathbf{0.909}$$\nOne word took the belief from 40% to 91% — a Naive Bayes filter is just this, multiplied across every word."
+            },
+            {
+              "id": "D3",
+              "difficulty": "core",
+              "prompt": "Machine A makes 60% of parts with a 2% defect rate; machine B makes 40% with 5%. A random part is defective. Which machine probably made it?",
+              "solution": "Paths to a defect: A: $0.6 \\times 0.02 = 0.012$; B: $0.4 \\times 0.05 = 0.020$. Total 0.032.\n$$P(B \\mid \\text{defect}) = 0.020 / 0.032 = \\mathbf{0.625}$$\nMachine B — despite making fewer parts. *Your path / all paths.*"
+            },
+            {
+              "id": "D4",
+              "difficulty": "stretch",
+              "prompt": "Keep D1's test (99% sensitivity, 1% false alarms) but work out P(sick | positive) by hand at three prevalences — 1 in 10,000, 1 in 1,000, and 1 in 10. What's the one-sentence lesson?",
+              "solution": "Use the \"your path / all paths\" structure with $P(\\text{sick} \\mid +) = \\dfrac{0.99\\,p}{0.99\\,p + 0.01(1-p)}$ for prevalence $p$:\n\n| Prevalence $p$ | P(sick given positive) |\n|---|---|\n| 1 in 10,000 (0.0001) | ≈ **0.010** (1%) |\n| 1 in 1,000 (0.001) | ≈ **0.090** (9%) |\n| 1 in 10 (0.1) | ≈ **0.917** (92%) |\n\n**Lesson:** the meaning of a positive result is not a property of the test — it's a property of the test *and the prior together*. (In machine-learning terms: precision collapses as class imbalance grows, even at fixed model quality.)"
+            }
+          ]
+        },
+        {
+          "id": "random-variables",
+          "number": "01.5",
+          "title": "Random Variables",
+          "oneLiner": "A random variable turns outcomes into numbers, so uncertainty becomes something you can compute with.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "A bet worth ₹120?",
+              "body": "Here's a bet. I flip 3 fair coins and pay you **₹100 per head**.\n\nQuick questions you *can't* answer with the tools so far: What are your possible winnings? How likely is each amount? Is this bet worth an entry fee of ₹120?\n\nNotice what just happened: the outcomes stopped being *things* (\"HTH\") and became **numbers** (₹200). And the moment outcomes become numbers, a whole new world opens — averages, spreads, expectations, \"is this bet fair?\" You cannot take the average of `{heads, tails}`. You *can* take the average of `{0, 100, 200, 300}`.\n\nThat bridge — from outcomes to numbers — is the **random variable**, and it's the doorway to everything in the rest of this course."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A machine that numbers outcomes",
+              "body": "### A random variable is a numbering machine 🎰→🔢\n\nA random variable (RV) is **a rule that attaches a number to every outcome** of an experiment.\n\n```\nOutcome (Ω):   TTT   TTH   THT   HTT   THH   HTH   HHT   HHH\n                │     │     │     │     │     │     │     │\nX = # heads:    0     1     1     1     2     2     2     3\nWinnings 100X:  0    100   100   100   200   200   200   300\n```\n\nThe randomness lives in *which outcome happens*; the variable just relabels it. Same experiment, new lens. (And note: several outcomes can map to the same number — three different outcomes all give X = 1.)\n\n### The PMF: where the probability piles up 📊\n\nOnce outcomes are numbered, the natural question is: **how much probability lands on each number?** Count the outcomes feeding each value (all 8 equally likely):\n\n| x (heads) | outcomes mapping to it | P(X = x) |\n|-----------|------------------------|----------|\n| 0 | TTT | 1/8 |\n| 1 | TTH, THT, HTT | 3/8 |\n| 2 | THH, HTH, HHT | 3/8 |\n| 3 | HHH | 1/8 |\n\nThis table is the **probability mass function (PMF)** — the complete profile of X's randomness. Picture it as a bar chart: probability \"mass\" piled on each value. Symmetric, humped in the middle — you're already looking at a baby binomial distribution (Module 02 grows it up).\n\nAnd the bet? P(winning ≥ ₹200) = 3/8 + 1/8 = 1/2. Whether ₹120 entry is *fair* needs one more tool — expectation, the opening act of the next phase. The cliffhanger is deliberate."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The formal definition and the PMF",
+              "body": "A **random variable** is a function from the sample space to the reals:\n\n$$X : \\Omega \\to \\mathbb{R}$$\n\nFor a **discrete** RV (countable values), the **probability mass function** is\n\n$$p_X(x) = P(X = x) = P(\\{\\omega \\in \\Omega : X(\\omega) = x\\})$$\n\n— the probability of the *set of outcomes* that map to $x$. Requirements (inherited straight from the axioms):\n\n$$p_X(x) \\ge 0 \\qquad \\text{and} \\qquad \\sum_x p_X(x) = 1$$\n\nStatements like $\\{X \\ge 2\\}$ are just **events** — sets of outcomes — so everything from Modules 00–01 (conditioning, Bayes, independence) applies to random variables unchanged. Two RVs are independent iff every $\\{X = x\\}$ is independent of every $\\{Y = y\\}$.\n\nOne more object worth meeting (it stars in the next module): the **CDF**, $F(x) = P(X \\le x)$ — the running total of the PMF. It exists for *every* RV, including the continuous ones where PMFs fail.\n\n**Reading the PMF as a picture.** Lay the four probabilities out as bars over 0, 1, 2, 3: a short bar (1/8), a tall one (3/8), a tall one (3/8), a short one (1/8). It's a symmetric hill, humped in the middle — you are already looking at a baby **binomial distribution**, which the next module grows up into its full form. Push to 10 coins instead of 3 and the hill gets smoother and more bell-shaped; use a *biased* coin and the hill leans to one side. The shape of a PMF *is* the personality of the randomness."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Why everything downstream is a random variable",
+              "body": "- **Every column of every dataset is modeled as a random variable.** User age, session length, churn flag, pixel intensity — the entire statistical worldview of data science is \"my data are realizations of random variables.\" This topic is where that worldview begins.\n- **Labels are RVs, and classifiers predict their PMFs.** A recommendation model's output like \"0.1, 0.7, 0.2\" over three classes is literally a predicted PMF over a class-valued random variable. The loss functions that train classifiers (later in the course) measure how good that predicted PMF is.\n- **\"A function of an RV is another RV\"** is the quiet workhorse: revenue is a function of conversions, a log-transformed feature is a function of the raw one, a loss is a function of prediction and label. You turned \"number of heads\" into \"winnings\" with one multiplication; feature engineering is that move, repeated.\n- **Tallying how often each value occurs** — building an empirical PMF — is exactly what a histogram, a category count, and a class-balance check all do. You'll do it, in some form, nearly every working day."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **An RV is a function, not a number.** \"X = number of heads\" is the *rule*; the number (2, say) is one *realization* of it. Sloppiness here makes later notation (E[X], the sample mean, estimators) incomprehensible. The RV is the machine; a data point is one thing the machine produced.\n- **\"Random\" ≠ \"uniform.\"** X's values 0–3 are *not* equally likely (1/8, 3/8, 3/8, 1/8). Assuming every listed value is equally probable is the same abuse as \"lottery: win or lose, 50/50.\"\n- **A PMF must sum to exactly 1.** If your hand-built table sums to 0.95, you dropped an outcome; 1.2, you double-counted. It's the axioms' built-in error detector — use it every time.\n- **Discrete tools don't survive the jump to continuous.** For a continuous RV (height, time), P(X = any exact value) = 0 and the PMF dies; densities replace it in the next module. If that sounds paradoxical, good — it's the cliffhanger."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define a random variable in one sentence. What part is random, and what part is deterministic?\n2. Rebuild the 3-coin PMF table from scratch (outcomes → values → probabilities).\n3. What two conditions must any PMF satisfy, and which axiom does each come from?\n4. X is the *larger* of two dice rolls. Compute P(X = 6) by counting.\n5. Why is a model's class-probability output \"a predicted PMF\"? What must its entries do to be legal?\n\n> ✍️ **Explain it back:** Explain to a friend why we bother converting \"HTH\" into \"2\" — what does turning outcomes into numbers make possible that was impossible before? (Your answer should mention averaging, and the bet's unanswered question.) If it leaves them wanting the next module, this topic — and Module 01 — is ✅.\n\n---\n\n*Module complete. Consolidate with the [cheatsheet](cheatsheet.md) and [problems](problems.md), then advance to `02-distributions/`.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "E1",
+              "difficulty": "warm-up",
+              "prompt": "X = number of heads in two fair coin flips. Write the full PMF and verify it sums to 1.",
+              "solution": "Outcomes HH, HT, TH, TT (¼ each): $P(X=0) = \\frac14$, $P(X=1) = \\frac24$, $P(X=2) = \\frac14$. Sum = 1 ✓."
+            },
+            {
+              "id": "E2",
+              "difficulty": "core",
+              "prompt": "Roll two dice; let X = the **larger** of the two (ties count as the value). Derive the PMF formula and check it sums to 1.",
+              "solution": "$P(X \\le k) = (k/6)^2$ (both dice ≤ k), so $P(X = k) = \\frac{k^2 - (k-1)^2}{36} = \\frac{2k - 1}{36}$.\nPMF: 1/36, 3/36, 5/36, 7/36, 9/36, 11/36 — sum $= 36/36 = 1$ ✓. The mass piles up on high values: maxima drift upward (a preview of order statistics)."
+            },
+            {
+              "id": "E3",
+              "difficulty": "stretch",
+              "prompt": "Answer the module's cliffhanger bet by hand: 3 coins, ₹100 per head, entry fee ₹120. Using the 3-coin PMF (1/8, 3/8, 3/8, 1/8 for 0–3 heads), find the *average* winnings per play. Is the bet worth it?",
+              "solution": "Average winnings = each payout weighted by its probability:\n$$0\\cdot\\tfrac18 + 100\\cdot\\tfrac38 + 200\\cdot\\tfrac38 + 300\\cdot\\tfrac18 = \\tfrac{0 + 300 + 600 + 300}{8} = \\tfrac{1200}{8} = \\mathbf{₹150}.$$\n₹150 average payout beats the ₹120 entry, so the bet is **favorable** — worth about ₹30 per play in the long run. That probability-weighted average of a random variable has a name — **expectation** — and it opens the next phase of the course."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

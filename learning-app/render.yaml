@@ -1,0 +1,14 @@
+# Render.com blueprint — one web service serves BOTH the API and the built React app.
+# In the Render dashboard: New → Blueprint, point it at this repo. Or configure a
+# Web Service manually with the Root Directory / Build / Start values below.
+services:
+  - type: web
+    name: prob-stats-learning
+    runtime: node
+    rootDir: learning-app
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "22.17.0"
