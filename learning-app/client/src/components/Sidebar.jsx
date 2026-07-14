@@ -3,16 +3,16 @@
 // Upcoming modules from the course roadmap render locked, like the design.
 const UPCOMING = [
   {
-    number: "02",
-    title: "Distributions",
-    phase: "Phase II — Shapes of Randomness",
-    topics: ["Bernoulli & Binomial", "Poisson & Exponential", "The Normal"],
-  },
-  {
     number: "03",
     title: "Expectation & Variance",
-    phase: null,
+    phase: null, // same phase (II) as the now-unlocked Distributions module
     topics: ["Expectation", "Variance & Moments"],
+  },
+  {
+    number: "04",
+    title: "Joint Distributions & Dependence",
+    phase: "Phase III — When Variables Interact",
+    topics: ["Covariance & Correlation", "Conditional Expectation"],
   },
 ];
 

@@ -15,6 +15,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const THEORY_DIR = path.resolve(__dirname, "../../../theory");
+// App-only content lives here (not in /theory). Same markdown format, parsed the
+// same way — so app-authored modules stay in sync and survive regeneration.
+const APP_DIR = path.resolve(__dirname, "app-content");
 const OUT_FILE = path.resolve(__dirname, "course.json");
 
 // ---- helpers ---------------------------------------------------------------
@@ -111,6 +114,14 @@ const ONE_LINERS = {
     "The crown jewel: turn P(evidence | cause) into the thing you actually want — P(cause | evidence).",
   "random-variables":
     "A random variable turns outcomes into numbers, so uncertainty becomes something you can compute with.",
+  "bernoulli-and-binomial":
+    "One yes/no trial is a Bernoulli; count the yeses over many independent trials and you get the Binomial.",
+  "poisson-distribution":
+    "When events are rare but you watch a lot, their counts follow a Poisson — governed by a single rate.",
+  "continuous-distributions":
+    "When outcomes vary smoothly, probability becomes area under a curve — the density — not height on a bar.",
+  "normal-distribution":
+    "The bell curve: the shape that sums and averages settle into, described entirely by a mean and a spread.",
 };
 
 const MODULES = [
@@ -134,13 +145,24 @@ const MODULES = [
     dir: "01-probability-core",
     partToTopic: ["A", "B", "C", "D", "E"],
   },
+  {
+    id: "02-distributions",
+    number: "02",
+    phase: "Phase II — Shapes of Randomness",
+    title: "Distributions: The Shapes of Randomness",
+    summary:
+      "The handful of distributions that describe almost everything — Bernoulli & Binomial for counts of successes, Poisson for rare events, the leap to continuous densities, and the Normal bell curve that sums and averages fall into.",
+    root: APP_DIR, // app-authored content, not in /theory
+    dir: "02-distributions",
+    partToTopic: ["A", "B", "C", "D"],
+  },
 ];
 
 // ---- build -----------------------------------------------------------------
 
 function build() {
   const modules = MODULES.map((mod) => {
-    const dir = path.join(THEORY_DIR, mod.dir);
+    const dir = path.join(mod.root || THEORY_DIR, mod.dir);
     const topicFiles = fs
       .readdirSync(dir)
       .filter((f) => /^\d\d-.+\.md$/.test(f))

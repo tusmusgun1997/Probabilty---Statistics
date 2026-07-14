@@ -1,7 +1,7 @@
 {
   "title": "Probability & Statistics",
   "tagline": "Built for intuition. Aimed at data science.",
-  "generatedAt": "2026-07-14T14:16:21.252Z",
+  "generatedAt": "2026-07-14T14:43:29.670Z",
   "modules": [
     {
       "id": "00-foundations",
@@ -604,6 +604,271 @@
               "difficulty": "stretch",
               "prompt": "Answer the module's cliffhanger bet by hand: 3 coins, ₹100 per head, entry fee ₹120. Using the 3-coin PMF (1/8, 3/8, 3/8, 1/8 for 0–3 heads), find the *average* winnings per play. Is the bet worth it?",
               "solution": "Average winnings = each payout weighted by its probability:\n$$0\\cdot\\tfrac18 + 100\\cdot\\tfrac38 + 200\\cdot\\tfrac38 + 300\\cdot\\tfrac18 = \\tfrac{0 + 300 + 600 + 300}{8} = \\tfrac{1200}{8} = \\mathbf{₹150}.$$\n₹150 average payout beats the ₹120 entry, so the bet is **favorable** — worth about ₹30 per play in the long run. That probability-weighted average of a random variable has a name — **expectation** — and it opens the next phase of the course."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "02-distributions",
+      "number": "02",
+      "phase": "Phase II — Shapes of Randomness",
+      "title": "Distributions: The Shapes of Randomness",
+      "summary": "The handful of distributions that describe almost everything — Bernoulli & Binomial for counts of successes, Poisson for rare events, the leap to continuous densities, and the Normal bell curve that sums and averages fall into.",
+      "topics": [
+        {
+          "id": "bernoulli-and-binomial",
+          "number": "02.1",
+          "title": "Bernoulli & Binomial",
+          "oneLiner": "One yes/no trial is a Bernoulli; count the yeses over many independent trials and you get the Binomial.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Counting the conversions",
+              "body": "A landing page converts **20%** of the people who visit it. Ten people visit today.\n\n**What's the chance that exactly 3 of them convert?**\n\nNot \"about 2, since 20% of 10 is 2\" — the *exact* probability of landing on 3. You can feel that it should be fairly likely (3 is close to 2) but you can't yet put a number on it. That number is the bread and butter of every A/B test, every conversion report, every \"did this change actually help?\" And it comes from one of the most useful distributions in all of data science."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "From one coin to a handful",
+              "body": "Start with the simplest random thing there is: **a single yes/no trial.** A coin flip, a visitor who either converts or doesn't, a part that's either defective or fine. One trial, two outcomes, with probability **p** of \"success.\" That's a **Bernoulli** trial — a labelled coin, where p need not be ½.\n\nNow repeat it. Flip that same coin **n** independent times and **count the successes.** That count is a **Binomial**. The three coins from the last module (counting heads) were exactly this — a Binomial with n = 3 and p = ½, giving the PMF 1/8, 3/8, 3/8, 1/8.\n\n🖼️ *Picture:* a row of n coins, each landing heads with probability p. The Binomial is the distribution of *how many* heads you see — a bar chart that humps around n·p. With n = 10 and p = 0.2 it humps around 2; push p toward ½ and the hump slides to the middle and turns symmetric.\n\nThe key question the Binomial answers is always the same: **\"out of n independent tries, how likely is exactly k successes?\"**"
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The formula, and why it has three pieces",
+              "body": "A **Bernoulli(p)** variable is as simple as it gets:\n\n$$P(X = 1) = p, \\qquad P(X = 0) = 1 - p.$$\n\nA **Binomial(n, p)** variable counts successes across n independent Bernoulli(p) trials:\n\n$$P(X = k) = \\binom{n}{k}\\, p^{k}\\, (1-p)^{\\,n-k}, \\qquad k = 0, 1, \\dots, n.$$\n\nRead it as three pieces multiplied together:\n\n- $p^{k}$ — the k successes each happen with probability p.\n- $(1-p)^{\\,n-k}$ — the other n − k trials are failures.\n- $\\binom{n}{k}$ — the number of *different arrangements* of those k successes among n slots (the \"choose\" from the counting topic). Without it you'd only count *one* ordering.\n\nIts centre and spread:\n\n$$\\text{mean} = np, \\qquad \\text{variance} = np(1-p).$$\n\n**Worked example — the hook.** n = 10, p = 0.2, k = 3:\n\n$$P(X = 3) = \\binom{10}{3}(0.2)^3(0.8)^7 = 120 \\times 0.008 \\times 0.2097 \\approx \\mathbf{0.201}.$$\n\nSo about a **20%** chance of exactly 3 conversions — and the average is np = 2, exactly as intuition guessed."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the Binomial shows up",
+              "body": "- **A/B testing lives here.** \"Variant B converted 340 of 2,000 visitors\" is a Binomial count. Asking whether B truly beats A is asking whether two Binomial rates differ by more than chance — the foundation of every conversion experiment.\n- **Rates and proportions everywhere:** defective items in a batch, emails that bounce, users who churn this month, correct predictions a classifier makes on n test cases. Any \"k out of n succeeded\" is Binomial.\n- **It's the model behind logistic regression.** A classifier predicting a yes/no label is modelling a Bernoulli outcome whose success probability p depends on the features. The Binomial is the group-level version of that.\n- **Sanity-checking \"is this surprising?\"** If a coin you believe is fair shows 8 heads in 10 flips, the Binomial tells you how rare that is — the seed of hypothesis testing later in the course."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Forgetting the count term.** $p^k(1-p)^{n-k}$ alone is the probability of *one specific sequence*. You almost always want *any* arrangement of k successes, which needs the $\\binom{n}{k}$.\n- **Using it when trials aren't independent or p drifts.** The Binomial assumes n *fixed*, trials *independent*, and p *constant*. Visitors during a rush hour, or sampling without replacement from a small pool, break these.\n- **Confusing \"count of successes\" with \"trials until the first success.\"** The Binomial counts successes in a fixed n; the number of trials you wait for a success is a *different* distribution (geometric).\n- **Mixing up p and k.** p is the per-trial probability; k is the number of successes. \"20% convert\" is p, not a count.\n\n> 🔭 *A teaser:* when n is huge and p is tiny (rare events, many chances), the Binomial becomes awkward — and morphs into the next topic's distribution."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define a Bernoulli trial and a Binomial in one sentence each. How are they related?\n2. What do the three pieces of the Binomial formula each represent?\n3. Why is the $\\binom{n}{k}$ term necessary — what goes wrong without it?\n4. A treatment works on 70% of patients. Of 5 patients, what's the probability all 5 improve? (Set it up.)\n5. Name the three assumptions the Binomial requires, and give one real situation that breaks each.\n\n> ✍️ **Explain it back:** A teammate says \"our page converts 20%, so out of 10 visitors we'll get 2 conversions.\" Explain why that's only the *average*, and how the Binomial describes the whole spread of what could actually happen. If they see why \"exactly 2\" is not guaranteed, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "A fair coin is flipped 4 times. What's the probability of getting exactly 2 heads?",
+              "solution": "Binomial with n = 4, p = ½, k = 2:\n$$\\binom{4}{2}(0.5)^2(0.5)^2 = 6 \\times 0.0625 = \\mathbf{0.375}.$$\nSix of the sixteen equally likely sequences have exactly two heads."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "A basketball player makes 80% of free throws. She takes 5. What's the probability she makes all 5, and what's her expected number of makes?",
+              "solution": "All 5 made: only one arrangement, so $\\binom{5}{5}(0.8)^5(0.2)^0 = (0.8)^5 \\approx \\mathbf{0.328}$.\nExpected makes = $np = 5 \\times 0.8 = \\mathbf{4}$."
+            },
+            {
+              "id": "A3",
+              "difficulty": "stretch",
+              "prompt": "A factory's parts are defective 5% of the time, independently. In a box of 20, what's the probability of *at least one* defective? (Use the complement trick from Module 00.)",
+              "solution": "Easier via the complement: P(at least one) = 1 − P(none).\n$$P(\\text{none}) = \\binom{20}{0}(0.05)^0(0.95)^{20} = (0.95)^{20} \\approx 0.358.$$\nSo P(at least one) $\\approx 1 - 0.358 = \\mathbf{0.642}$ — about 64%. Even a 5% rate makes a defect in the box more likely than not."
+            }
+          ]
+        },
+        {
+          "id": "poisson-distribution",
+          "number": "02.2",
+          "title": "The Poisson Distribution",
+          "oneLiner": "When events are rare but you watch a lot, their counts follow a Poisson — governed by a single rate.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "How many, when there's no \"how many tries\"?",
+              "body": "How many typos are on this page? How many support calls arrive in the next hour? How many errors will a server log in a minute?\n\nThe Binomial needed a fixed **n** — ten visitors, five patients. But here there's no obvious n. There isn't a fixed number of \"typo opportunities\" you can count; there's just a page, and a *rate* at which typos tend to occur. How do you model a count when all you know is \"on average, about five per hour\"?"
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Rare events, endless chances",
+              "body": "Imagine the hour split into thousands of tiny slivers of time. In each sliver, an event (a call, a typo, an error) either happens or not — with a *tiny* probability. There are a *huge* number of slivers. That's a Binomial with **n enormous and p tiny**.\n\nWhen you take that to the limit — n → ∞, p → 0, but their product **n·p = λ** staying moderate — the Binomial collapses into a cleaner shape that depends on just **one number: λ (lambda), the average count.** That shape is the **Poisson distribution.**\n\n🖼️ *Picture:* emails arriving in your inbox, averaging 5 per hour. Some hours bring 2, some bring 8, occasionally 0 or 11 — but centred on 5, and never negative. The Poisson is the distribution of that count.\n\nThe one lever is λ: the average number of events per window. Everything about the distribution follows from it."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "One rate runs everything",
+              "body": "For a Poisson with average rate **λ**, the probability of seeing exactly k events is:\n\n$$P(X = k) = \\frac{e^{-\\lambda}\\, \\lambda^{k}}{k!}, \\qquad k = 0, 1, 2, \\dots$$\n\nThere's no upper limit on k — unlike the Binomial, the count can (in principle) be any whole number. Its signature property:\n\n$$\\text{mean} = \\lambda, \\qquad \\text{variance} = \\lambda.$$\n\n**The mean and the variance are equal.** That's a fingerprint you can actually check in data.\n\n**Worked example.** Emails arrive at λ = 5 per hour. Probability of exactly 3 in the next hour:\n\n$$P(X = 3) = \\frac{e^{-5}\\,5^{3}}{3!} = \\frac{0.0067 \\times 125}{6} \\approx \\mathbf{0.14}.$$\n\nThe assumptions behind it: events occur **independently**, at a **constant average rate**, and never two at exactly the same instant."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the Poisson shows up",
+              "body": "- **Modelling counts is its whole job:** arrivals at a queue, defects per batch, rare-disease cases per city, clicks per minute, goals in a match, mutations per genome. If your target is \"a count of things,\" the Poisson is the first model to reach for (Poisson regression predicts count outcomes directly).\n- **Anomaly detection.** If calls average λ = 5 an hour and suddenly you see 20, the Poisson tells you how astronomically unlikely that is under normal conditions — so it flags a real anomaly (an outage, an attack, a viral spike).\n- **A built-in data check.** Because mean = variance for a true Poisson, you can test it: compute both from your counts. If the variance is *much* bigger than the mean (\"overdispersion\"), your data isn't really Poisson — events are clustering or the rate isn't constant, and you need a richer model.\n- **It pairs with waiting times.** If *counts* per hour are Poisson, the *gaps between* events follow the exponential distribution — the bridge to the next topic."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Assuming a constant rate when it isn't.** Support calls spike at 9 a.m. and after outages; website traffic surges on launch day. A single λ can't describe a rate that changes through the day.\n- **Ignoring clustering.** The Poisson assumes events are independent. If one earthquake triggers aftershocks, or one viral tweet triggers more, events clump — and real counts swing wider than Poisson predicts (overdispersion).\n- **Forgetting to scale λ to the window.** λ is tied to a time (or space) window. If λ = 5 per hour, then over 30 minutes λ = 2.5, and over a day λ = 120. Match the rate to the window before computing.\n- **Using Poisson for things with a natural ceiling.** \"How many of my 10 visitors converted?\" has a hard max of 10 — that's Binomial. Poisson is for counts with no fixed upper bound."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. In plain words, what situation does the Poisson describe, and what is λ?\n2. How does the Poisson arise from the Binomial? What happens to n and p?\n3. What is the Poisson's signature relationship between mean and variance, and how would you use it to check whether data is Poisson?\n4. A shop averages 2 customers per minute. Set up the probability that 0 customers arrive in the next minute.\n5. Give one real situation where the Poisson's assumptions break, and say which assumption fails.\n\n> ✍️ **Explain it back:** A colleague models \"number of fraud alerts per hour\" and finds the variance is five times the mean. Explain what that mismatch tells them about whether the Poisson is the right model. If they understand *why* equal mean and variance matters, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "A call centre receives on average 4 calls per minute. What distribution models the number of calls in a given minute, and what are its mean and variance?",
+              "solution": "A **Poisson** with λ = 4. Its mean = λ = **4** and variance = λ = **4** — mean and variance are equal, the Poisson's signature."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "A website logs on average 2 errors per hour. What's the probability of exactly 0 errors in the next hour?",
+              "solution": "Poisson, λ = 2, k = 0:\n$$P(X = 0) = \\frac{e^{-2}\\, 2^0}{0!} = e^{-2} \\approx \\mathbf{0.135}.$$\nAbout a 14% chance of a clean hour."
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "A shop averages 6 customers per hour. Using natural scaling, what's the average number in a 20-minute window, and set up the probability that exactly 1 arrives in that window?",
+              "solution": "Scale λ to the window: 20 minutes is ⅓ of an hour, so λ = 6 × ⅓ = **2** for the 20-minute window.\n$$P(X = 1) = \\frac{e^{-2}\\, 2^1}{1!} = 2e^{-2} \\approx \\mathbf{0.271}.$$\nThe key move is rescaling the rate to match the window before computing."
+            }
+          ]
+        },
+        {
+          "id": "continuous-distributions",
+          "number": "02.3",
+          "title": "From Bars to Curves: Continuous Distributions",
+          "oneLiner": "When outcomes vary smoothly, probability becomes area under a curve — the density — not height on a bar.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The paradox of the exact height",
+              "body": "Pick a person at random. What's the probability they are **exactly 170 centimetres** tall — not 170.1, not 169.99999, but 170.000000… on forever?\n\nThe honest answer is **zero**. There are infinitely many possible heights, so any single exact value has no room to carry probability. Yet heights *near* 170 are extremely common. How can every exact value have probability zero, while the variable is obviously real and clusters around typical values?\n\nResolving this cracks open the entire continuous world — where the discrete tools from the last two topics stop working and something more elegant takes over."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Probability becomes area",
+              "body": "With a die or a Binomial, probability sits in **bars** — a lump of probability on each value, and the lumps add to 1. For something continuous like height, you can't put a lump on every exact value (there are infinitely many). So we spread the probability out into a smooth **curve**, and change the rule:\n\n> **Probability is the *area under the curve* over a range — not the height of the curve at a point.**\n\nThat curve is the **probability density function (PDF)**. It answers questions like \"what's the chance a height falls *between* 168 and 172?\" by measuring the area sitting above that stretch. The total area under the whole curve is 1 (something happens). The probability of any single exact value is the area of a line with no width — **zero** — which dissolves the paradox: exact values have probability 0, but *ranges* have real, positive probability.\n\n🖼️ *Two shapes to hold onto:*\n- **Uniform** — a flat rectangle. Every value in a range is equally likely (a random number between 0 and 1).\n- **Exponential** — a curve that starts high and decays. It models *waiting times*: time until the next bus, next call, next failure. Short waits are common, long waits rare.\n\nRunning alongside the density is the **CDF** — the *running total* of area, F(x) = P(X ≤ x) — which climbs from 0 to 1 and answers \"how much probability is at or below x.\""
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Density, and the two starter distributions",
+              "body": "A **probability density function** f(x) satisfies:\n\n$$f(x) \\ge 0, \\qquad \\text{total area} = 1, \\qquad P(a \\le X \\le b) = \\text{area of } f \\text{ between } a \\text{ and } b.$$\n\nA crucial consequence: $P(X = x) = 0$ for any exact value, so $P(a \\le X \\le b)$ and $P(a < X < b)$ are the same. The **CDF** is $F(x) = P(X \\le x)$.\n\n**Uniform(a, b)** — flat over [a, b]:\n\n$$f(x) = \\frac{1}{b-a}. \\qquad \\text{Example: on } [0, 10],\\ P(2 \\le X \\le 5) = \\frac{5-2}{10} = \\mathbf{0.3}.$$\n\n**Exponential(λ)** — waiting time for events arriving at rate λ:\n\n$$f(x) = \\lambda e^{-\\lambda x} \\ (x \\ge 0), \\qquad \\text{mean} = \\frac{1}{\\lambda}.$$\n\nThe exponential has a famous quirk — it is **memoryless**: having already waited 10 minutes for the bus tells you *nothing* about how much longer you'll wait. The distribution of remaining time resets, as if the clock had no memory of the time already spent."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where continuous distributions show up",
+              "body": "- **Waiting and duration everywhere.** Time between website requests, until a machine fails, until a customer churns, until the next earthquake — the exponential (and its relatives) model all of these. It's the natural partner of the Poisson: Poisson counts events, exponential times the gaps between them.\n- **The uniform is the raw material of randomness.** Every random-number routine produces a Uniform(0, 1) under the hood; simulations, random sampling, and shuffling all start there.\n- **Densities are what likelihoods are made of.** When you fit a model to continuous data (heights, prices, sensor readings), you evaluate the PDF at each data point — that's the \"likelihood\" that maximum-likelihood estimation maximises, later in the course.\n- **Memorylessness models \"no wear-out.\"** The exponential assumes a thing is no more likely to fail having run a while — a useful (and testable) baseline in reliability and survival analysis."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Reading the curve's height as a probability.** Density is *not* probability. A density can even be **greater than 1** (a tall, narrow peak) — only the *area* is a probability, and area is always between 0 and 1.\n- **Forgetting that exact values have probability 0.** \"P(wait = exactly 5.0 minutes)\" is 0; ask about a *range* (\"between 4.9 and 5.1\") instead.\n- **Being surprised by memorylessness.** Under the exponential, \"I've already waited 20 minutes, so I'm due soon\" is false — the remaining wait has the same distribution it started with.\n- **Confusing the PDF with the CDF.** The PDF is the curve (density); the CDF is the accumulated area up to x. Percentiles and \"probability below x\" come from the CDF, not the PDF."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Resolve the paradox: how can every exact height have probability 0 while the variable is real?\n2. What is a probability density, and how do you get an actual probability from it?\n3. Why can a density value be larger than 1, when a probability never can?\n4. For a Uniform(0, 20), what's the probability of landing between 5 and 8?\n5. Explain \"memoryless\" for the exponential in one sentence, using the waiting-for-a-bus example.\n\n> ✍️ **Explain it back:** A friend asks, \"if the chance of being exactly 170 cm is zero, how can anyone be 170 cm?\" Answer them using the idea of area under a curve. If the \"probability is area, not height\" picture lands, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "A random number is drawn uniformly between 0 and 50. What's the probability it lands between 10 and 20?",
+              "solution": "Uniform: probability is the fraction of the interval covered. $(20 - 10)/(50 - 0) = 10/50 = \\mathbf{0.2}$."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "Explain why the probability that a continuous waiting time equals *exactly* 3.000… minutes is 0, yet the wait is obviously some real number.",
+              "solution": "For a continuous variable, probability is **area under the density curve** over a range. A single exact value spans a range of zero width, so its area — and thus its probability — is 0. Real outcomes still occur because each actual wait falls inside some tiny interval, and intervals have positive area. Only *ranges*, not exact points, carry probability."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "Buses arrive on average every 10 minutes (exponential waiting time). You've already waited 10 minutes. Because the exponential is memoryless, what's the expected *additional* wait, and why?",
+              "solution": "Still **10 minutes**. Memorylessness means the time already spent waiting carries no information about the remaining wait — the distribution of what's left is identical to the original. The clock effectively resets, so your expected additional wait is the same 1/λ = 10 minutes you started with. (\"I'm due any second now\" is a fallacy here.)"
+            }
+          ]
+        },
+        {
+          "id": "normal-distribution",
+          "number": "02.4",
+          "title": "The Normal Distribution",
+          "oneLiner": "The bell curve: the shape that sums and averages settle into, described entirely by a mean and a spread.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The shape that's everywhere",
+              "body": "Measure the heights of a thousand people: a bell. Weigh the packets off a factory line: a bell. Look at the errors a scale makes, the scores on a big exam, the average daily temperature over years: bell, bell, bell.\n\nWildly different sources, one recurring silhouette — symmetric, humped in the middle, tapering on both sides. **Why does the same shape keep appearing, in places that have nothing to do with each other?** The answer is one of the deepest facts in statistics, and this curve is the doorway to it."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A bell described by just two numbers",
+              "body": "The **Normal distribution** (or Gaussian) is a symmetric bell fully pinned down by two numbers:\n\n- **μ (mu)** — the mean, where the peak sits.\n- **σ (sigma)** — the standard deviation, how wide the bell spreads.\n\nShift μ and the whole bell slides left or right; change σ and it gets fatter or skinnier. That's all — two dials describe the entire curve.\n\nIts most useful feature is the **68–95–99.7 rule**: about **68%** of the probability lies within 1σ of the mean, **95%** within 2σ, and **99.7%** within 3σ. Once you know μ and σ, you can eyeball almost any \"how likely is a value this extreme?\" question.\n\n**Why it's everywhere:** when you add up (or average) many small, independent random effects, the result drifts toward a Normal — *regardless* of the shapes of the pieces. A height is the sum of countless genetic and environmental nudges; a measurement error is the sum of many tiny disturbances. This pile-up-into-a-bell fact is the **Central Limit Theorem**, the headline act of Phase III — but you'll feel its pull all through this topic."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The bell, and the z-score trick",
+              "body": "The Normal's density is the classic bell formula (worth recognising, not memorising):\n\n$$f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}}\\, e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}, \\qquad \\text{mean} = \\mu, \\quad \\text{sd} = \\sigma.$$\n\nThe real workhorse is **standardisation**. Any Normal can be shifted and rescaled into the single **standard Normal** — mean 0, sd 1 — using the **z-score**:\n\n$$z = \\frac{x - \\mu}{\\sigma}.$$\n\nA z-score says *how many standard deviations from the mean* a value sits. z = 2 means \"two σ above average\"; by the 95% rule, only about 2.5% of values sit above that. One standard table then answers every Normal question.\n\n**Worked example.** Exam scores are Normal with μ = 100, σ = 15.\n- **Between 85 and 115?** That's μ ± 1σ → about **68%**.\n- **Above 130?** 130 is μ + 2σ, i.e. z = 2. The 95% rule leaves 5% in the two tails combined, so about **2.5%** score above 130."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the Normal shows up",
+              "body": "- **The default model for noise.** Measurement error, sensor jitter, and the leftover \"residuals\" in linear regression are almost always modelled as Normal. A huge amount of classical statistics assumes it.\n- **Standardisation is everyday feature engineering.** Converting features to z-scores (mean 0, sd 1) is a standard preprocessing step so that no single feature dominates a model just because of its units. That's the z-score from this topic, applied at scale.\n- **The Central Limit Theorem makes inference possible.** Because *averages* are Normal even when raw data isn't, sample means, confidence intervals, and hypothesis tests all lean on this curve — the entire back half of the course rests here.\n- **Anomaly detection via σ.** \"Flag anything beyond 3σ from the mean\" uses the 99.7% rule: such values should appear only ~0.3% of the time, so they're worth a second look."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Assuming everything is Normal.** Plenty of real data isn't: incomes, wait times, and web-session lengths are **skewed** with long right tails. Forcing a Normal model onto them underestimates the extremes badly.\n- **Underestimating fat tails.** Real \"once-in-a-century\" events (market crashes, viral spikes) happen far more often than a Normal's thin tails predict. Betting on Normal tails has sunk real institutions.\n- **Mean ≠ median for skewed data.** The Normal is symmetric, so its mean and median coincide. Reporting a mean for skewed data (e.g. average salary) can badly misrepresent the \"typical\" value.\n- **\"Normal\" is a technical word.** It doesn't mean \"ordinary\" or \"the norm.\" A distribution being non-Normal isn't a defect — many important quantities simply aren't bell-shaped."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Which two numbers fully describe a Normal distribution, and what does each control?\n2. State the 68–95–99.7 rule.\n3. What is a z-score, and what does z = −1.5 mean in words?\n4. Heights are Normal with μ = 170, σ = 10. Roughly what fraction of people are between 160 and 180?\n5. Give two kinds of real data that are *not* well modelled by a Normal, and say why.\n\n> ✍️ **Explain it back:** A friend asks why the bell curve \"shows up everywhere.\" Explain, without formulas, that it's what you get when many small independent effects add up — and give one concrete example (like height). If they grasp the \"sum of many little things\" idea, this topic — and the whole Distributions module — is ✅.\n\n---\n\n*Module complete. Head to the exercises, then onward to Phase III.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "IQ scores are Normal with μ = 100, σ = 15. Using the 68–95–99.7 rule, what fraction of people score between 85 and 115?",
+              "solution": "85 and 115 are exactly μ − σ and μ + σ (one standard deviation each side). By the rule, that's about **68%**."
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "For the same IQ distribution (μ = 100, σ = 15), compute the z-score of a score of 130 and say roughly what fraction of people score above it.",
+              "solution": "$z = (130 - 100)/15 = \\mathbf{2}$ — two standard deviations above the mean. The 95% rule leaves 5% split between the two tails, so about **2.5%** score above 130."
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "Daily incomes in a city have a long right tail (a few very high earners). Would a Normal distribution model them well? What goes wrong, and which is larger — the mean or the median?",
+              "solution": "No — the Normal is symmetric, but incomes are **right-skewed**. Forcing a Normal underestimates the long tail of high earners and misrepresents the spread. With a right skew, the few large values pull the **mean above the median**, so the mean overstates the \"typical\" income. (This is why median income is usually reported instead of mean.)"
             }
           ]
         }
