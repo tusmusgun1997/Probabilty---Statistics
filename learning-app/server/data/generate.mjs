@@ -154,6 +154,14 @@ const ONE_LINERS = {
     "Maximum likelihood picks the parameter that makes your observed data most probable — the recipe behind how nearly every model is fit.",
   "confidence-intervals":
     "A confidence interval turns a point estimate into an honest range — the rigorous margin of error, and the most misinterpreted tool in statistics.",
+  "logic-of-hypothesis-testing":
+    "Hypothesis testing is a courtroom for data: assume nothing happened, and reject that only if the evidence would be too surprising by chance.",
+  "p-values":
+    "A p-value is the probability of data at least as extreme as yours if nothing were really going on — a measure of surprise under the null, nothing more.",
+  "errors-and-power":
+    "Every test can fail two ways — a false alarm (Type I) or a missed effect (Type II) — and power is the chance of catching a real effect when it's there.",
+  "ab-testing":
+    "A/B testing is hypothesis testing in a business suit — and its hardest problems are discipline: peeking, multiple comparisons, and significant-vs-worth-it.",
 };
 
 const MODULES = [
@@ -230,6 +238,17 @@ const MODULES = [
       "Reversing the arrow from data back to the process: what an estimator is, what makes one good (bias, variance, and their tradeoff — the deepest idea in ML), maximum likelihood (how models are actually fit), and confidence intervals (the rigorous margin of error, and the most misread tool in statistics).",
     root: APP_DIR,
     dir: "06-inference",
+    partToTopic: ["A", "B", "C", "D"],
+  },
+  {
+    id: "07-hypothesis-testing",
+    number: "07",
+    phase: "Phase IV — Learning From Data",
+    title: "Hypothesis Testing",
+    summary:
+      "The daily bread of product data science: the courtroom logic of testing, what a p-value really is (and the four ways it's misread), the two error types and statistical power, and putting it all together into A/B testing done honestly.",
+    root: APP_DIR,
+    dir: "07-hypothesis-testing",
     partToTopic: ["A", "B", "C", "D"],
   },
 ];
