@@ -3,18 +3,20 @@ import Section from "./Section.jsx";
 import { sectionColor } from "../sectionColors.js";
 
 /**
- * SectionSlider — renders a topic's learning sections one at a time as an
- * interactive, animated step-through (instead of one long scroll).
+ * SectionSlider — shows a topic's learning sections ONE AT A TIME as a carousel.
+ *
+ * A single header shows only the currently selected subtopic (emoji + title +
+ * "N of M") flanked by ‹ / › buttons that move between sections; a progress bar
+ * shows overall position. Content slides in on each change.
  *
  * Self-contained and reusable: give it an array of `sections`
- * ({ id, icon, title, body }) and it handles stepping, the progress stepper,
- * keyboard arrows, swipe, and slide animation. Everything slider-specific lives
- * in this file + its `.slider-*` styles, so it's easy to restyle or replace.
+ * ({ id, icon, title, body }). All carousel behavior + `.slider-*` styles live
+ * here, so it's easy to restyle or replace.
  *
  * Props:
  *   sections   : Section[]                      (required)
- *   resetKey   : any — when it changes, jump back to the first step
- *   onFinish   : () => void — called from the final step's primary button
+ *   resetKey   : any — when it changes, jump back to the first section
+ *   onFinish   : () => void — shown as a button on the final section
  *   finishLabel: string — label for that button (default "Finish")
  */
 export default function SectionSlider({
@@ -25,7 +27,6 @@ export default function SectionSlider({
 }) {
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(1); // 1 = forward, -1 = back (drives slide direction)
-  const [seen, setSeen] = useState(() => new Set([0]));
   const stageRef = useRef(null);
   const touchX = useRef(null);
   const mounted = useRef(false);
@@ -33,22 +34,16 @@ export default function SectionSlider({
 
   const total = sections.length;
 
-  // reset to the first step whenever the topic changes
+  // reset to the first section whenever the topic changes
   useEffect(() => {
     indexRef.current = 0;
     setIndex(0);
     setDir(1);
-    setSeen(new Set([0]));
     mounted.current = false;
   }, [resetKey]);
 
-  // mark the current step "seen" whenever it changes (however we got there)
-  useEffect(() => {
-    setSeen((prev) => (prev.has(index) ? prev : new Set(prev).add(index)));
-  }, [index]);
-
-  // jump to any step. Uses a synchronously-updated ref so back-to-back calls
-  // (fast key presses / double taps) accumulate instead of sharing stale state.
+  // move to any section. A synchronously-updated ref keeps back-to-back calls
+  // (fast key presses / double taps) from sharing stale state.
   const go = useCallback(
     (target) => {
       const cur = indexRef.current;
@@ -64,7 +59,7 @@ export default function SectionSlider({
   const goNext = useCallback(() => go(indexRef.current + 1), [go]);
   const goPrev = useCallback(() => go(indexRef.current - 1), [go]);
 
-  // keyboard: ← / → step through (ignore while typing in a field)
+  // keyboard: ← / → move through (ignored while typing in a field)
   useEffect(() => {
     const onKey = (e) => {
       const t = e.target;
@@ -76,7 +71,7 @@ export default function SectionSlider({
     return () => window.removeEventListener("keydown", onKey);
   }, [goNext, goPrev]);
 
-  // after a step change, bring the slider's top into view (skip first mount)
+  // after a change, bring the slider's top into view (skip first mount)
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
@@ -92,6 +87,7 @@ export default function SectionSlider({
 
   const section = sections[index];
   const isLast = index === total - 1;
+  const isFirst = index === 0;
   const accent = sectionColor(section.id);
 
   // touch swipe (mobile)
@@ -105,33 +101,43 @@ export default function SectionSlider({
 
   return (
     <div className="slider" ref={stageRef} style={{ "--c": accent }}>
-      {/* progress stepper — clickable, colored per section kind */}
-      <div className="slider-steps" role="tablist" aria-label="Lesson sections">
-        {sections.map((s, i) => (
-          <button
-            key={s.id}
-            className={
-              "slider-step" +
-              (i === index ? " current" : "") +
-              (seen.has(i) ? " seen" : "")
-            }
-            style={{ "--c": sectionColor(s.id) }}
-            onClick={() => go(i)}
-            title={`${i + 1}. ${s.title}`}
-            aria-label={`Go to section ${i + 1}: ${s.title}`}
-          >
-            <span className="slider-step-dot">{s.icon}</span>
-            <span className="slider-step-label">{s.title}</span>
-          </button>
-        ))}
+      {/* carousel header: only the selected subtopic, with ‹ / › controls */}
+      <div className="slider-carousel">
+        <button
+          className="carousel-arrow"
+          onClick={goPrev}
+          disabled={isFirst}
+          aria-label="Previous section"
+        >
+          ‹
+        </button>
+
+        <div key={section.id} className="carousel-current">
+          <span className="carousel-emoji">{section.icon}</span>
+          <div className="carousel-titles">
+            <div className="carousel-count">
+              Section {index + 1} of {total}
+            </div>
+            <div className="carousel-title">{section.title}</div>
+          </div>
+        </div>
+
+        <button
+          className="carousel-arrow"
+          onClick={goNext}
+          disabled={isLast}
+          aria-label="Next section"
+        >
+          ›
+        </button>
       </div>
 
-      {/* thin overall progress bar */}
+      {/* overall progress */}
       <div className="slider-progress">
         <span style={{ width: `${((index + 1) / total) * 100}%` }} />
       </div>
 
-      {/* the animated stage — key forces a fresh mount so it re-animates */}
+      {/* animated stage — key change remounts the card so it re-animates */}
       <div
         className="slider-stage"
         onTouchStart={onTouchStart}
@@ -142,30 +148,23 @@ export default function SectionSlider({
           className="slider-card"
           style={{ "--dx": dir > 0 ? "34px" : "-34px" }}
         >
-          <Section section={section} index={index + 1} total={total} />
+          <Section
+            section={section}
+            index={index + 1}
+            total={total}
+            showHeader={false}
+          />
         </div>
       </div>
 
-      {/* footer navigation */}
-      <div className="slider-nav">
-        <button className="slider-btn ghost" onClick={goPrev} disabled={index === 0}>
-          ← Back
-        </button>
-
-        <span className="slider-count">
-          {index + 1} <span className="of">/ {total}</span>
-        </span>
-
-        {isLast ? (
-          <button className="slider-btn primary" onClick={onFinish} disabled={!onFinish}>
+      {/* on the last section, offer the hand-off to practice */}
+      {isLast && onFinish && (
+        <div className="slider-finish">
+          <button className="slider-btn primary" onClick={onFinish}>
             {finishLabel} →
           </button>
-        ) : (
-          <button className="slider-btn primary" onClick={goNext}>
-            Next: {sections[index + 1].title} →
-          </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

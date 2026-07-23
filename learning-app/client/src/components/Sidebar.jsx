@@ -3,16 +3,16 @@
 // Upcoming modules from the course roadmap render locked, like the design.
 const UPCOMING = [
   {
-    number: "03",
-    title: "Expectation & Variance",
-    phase: null, // same phase (II) as the now-unlocked Distributions module
-    topics: ["Expectation", "Variance & Moments"],
+    number: "07",
+    title: "Hypothesis Testing",
+    phase: null, // same phase (IV) as the now-unlocked Inference module
+    topics: ["p-values & Errors", "A/B Testing", "Statistical Power"],
   },
   {
-    number: "04",
-    title: "Joint Distributions & Dependence",
-    phase: "Phase III — When Variables Interact",
-    topics: ["Covariance & Correlation", "Conditional Expectation"],
+    number: "08",
+    title: "Bayesian Inference",
+    phase: null, // same phase (IV)
+    topics: ["Priors & Posteriors", "Credible Intervals"],
   },
 ];
 

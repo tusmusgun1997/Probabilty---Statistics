@@ -122,6 +122,38 @@ const ONE_LINERS = {
     "When outcomes vary smoothly, probability becomes area under a curve — the density — not height on a bar.",
   "normal-distribution":
     "The bell curve: the shape that sums and averages settle into, described entirely by a mean and a spread.",
+  "expectation":
+    "Expectation is the long-run average of a random variable — its center of mass, and the basis of any fair price.",
+  "variance-and-standard-deviation":
+    "Variance measures how far outcomes spread from the mean; its square root, the standard deviation, puts that spread in real units.",
+  "combining-random-variables":
+    "Expectations always add; variances add only when things are independent — and that is why averaging data sharpens it.",
+  "expectation-in-decisions":
+    "Weigh outcomes by probability and you get a decision rule — the same expected-loss principle every model is trained to minimize.",
+  "joint-distributions":
+    "A joint distribution describes two variables together; the marginals recover each one alone by summing over the other.",
+  "covariance":
+    "Covariance is the average co-deviation of two variables — positive if they move together, negative if they oppose.",
+  "correlation":
+    "Correlation rescales covariance to a clean −1 to +1 — the universal measure of linear association, and the most misused number in data.",
+  "conditional-expectation":
+    "The average of Y for each value of X is the best possible prediction of Y from X — and estimating it is exactly what regression does.",
+  "law-of-large-numbers":
+    "Average enough independent draws and the average converges to the true mean — the law that makes learning from data possible.",
+  "central-limit-theorem":
+    "Add or average enough independent pieces and the result is Normal, whatever shape the pieces had — why the bell curve rules statistics.",
+  "sampling-distributions":
+    "A statistic from a sample is itself random; its spread — the standard error — is what lets one sample speak about the whole population.",
+  "margin-of-error":
+    "Combine the CLT with the standard error and you can put honest error bars on any estimate — the ±2·SE margin behind every poll.",
+  "estimators":
+    "Inference reverses the arrow: from a sample in hand, estimate the unknown parameter of the whole population — and treat that estimate as random.",
+  "bias-and-variance":
+    "A good estimator hits the truth on average (low bias) and doesn't wobble much (low variance) — and their tension is the deepest idea in machine learning.",
+  "maximum-likelihood":
+    "Maximum likelihood picks the parameter that makes your observed data most probable — the recipe behind how nearly every model is fit.",
+  "confidence-intervals":
+    "A confidence interval turns a point estimate into an honest range — the rigorous margin of error, and the most misinterpreted tool in statistics.",
 };
 
 const MODULES = [
@@ -154,6 +186,50 @@ const MODULES = [
       "The handful of distributions that describe almost everything — Bernoulli & Binomial for counts of successes, Poisson for rare events, the leap to continuous densities, and the Normal bell curve that sums and averages fall into.",
     root: APP_DIR, // app-authored content, not in /theory
     dir: "02-distributions",
+    partToTopic: ["A", "B", "C", "D"],
+  },
+  {
+    id: "03-expectation-variance",
+    number: "03",
+    phase: "Phase II — Shapes of Randomness",
+    title: "Expectation & Variance",
+    summary:
+      "The two numbers you compute with every day: expectation (the long-run average and the basis of any fair price or decision) and variance (how much outcomes spread), plus the rules for combining random variables and the √n law behind reliable estimates.",
+    root: APP_DIR,
+    dir: "03-expectation-variance",
+    partToTopic: ["A", "B", "C", "D"],
+  },
+  {
+    id: "04-joint-and-dependence",
+    number: "04",
+    phase: "Phase III — When Variables Interact",
+    title: "Joint Distributions & Dependence",
+    summary:
+      "Moving from one random variable to two that interact: joint and marginal distributions, covariance and correlation (and why correlation is not causation), and the conditional expectation — the best prediction of one variable from another, and the quiet definition of what regression estimates.",
+    root: APP_DIR,
+    dir: "04-joint-and-dependence",
+    partToTopic: ["A", "B", "C", "D"],
+  },
+  {
+    id: "05-limit-theorems",
+    number: "05",
+    phase: "Phase III — When Variables Interact",
+    title: "Limit Theorems: The Law of Large Numbers & the CLT",
+    summary:
+      "The two theorems that turn probability into working statistics: the Law of Large Numbers (averages converge to the truth), the Central Limit Theorem (averages become Normal whatever the data's shape), sampling distributions and the standard error, and the margin of error that puts honest bounds on any estimate.",
+    root: APP_DIR,
+    dir: "05-limit-theorems",
+    partToTopic: ["A", "B", "C", "D"],
+  },
+  {
+    id: "06-inference",
+    number: "06",
+    phase: "Phase IV — Learning From Data",
+    title: "Inference & Estimation",
+    summary:
+      "Reversing the arrow from data back to the process: what an estimator is, what makes one good (bias, variance, and their tradeoff — the deepest idea in ML), maximum likelihood (how models are actually fit), and confidence intervals (the rigorous margin of error, and the most misread tool in statistics).",
+    root: APP_DIR,
+    dir: "06-inference",
     partToTopic: ["A", "B", "C", "D"],
   },
 ];

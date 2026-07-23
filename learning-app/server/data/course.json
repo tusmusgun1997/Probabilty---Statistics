@@ -1,7 +1,7 @@
 {
   "title": "Probability & Statistics",
   "tagline": "Built for intuition. Aimed at data science.",
-  "generatedAt": "2026-07-14T14:43:29.670Z",
+  "generatedAt": "2026-07-23T14:51:53.769Z",
   "modules": [
     {
       "id": "00-foundations",
@@ -869,6 +869,1066 @@
               "difficulty": "stretch",
               "prompt": "Daily incomes in a city have a long right tail (a few very high earners). Would a Normal distribution model them well? What goes wrong, and which is larger — the mean or the median?",
               "solution": "No — the Normal is symmetric, but incomes are **right-skewed**. Forcing a Normal underestimates the long tail of high earners and misrepresents the spread. With a right skew, the few large values pull the **mean above the median**, so the mean overstates the \"typical\" income. (This is why median income is usually reported instead of mean.)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "03-expectation-variance",
+      "number": "03",
+      "phase": "Phase II — Shapes of Randomness",
+      "title": "Expectation & Variance",
+      "summary": "The two numbers you compute with every day: expectation (the long-run average and the basis of any fair price or decision) and variance (how much outcomes spread), plus the rules for combining random variables and the √n law behind reliable estimates.",
+      "topics": [
+        {
+          "id": "expectation",
+          "number": "03.1",
+          "title": "Expectation",
+          "oneLiner": "Expectation is the long-run average of a random variable — its center of mass, and the basis of any fair price.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Is the ₹120 bet worth it?",
+              "body": "Back in Module 01 we left a bet unfinished. I flip 3 fair coins and pay you **₹100 per head**; the entry fee is **₹120**. We worked out that you win ₹200 or more half the time — but we *couldn't* say whether the bet is actually worth playing.\n\nThe missing tool is one number: **what you'd win on average if you played the game over and over.** If that average beats ₹120, you play; if not, you walk. That same number decides insurance premiums, whether a business launches a feature, and what a fair price for *anything* uncertain is. It's called the **expectation**, and it's the heartbeat of this module."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "The long-run average, and the balance point",
+              "body": "The **expectation** (or expected value, or mean) of a random variable is the average you'd get if you repeated the experiment a huge number of times. You compute it by **weighting each outcome by how likely it is** — common outcomes count more, rare ones count less.\n\n🖼️ *Picture — the balance point.* Lay the PMF out as bars on a see-saw. The expectation is the **fulcrum where the bars balance.** Tall bars near a value pull the balance point toward them. For a fair die, the bars are equal across 1–6, so it balances dead centre at **3.5**.\n\nNotice something important there: **3.5 is not a value the die can ever show.** The expectation is not \"the most likely outcome\" and not \"what will happen\" — it's the *centre of mass* of all the possibilities. It's where reality clusters *on average*, not on any single roll."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Weighting outcomes by probability",
+              "body": "For a discrete variable, sum each value times its probability:\n\n$$E[X] = \\sum_x x \\cdot p(x).$$\n\nFor a continuous variable, the sum becomes an area-weighted integral, $E[X] = \\int x\\, f(x)\\, dx$ — same idea, smooth version.\n\n**Worked example — the die.** $E[X] = \\tfrac{1}{6}(1+2+3+4+5+6) = \\tfrac{21}{6} = \\mathbf{3.5}.$\n\n**Worked example — the bet, finally settled.** Winnings are ₹100 × (number of heads), with the 3-coin probabilities 1/8, 3/8, 3/8, 1/8:\n\n$$E[\\text{winnings}] = 0\\cdot\\tfrac18 + 100\\cdot\\tfrac38 + 200\\cdot\\tfrac38 + 300\\cdot\\tfrac18 = \\frac{1200}{8} = \\mathbf{₹150}.$$\n\n₹150 average payout against a ₹120 entry → the bet is **favorable**, worth about **+₹30 per play** in the long run. Cliffhanger resolved.\n\nThe distributions from Module 02 have clean expectations worth memorising: **Bernoulli(p) → p**, **Binomial(n, p) → np**, **Poisson(λ) → λ**. (Ten visitors at a 20% conversion rate → an expected 2 conversions, exactly as intuition said.)"
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where expectation shows up",
+              "body": "- **\"Expected everything\" runs the business.** Expected revenue, expected customer lifetime value (LTV), expected cost — every forecast and every \"is this worth doing?\" case is an expectation.\n- **Fair pricing and insurance.** A premium is essentially the expected payout plus a margin. Bets, warranties, and options are all priced off expected value.\n- **The mean is the simplest predictor.** If you must guess a number and you'll be graded on squared error, the expectation is the single best guess. Predicting \"the average\" is the baseline every model must beat.\n- **Your data's average estimates it.** The sample mean you compute on a column of data is an *estimate* of that variable's true expectation — the bridge from data to the underlying distribution (and the whole basis of estimation later in the course)."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Treating the expectation as a guaranteed or typical result.** The die never shows 3.5; a \"+₹30 expected\" bet still loses on plenty of individual plays. Expectation describes the *long run*, not the next trial.\n- **Trusting it blindly with huge variance.** A bet with positive expected value can still bankrupt you if the swings are wild and you can't play many times — expectation alone is half the story (the other half, variance, is next).\n- **Forgetting skew.** For a right-skewed variable (income, wait times), a few extreme values drag the mean above the \"typical\" case, so the expectation can misrepresent a normal experience. The median may describe people better.\n- **Reading \"expected\" as \"expected to happen.\"** It's a technical average, not a prediction of the next outcome."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define expectation in one plain sentence, and give the balance-point picture.\n2. Why can the expectation be a value the variable can never actually take?\n3. Compute the expected value of a single roll of a fair four-sided die (faces 1–4).\n4. A lottery ticket costs ₹100 and pays ₹10,000 with probability 0.005 (otherwise nothing). What's the expected value of buying one, and is it favorable?\n5. Give one situation where the expectation is a *misleading* summary of what to actually expect.\n\n> ✍️ **Explain it back:** A friend says \"the average roll of a die is 3.5, but that's impossible — you can't roll 3.5.\" Explain what the 3.5 really means. If they get that it's a long-run balance point, not a prediction, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "A game pays ₹5 if a fair die shows a 6, and nothing otherwise. What's the expected payout of one play?",
+              "solution": "$E[\\text{payout}] = 5 \\times \\tfrac16 + 0 \\times \\tfrac56 = \\tfrac{5}{6} \\approx \\mathbf{₹0.83}.$ So a fair entry fee would be about 83 paise."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "A carnival wheel pays ₹100 with probability 0.1, ₹20 with probability 0.3, and ₹0 otherwise. It costs ₹25 to play. Is it worth playing on average?",
+              "solution": "$E[\\text{winnings}] = 100(0.1) + 20(0.3) + 0(0.6) = 10 + 6 = ₹16.$ That's **below** the ₹25 cost, so on average you lose about ₹9 per play — **not** worth it."
+            },
+            {
+              "id": "A3",
+              "difficulty": "core",
+              "prompt": "Recall the distribution means from Module 02. A page converts each of 50 independent visitors with probability 0.08. What is the expected number of conversions?",
+              "solution": "This is Binomial(n = 50, p = 0.08), whose mean is $np = 50 \\times 0.08 = \\mathbf{4}$ conversions."
+            }
+          ]
+        },
+        {
+          "id": "variance-and-standard-deviation",
+          "number": "03.2",
+          "title": "Variance & Standard Deviation",
+          "oneLiner": "Variance measures how far outcomes spread from the mean; its square root, the standard deviation, puts that spread in real units.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Two jobs, same average pay",
+              "body": "You're weighing two job offers. You model your possible annual pay at each. Both come out to the **same average** — say ₹20 lakh. By the last topic's tool, expectation, they're identical.\n\nBut they're not. Job A's outcomes are all bunched around ₹20 lakh — steady, predictable. Job B swings from ₹8 lakh in a bad year to ₹35 lakh in a great one — same average, wildly different experience. **The mean literally cannot tell these two apart.** To choose well you need a second number: one for *how spread out* the outcomes are. That number is what separates a safe bet from a rollercoaster."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Average distance from the mean",
+              "body": "**Variance measures how far outcomes typically land from the mean.** The recipe: for each outcome, take its distance from the mean, **square it**, and average those squared distances (weighted by probability).\n\nWhy square the distances? Two reasons. First, distances above and below the mean would otherwise **cancel out** to zero — squaring makes them all positive. Second, squaring makes **big deviations count much more** than small ones, which matches how we think about risk: one disastrous year hurts more than several slightly-off ones.\n\nThe catch: squaring warps the units. If pay is in rupees, variance comes out in *rupees-squared* — meaningless to a human. So we take the square root to undo it, giving the **standard deviation (SD)**, back in real rupees. **The standard deviation is the number you actually report and reason about**; it's roughly \"how far, in normal units, a typical outcome sits from the average.\"\n\n🖼️ *Picture:* two bell curves with the *same* centre. A small SD is a tall, narrow spike (outcomes hug the mean — Job A). A large SD is a low, wide spread (outcomes range far — Job B)."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Squared distance, and a shortcut",
+              "body": "Formally, with mean $\\mu = E[X]$:\n\n$$\\text{Var}(X) = E\\big[(X - \\mu)^2\\big], \\qquad \\text{SD}(X) = \\sqrt{\\text{Var}(X)}.$$\n\nA shortcut that's almost always easier to compute:\n\n$$\\text{Var}(X) = E[X^2] - \\big(E[X]\\big)^2 \\quad\\text{—  \"the mean of the square minus the square of the mean.\"}$$\n\n**Worked example — a fair die.** We know $E[X] = 3.5$. Now the mean of the squares:\n\n$$E[X^2] = \\tfrac16(1 + 4 + 9 + 16 + 25 + 36) = \\tfrac{91}{6} \\approx 15.17.$$\n\n$$\\text{Var}(X) = 15.17 - 3.5^2 = 15.17 - 12.25 = 2.92, \\qquad \\text{SD} \\approx \\mathbf{1.71}.$$\n\nSo a die's rolls sit, on average, about **1.7 away** from 3.5 — which matches the feel of the numbers 1–6.\n\nThe Module 02 distributions have tidy variances too: **Bernoulli(p) → p(1−p)**, **Binomial(n, p) → np(1−p)**, **Poisson(λ) → λ** (its mean and variance are equal — that signature again)."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where spread shows up",
+              "body": "- **Spread is risk.** In finance, an asset's standard deviation *is* its volatility. In operations, it's how unreliable a delivery time is. Any time \"average\" hides danger, the SD reveals it — exactly the two-jobs problem.\n- **Spread is noise.** Measurement error, sensor jitter, and the scatter of data around a model's prediction are all quantified by variance. The famous **bias–variance tradeoff** in machine learning is literally about a model's prediction variance.\n- **Standardisation uses it.** The z-scores from Module 02, and feature scaling in ML, divide by the standard deviation so every feature has comparable spread. \"Mean ± SD\" is the universal one-line summary of a dataset.\n- **It decides significance.** Whether an A/B test result is \"real\" depends not just on the gap between the means but on how much each group varies — a big gap with huge spread can still be noise."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Reporting variance to humans.** Its squared units (\"rupees²\") are uninterpretable. Communicate with the **standard deviation**, which lives in real units.\n- **Ignoring outliers.** Because deviations are squared, a single extreme value can massively inflate the SD. For messy, heavy-tailed data, robust spread measures (like the interquartile range) may describe the bulk better.\n- **Comparing SDs across different scales.** An SD of 5 is huge for shoe sizes and tiny for house prices. To compare spread across unlike quantities, use the *relative* spread (coefficient of variation = SD ÷ mean).\n- **Confusing precise with accurate.** Low variance means *consistent*, not *correct*. A miscalibrated scale can give tightly clustered readings that are all wrong (low variance, high bias)."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. In words, what does variance measure, and why are the distances squared?\n2. Why do we usually report the standard deviation instead of the variance?\n3. Use the shortcut $E[X^2] - (E[X])^2$ to find the variance of a fair coin scored as 1 for heads, 0 for tails.\n4. Two datasets have the same mean but very different standard deviations. What does that tell you, with a real example?\n5. Why can one outlier distort the standard deviation, and what could you use instead?\n\n> ✍️ **Explain it back:** Explain to a friend why two investments with the *same* average return can be very different choices, using the word \"standard deviation.\" If they connect spread to risk, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "A fair coin is scored 1 for heads, 0 for tails. Find its variance and standard deviation.",
+              "solution": "$E[X] = 0.5$. $E[X^2] = 1^2(0.5) + 0^2(0.5) = 0.5$. So $\\text{Var} = 0.5 - 0.5^2 = 0.25$ and $\\text{SD} = \\sqrt{0.25} = \\mathbf{0.5}$. (Matches Bernoulli variance $p(1-p) = 0.25$.)"
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "A random variable takes values 0, 10, 20 each with probability 1/3. Compute its mean, variance, and standard deviation.",
+              "solution": "$E[X] = (0 + 10 + 20)/3 = 10$. $E[X^2] = (0 + 100 + 400)/3 = 500/3 \\approx 166.7$.\n$\\text{Var} = 166.7 - 10^2 = 66.7$, so $\\text{SD} = \\sqrt{66.7} \\approx \\mathbf{8.16}$."
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "Two datasets both have mean 50. Dataset X is {49, 50, 51}; dataset Y is {10, 50, 90}. Without full calculation, which has the larger standard deviation and why? Then confirm by computing both (treat each as equally likely).",
+              "solution": "Y, clearly — its values sit far from the mean while X's hug it.\nX: deviations −1, 0, 1 → $\\text{Var} = (1 + 0 + 1)/3 = 0.667$, SD ≈ **0.82**.\nY: deviations −40, 0, 40 → $\\text{Var} = (1600 + 0 + 1600)/3 = 1066.7$, SD ≈ **32.7**.\nSame mean, ~40× the spread — the mean alone would have called them identical."
+            }
+          ]
+        },
+        {
+          "id": "combining-random-variables",
+          "number": "03.3",
+          "title": "Combining Random Variables: Linearity & the √n Effect",
+          "oneLiner": "Expectations always add; variances add only when things are independent — and that is why averaging data sharpens it.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "How much better is an average?",
+              "body": "You measure a table's length once; your reading might be off by a little. So you measure it **100 times and average** — everyone agrees the average is more trustworthy than a single reading.\n\nBut *how much* more trustworthy? Twice as good? Ten times? A hundred times, since you took a hundred readings? The answer is exact, and it's genuinely surprising the first time you see it — and it quietly governs how big a sample you need, how long to run an A/B test, and why \"wisdom of crowds\" and model ensembles work."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Two rules, and one asymmetry",
+              "body": "Combining random variables comes down to two rules — and the fact that they behave *differently* is the whole lesson.\n\n**Rule 1 — Means always add.** $E[X + Y] = E[X] + E[Y]$. Always. This is **linearity of expectation**, and its superpower is that it holds **even when X and Y are related.** Expected totals just add up, no independence required. It makes many scary-looking averages trivial.\n\n**Rule 2 — Spreads add *only when independent*.** $\\text{Var}(X + Y) = \\text{Var}(X) + \\text{Var}(Y)$ **only if X and Y are independent.** If they move together, there's an extra term (covariance — Module 04's job). Uncertainty only stacks cleanly when the pieces are unrelated.\n\nAnd scaling: multiplying by a constant scales the mean by that constant, but scales the **variance by its square** — $\\text{Var}(aX) = a^2\\,\\text{Var}(X)$ — so the standard deviation scales by $|a|$.\n\n**The payoff — the √n effect.** Average $n$ independent measurements. The mean of the average is unchanged, but its **variance is divided by n**, so its standard deviation is divided by **√n**. More data sharpens your estimate — but through the square root, so **to cut your error in half you need four times the data**, not twice. Diminishing returns, made precise."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The rules on paper",
+              "body": "For constants $a, b$ and any variables:\n\n$$E[aX + b] = aE[X] + b, \\qquad E[X_1 + \\dots + X_n] = \\sum_i E[X_i] \\ \\text{(always)}.$$\n\n$$\\text{Var}(aX + b) = a^2\\,\\text{Var}(X), \\qquad \\text{Var}\\Big(\\sum_i X_i\\Big) = \\sum_i \\text{Var}(X_i) \\ \\text{(independent only)}.$$\n\nFor the **sample mean** $\\bar{X} = \\tfrac{1}{n}\\sum_i X_i$ of $n$ independent draws with mean $\\mu$ and standard deviation $\\sigma$:\n\n$$E[\\bar{X}] = \\mu, \\qquad \\text{Var}(\\bar{X}) = \\frac{\\sigma^2}{n}, \\qquad \\text{SD}(\\bar{X}) = \\frac{\\sigma}{\\sqrt{n}}.$$\n\nThat last quantity, $\\sigma/\\sqrt{n}$, is so important it has its own name: the **standard error**.\n\n**Worked example — the table.** Say a single measurement has SD $\\sigma = 2$ mm. Average 100 readings: the standard error is $2/\\sqrt{100} = 0.2$ mm — a **tenfold** sharpening. Want to reach 0.1 mm? You'd need $n = 400$ readings, not 200. The √n is why."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where this runs the show",
+              "body": "- **Sample sizes and A/B tests.** \"How long must we run the experiment?\" is answered by the standard error $\\sigma/\\sqrt{n}$: pick n so the error is small enough to see the effect you care about. This one formula plans nearly every experiment.\n- **Why ensembles work.** Averaging many noisy but *independent* models (bagging, random forests) drives the combined variance down by roughly 1/n — the √n effect applied to predictions. The catch is right there in Rule 2: it only works to the extent the models' errors are **independent**.\n- **Linearity makes hard sums easy.** \"Expected number of matches / collisions / successes across many pieces\" often falls out instantly by adding per-piece expectations — no need to untangle their dependence.\n- **The bridge to inference.** Confidence intervals, standard errors on every dashboard, and the Central Limit Theorem (next phase) all stand on $\\sigma/\\sqrt{n}$. This is the machinery that makes samples speak about populations."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Adding variances when the pieces aren't independent.** Correlated errors do **not** shrink like 1/n. Ensembles of near-identical models barely help; an A/B test that assigns whole *offices* (not individuals) has correlated users and a far larger true error than the naive formula claims (the independence trap from Module 01, with real consequences).\n- **Expecting error to fall linearly with n.** It falls with **√n**. Going from 100 to 10,000 samples (100×) only sharpens you 10×. Big data helps, but with diminishing returns.\n- **Thinking more data fixes bias.** Only *variance* shrinks with n. A systematically wrong measurement (a miscalibrated sensor) stays wrong no matter how many readings you average.\n- **Applying linearity to nonlinear functions.** $E[X + Y] = E[X] + E[Y]$, but $E[X^2] \\neq (E[X])^2$ and $E[1/X] \\neq 1/E[X]$. Averages pass through addition, not through squaring, dividing, or other curves."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the two combining rules. Which one needs independence, and which holds always?\n2. What is the √n effect, and why does halving your error require *four times* the data?\n3. A single measurement has SD 6. What's the standard error of the average of 36 measurements?\n4. Why does averaging many models reduce variance — and what assumption must hold for it to work?\n5. Give one thing that collecting more data will *not* fix, and say why.\n\n> ✍️ **Explain it back:** A colleague wants to double the precision of an estimate and assumes they need to double the sample size. Explain, using the √n rule, why they actually need four times as much data. If they grasp the square-root, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "X has mean 5 and Y has mean 8. What is E[X + Y]? Does your answer depend on whether X and Y are independent?",
+              "solution": "$E[X + Y] = 5 + 8 = \\mathbf{13}$. It does **not** depend on independence — linearity of expectation always holds."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "A single measurement has a standard deviation of 8 mm. What is the standard error of the average of 64 independent measurements?",
+              "solution": "Standard error $= \\sigma/\\sqrt{n} = 8/\\sqrt{64} = 8/8 = \\mathbf{1}$ mm — an eightfold sharpening from averaging 64 readings."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "Your estimate currently has a standard error of 4 units from 100 samples. You want to get it down to 1 unit. How many samples do you need in total, and what principle sets that number?",
+              "solution": "Standard error scales as $1/\\sqrt{n}$. To go from 4 to 1 is a **4× reduction**, which needs $4^2 = 16$ times the data: $100 \\times 16 = \\mathbf{1{,}600}$ samples. The √n effect means cutting error by a factor k costs $k^2$ times the data — diminishing returns."
+            }
+          ]
+        },
+        {
+          "id": "expectation-in-decisions",
+          "number": "03.4",
+          "title": "Expectation in the Wild: Decisions, Loss & Risk",
+          "oneLiner": "Weigh outcomes by probability and you get a decision rule — the same expected-loss principle every model is trained to minimize.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "One rule behind a thousand decisions",
+              "body": "Should you buy the extended warranty? Should the fraud model block this transaction? Should you ship variant B? Should the self-driving car brake now?\n\nEvery one of these is a decision made under uncertainty, with costs on one side and payoffs on the other. It turns out they're all the *same* problem, and there's one principled way to solve it — the very same principle that a model quietly applies every time it updates its weights. Learn it once and you can reason about warranties, fraud thresholds, business bets, and loss functions with a single mental tool."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Weigh the outcomes, then pick",
+              "body": "When your choices lead to outcomes that have both a **value** (money, cost, benefit) and a **probability**, the rational choice — over many repetitions — is the one with the best **expected value**: weigh each outcome by its probability, add them up, and compare your options. Framed as costs, you pick the action with the lowest **expected cost (or expected loss)**.\n\nThat's it. Insurance, warranties, medical treatment choices, and business bets all reduce to \"compute the expected value of each option and take the best one.\"\n\nTwo honest caveats keep this from being naïve:\n\n- **Variance matters for one-shot, high-stakes bets.** A coin flip that pays +₹10 lakh or −₹9 lakh has a great expected value, but if losing bankrupts you and you only play once, expected value alone is reckless. When you can't average over many tries, *spread* (last two topics) re-enters the decision.\n- **People value outcomes, not raw rupees.** A guaranteed ₹1 crore usually beats a 50% shot at ₹3 crore even though the gamble has higher expected value — because the *usefulness* of money grows slower than the amount (this is \"utility\"). Expected value is the baseline; utility refines it."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Expected value as a decision rule",
+              "body": "For each action, the expected value is the probability-weighted sum of its outcomes:\n\n$$\\text{EV} = \\sum (\\text{probability} \\times \\text{payoff}), \\qquad \\text{choose the action with the best EV.}$$\n\n**Worked example — the warranty.** A warranty costs **₹2,000**. Without it, the device fails with probability **0.05**, costing **₹20,000** to repair. Your expected cost *without* the warranty is:\n\n$$0.05 \\times 20{,}000 = ₹1{,}000.$$\n\nThat's **less** than the ₹2,000 warranty, so on average you should **skip it** — the warranty is priced above your expected loss (as insurance usually is). Unless a ₹20,000 hit would genuinely wreck you, in which case you're buying peace from variance, not expected value.\n\n**The same rule trains models.** A model chooses predictions to **minimise expected loss** — and the loss function you pick decides *what* it predicts: minimising expected **squared error** yields the **mean**, minimising expected **absolute error** yields the **median**, and minimising **cross-entropy** yields calibrated **probabilities**. Choosing a loss function *is* choosing which expectation to optimise."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where decision-by-expectation shows up",
+              "body": "- **It is the core of machine learning.** Training a model = minimising expected loss (statisticians call it *risk*). Every gradient step nudges parameters to lower the expected loss over the data. This topic is the objective that all of supervised learning is chasing.\n- **Classification thresholds are cost decisions.** Missing a fraud (false negative) may cost far more than a false alarm (false positive). The optimal decision threshold isn't 0.5 — it's wherever the *expected cost* of the two error types balances. Cost-sensitive thresholding is expected value, applied.\n- **Business and bidding.** Customer lifetime value, whether to launch, how much to bid in an ad auction — all are expected-value comparisons. Ad systems literally bid the expected value of a click.\n- **Reinforcement learning** picks actions to maximise *expected future reward* — this exact rule, extended over time."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Using raw expected value for ruinous one-shot bets.** A positive-EV gamble can still ruin you if a single bad outcome is catastrophic and you can't repeat. Expected value assumes you survive to play the average out — factor in variance and the risk of ruin.\n- **Ignoring utility.** Treating ₹1 as always worth the same ignores that losses and gains feel different and that money has diminishing usefulness. Expected *monetary* value and expected *utility* can point to different choices.\n- **Underweighting rare catastrophes.** A tiny probability times an enormous cost can dominate the decision — and those tail probabilities are the hardest to estimate. \"It almost never happens\" is not the same as \"ignore it.\"\n- **Garbage in.** An expected value is only as trustworthy as the probabilities and payoffs you feed it. Confident decisions built on guessed inputs are false confidence."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the expected-value decision rule in one sentence.\n2. Redo the warranty example with a failure probability of 0.15 — should you buy it now?\n3. Why is \"highest expected value\" sometimes the *wrong* choice for a single, high-stakes decision?\n4. How does the choice of loss function change what a model predicts? Give one example.\n5. In fraud detection, why is the best decision threshold usually not 0.5?\n\n> ✍️ **Explain it back:** Explain to a friend how deciding whether to buy an extended warranty and how training a machine-learning model are, deep down, the same calculation. If they see \"minimise expected cost\" underneath both, this topic — and the whole Expectation & Variance module — is ✅.\n\n---\n\n*Module complete. Head to the exercises, then onward to Phase III — where these tools meet the two theorems that make statistics work.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "A ₹50 raffle ticket has a 1-in-100 chance of winning ₹3,000. Using expected value, is buying a ticket a good deal?",
+              "solution": "$E[\\text{winnings}] = 0.01 \\times 3000 = ₹30$, which is **less** than the ₹50 price — expected value is negative (−₹20 per ticket), so it's not a good deal on average. (People still buy for the utility/thrill, not the EV.)"
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "An extended warranty costs ₹3,000. Without it, a device fails with probability 0.2, costing ₹12,000 to repair. On an expected-cost basis, should you buy it? What real-world reason might override that answer?",
+              "solution": "Expected repair cost without warranty $= 0.2 \\times 12{,}000 = ₹2{,}400$, which is **below** the ₹3,000 warranty — so on average, **skip it**. Override: if a sudden ₹12,000 hit would genuinely wreck your finances, paying ₹3,000 to remove that variance (risk) can still be rational. Expected value isn't the whole story for one-shot, painful losses."
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "A fraud model can flag a transaction. A missed fraud (false negative) costs ₹10,000; a false alarm (false positive) costs ₹100 in review time. Intuitively, should the flagging threshold be higher or lower than a neutral 0.5, and why — in terms of expected cost?",
+              "solution": "**Lower** than 0.5. Because a missed fraud costs 100× more than a false alarm, the expected cost of *failing to flag* a borderline case is far higher than the expected cost of flagging it unnecessarily. Minimising expected cost therefore means flagging more aggressively — accepting many cheap false positives to avoid a few catastrophic false negatives. The optimal threshold sits where the expected costs of the two error types balance, which here is well below 0.5."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "04-joint-and-dependence",
+      "number": "04",
+      "phase": "Phase III — When Variables Interact",
+      "title": "Joint Distributions & Dependence",
+      "summary": "Moving from one random variable to two that interact: joint and marginal distributions, covariance and correlation (and why correlation is not causation), and the conditional expectation — the best prediction of one variable from another, and the quiet definition of what regression estimates.",
+      "topics": [
+        {
+          "id": "joint-distributions",
+          "number": "04.1",
+          "title": "Joint Distributions: Two Variables at Once",
+          "oneLiner": "A joint distribution describes two variables together; the marginals recover each one alone by summing over the other.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Height knows something about weight",
+              "body": "Height has its own distribution — a bell curve. Weight has its own distribution — also a bell. Studied separately, that's the whole story.\n\nExcept it isn't. Tell me someone is unusually **tall**, and you immediately expect them to be **heavier** than average. The two variables carry information about each other. Neither bell curve, on its own, can express that link — a single-variable distribution is blind to relationships. To capture \"tall tends to go with heavy,\" we need to describe the two variables *jointly*, and that opens the door to nearly all of predictive modelling."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A table over combinations",
+              "body": "A **joint distribution** assigns probability to *combinations* of values — not \"how likely is X = tall\" but \"how likely is X = tall **and** Y = heavy.\"\n\n🖼️ *Picture — a grid.* Rows are values of X, columns are values of Y, and each cell holds the probability of that exact pair. Every cell is ≥ 0 and the whole grid sums to 1. This grid is the complete description of the two variables together.\n\nFrom the grid you can always recover each variable on its own: **sum across a whole row** to get the probability of that X value (pooling over every possible Y). These row and column totals are the **marginal** distributions — literally the numbers you'd write in the *margins* of the table. The marginals are just the individual bell curves from the hook.\n\nHere's the crucial asymmetry: the joint gives you the marginals, but the **marginals do not give you back the joint.** Two datasets can have identical height distributions and identical weight distributions, yet in one, tall-goes-with-heavy, and in the other, tall-goes-with-light. The relationship lives *only* in the joint, never in the two histograms alone."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Joint, marginal, and independence",
+              "body": "For discrete X and Y, the **joint PMF** is $p(x, y) = P(X = x,\\ Y = y)$, with $p(x,y) \\ge 0$ and $\\sum_x \\sum_y p(x,y) = 1$.\n\nThe **marginals** come from summing out the other variable:\n\n$$p_X(x) = \\sum_y p(x, y), \\qquad p_Y(y) = \\sum_x p(x, y).$$\n\nX and Y are **independent** exactly when the joint factors into the marginals — the product rule from Module 01, now for whole variables:\n\n$$X \\perp Y \\iff p(x, y) = p_X(x)\\, p_Y(y) \\ \\text{for every } x, y.$$\n\n**Worked example — umbrellas and rain.** A joint table of P(weather, umbrella):\n\n| | Umbrella | No umbrella | **Row total (Rain)** |\n|---|---|---|---|\n| **Rain** | 0.30 | 0.10 | **0.40** |\n| **No rain** | 0.15 | 0.45 | **0.60** |\n| **Column total** | **0.45** | **0.55** | 1.00 |\n\nMarginals (the margins): P(rain) = 0.40, P(umbrella) = 0.45. Are they independent? If they were, P(rain, umbrella) would equal 0.40 × 0.45 = 0.18. But the table says **0.30** ≠ 0.18 — so rain and umbrellas are **dependent** (of course: people carry umbrellas *because* it rains). The gap between 0.30 and 0.18 is the relationship the marginals can't see.\n\n(For continuous variables the grid becomes a smooth **joint density** surface — a hill over the X–Y plane — where probability is *volume* over a region, and marginals come from integrating out the other variable.)"
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where joint distributions show up",
+              "body": "- **Every dataset with two or more columns is a sample from a joint distribution.** The entire enterprise of machine learning is exploiting the *joint* structure between features and a target — the relationships a single column can never reveal.\n- **Marginalising is everyday exploration.** Making a histogram of one column is reading a marginal. Cross-tabs, contingency tables, and heatmaps are empirical joint distributions you build without naming them.\n- **Dependence is what makes prediction possible.** A feature that's *independent* of the target is useless — its marginal tells you nothing extra. Every useful feature is one whose joint relationship with the target lets you narrow Y down once you know X.\n- **It's the foundation for everything in this module** — covariance, correlation, and conditional expectation are all summaries of the joint."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Trying to rebuild the joint from the marginals.** You can't. Same two histograms can hide wildly different relationships; you must look at the pairs, not the two columns separately.\n- **Assuming independence to multiply.** $P(X, Y) = P(X)P(Y)$ *only* under independence. Multiplying linked variables' probabilities (rain × umbrella) gives the wrong answer, as the example showed.\n- **Confusing joint with conditional.** \"P(rain and umbrella)\" (a joint cell, 0.30) is not \"P(umbrella given rain)\" (a conditional, 0.30/0.40 = 0.75). Keep the two straight — the conditional rescales to the slice.\n- **Judging variables only one at a time.** Two columns can each look perfectly normal alone yet combine into something misleading — a preview of Simpson's paradox, where a trend within every group reverses when the groups are pooled."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. What does a joint distribution describe that two separate distributions cannot?\n2. How do you get a marginal distribution from a joint table?\n3. Why can't you reconstruct the joint distribution from the two marginals?\n4. From the umbrella table, compute P(no rain, no umbrella) and the marginal P(no umbrella). Are weather and umbrella independent?\n5. State the independence condition for two variables in terms of the joint and the marginals.\n\n> ✍️ **Explain it back:** Explain to a friend why knowing the distribution of heights and (separately) the distribution of weights still doesn't tell you whether tall people tend to be heavier. If they see that the relationship lives only in the joint, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "A joint table of P(X, Y) has cells: P(0,0) = 0.1, P(0,1) = 0.2, P(1,0) = 0.3, P(1,1) = 0.4. Find the marginal distribution of X.",
+              "solution": "Sum across Y for each X. P(X = 0) = 0.1 + 0.2 = **0.3**; P(X = 1) = 0.3 + 0.4 = **0.7**. (They sum to 1, as a marginal must.)"
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "For the same table, are X and Y independent? Check one cell.",
+              "solution": "Marginals: P(X = 0) = 0.3, P(Y = 0) = 0.1 + 0.3 = 0.4. If independent, P(0, 0) would equal 0.3 × 0.4 = 0.12. But the table says **0.1** ≠ 0.12, so X and Y are **dependent**."
+            },
+            {
+              "id": "A3",
+              "difficulty": "stretch",
+              "prompt": "Two coins are flipped. Let X = number of heads and Y = 1 if the first coin is heads, else 0. Build the joint table of (X, Y) and give the marginal of X.",
+              "solution": "Outcomes (each prob ¼): TT → (X=0, Y=0); TH → (X=1, Y=0); HT → (X=1, Y=1); HH → (X=2, Y=1).\n\n| | Y = 0 | Y = 1 |\n|---|---|---|\n| X = 0 | ¼ | 0 |\n| X = 1 | ¼ | ¼ |\n| X = 2 | 0 | ¼ |\n\nMarginal of X: P(X=0) = ¼, P(X=1) = ½, P(X=2) = ¼ — the familiar Binomial(2, ½). (X and Y are clearly dependent: knowing the first coin constrains the total.)"
+            }
+          ]
+        },
+        {
+          "id": "covariance",
+          "number": "04.2",
+          "title": "Covariance: Do They Move Together?",
+          "oneLiner": "Covariance is the average co-deviation of two variables — positive if they move together, negative if they oppose.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "What moves with what",
+              "body": "Ice-cream sales go up — and so do drownings. Study hours go up — and so do exam scores. A product's price goes up — and demand goes down.\n\nSome pairs of variables move **together**, some move in **opposite** directions, and some don't track each other at all. We'd like one number that captures the *direction and strength* of that co-movement, distilled from the whole joint distribution. That number is **covariance** — and it comes with a warning we'll cash in next topic: *moving together is not the same as causing.*"
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Deviations, multiplied",
+              "body": "Covariance asks a simple question of every data point: **when X is above its average, is Y also above its average?**\n\nFor each observation, take how far X sits from its mean and how far Y sits from *its* mean, and **multiply those two deviations**:\n\n- Both above average (or both below) → the two deviations have the **same sign** → their product is **positive**.\n- One above while the other is below → **opposite signs** → product **negative**.\n\nAverage those products across all the data. If the pairs mostly move together, the positives dominate → **positive covariance**. If they mostly oppose, negatives dominate → **negative covariance**. If there's no consistent pattern, the products cancel → **covariance near zero.**\n\n🖼️ *Picture:* draw the scatter plot and split it into four quadrants with a vertical line at X's mean and a horizontal line at Y's mean. Points in the top-right and bottom-left (both-above, both-below) push covariance positive; points in the other two quadrants push it negative. Covariance measures which quadrants the cloud favours."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The formula, and the missing variance term",
+              "body": "With means $\\mu_X$ and $\\mu_Y$:\n\n$$\\text{Cov}(X, Y) = E\\big[(X - \\mu_X)(Y - \\mu_Y)\\big] = E[XY] - E[X]\\,E[Y].$$\n\nThe second form is the handy shortcut (\"mean of the product minus product of the means\"). What matters most is the **sign**: positive = move together, negative = move oppositely, zero = no *linear* co-movement. Note that a variable's covariance with itself is just its variance: $\\text{Cov}(X, X) = \\text{Var}(X)$.\n\nThis is also the **missing piece from Module 03.** The clean rule \"variances add\" was only true for independent variables. The full rule is:\n\n$$\\text{Var}(X + Y) = \\text{Var}(X) + \\text{Var}(Y) + 2\\,\\text{Cov}(X, Y).$$\n\nVariances add cleanly *only* when the covariance is zero. When variables move together, their combined spread is larger than the parts; when they oppose, it's smaller.\n\n**Worked example.** Three equally likely paired outcomes: (X, Y) = (1, 2), (2, 1), (3, 3). Means: $\\mu_X = 2$, $\\mu_Y = 2$. Products of deviations: $(1{-}2)(2{-}2) = 0$; $(2{-}2)(1{-}2) = 0$; $(3{-}2)(3{-}2) = 1$. Average $= (0 + 0 + 1)/3 \\approx \\mathbf{0.33}$ — a small **positive** covariance, so X and Y lean toward moving together. But is 0.33 \"strong\"? We genuinely can't say yet — its size depends on the units, which is precisely the problem the next topic fixes."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where covariance shows up",
+              "body": "- **The covariance matrix runs multivariate analysis.** Collect the covariances between every pair of features into a matrix, and you have the object at the heart of **PCA / dimensionality reduction** (it finds the directions of greatest joint spread) and of the multivariate Normal.\n- **Diversification is covariance in action.** A portfolio's risk isn't just the sum of its assets' risks — the cross term $2\\,\\text{Cov}$ is exactly why holding assets that move *oppositely* (negative covariance) reduces total risk. Same math, real money.\n- **It explains the √n caveat from Module 03.** Errors that are correlated have positive covariance, so their combined variance *doesn't* shrink like 1/n. That's why an ensemble of near-identical models barely helps, and why an A/B test with clustered users has more real uncertainty than the naive formula claims.\n- **It's the raw ingredient of correlation** — the standardized, interpretable version you'll use daily, coming next."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Reading the magnitude.** A covariance of 50 is *not* \"stronger\" than one of 5 — the number scales with the units of X and Y, so its size is uninterpretable on its own. Only the **sign** is directly meaningful (the next topic fixes the magnitude).\n- **Thinking zero covariance means independence.** It does not. Covariance only detects **linear** co-movement. A perfectly dependent U-shaped relationship (Y = X² with X centred at 0) has **zero covariance** while Y is completely determined by X. Independence forces covariance to 0, but not the reverse.\n- **Forgetting the covariance term in sums.** $\\text{Var}(X + Y) = \\text{Var}(X) + \\text{Var}(Y)$ is only the independent-case shortcut. Leaving out $2\\,\\text{Cov}$ underestimates (or overestimates) the true spread of a combination.\n- **Seeing co-movement and inferring cause.** Covariance is symmetric and says nothing about *why* — that's next topic's headline warning."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. In words, how does covariance decide its sign?\n2. What does a covariance of zero tell you — and, importantly, what does it *not* tell you?\n3. Why is the *magnitude* of a covariance hard to interpret?\n4. Write the full formula for Var(X + Y). When does it reduce to Var(X) + Var(Y)?\n5. Give a pair of variables you'd expect to have negative covariance, and explain why.\n\n> ✍️ **Explain it back:** Explain to a friend how you'd tell, from data, whether two quantities \"move together\" — and why a covariance of zero doesn't guarantee they're unrelated. If they get the linear-only limitation, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "Without calculating, state the sign of the covariance you'd expect between (a) hours studied and exam score, (b) outdoor temperature and heating-bill amount.",
+              "solution": "(a) **Positive** — more study tends to go with higher scores. (b) **Negative** — warmer weather goes with lower heating bills."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "Three equally likely paired outcomes: (X, Y) = (1, 3), (2, 2), (3, 1). Compute the covariance and interpret its sign.",
+              "solution": "Means: $\\mu_X = 2$, $\\mu_Y = 2$. Deviation products: $(1{-}2)(3{-}2) = -1$; $(2{-}2)(2{-}2) = 0$; $(3{-}2)(1{-}2) = -1$. Average $= (-1 + 0 - 1)/3 = \\mathbf{-0.67}$. **Negative** — as X rises, Y falls (they move oppositely), which matches the data."
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "X and Y are independent, each with variance 4. What is Var(X + Y)? Now suppose instead Cov(X, Y) = 3 — what is Var(X + Y), and what does the change mean?",
+              "solution": "Independent: $\\text{Var}(X+Y) = 4 + 4 + 2(0) = \\mathbf{8}$.\nWith Cov = 3: $\\text{Var}(X+Y) = 4 + 4 + 2(3) = \\mathbf{14}$. The positive covariance makes the combined spread larger than the sum of the parts — because the two variables tend to be high together and low together, their sum swings more widely."
+            }
+          ]
+        },
+        {
+          "id": "correlation",
+          "number": "04.3",
+          "title": "Correlation: Covariance, Standardized",
+          "oneLiner": "Correlation rescales covariance to a clean −1 to +1 — the universal measure of linear association, and the most misused number in data.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The number everyone quotes",
+              "body": "\"The correlation is **0.8**\" — strong link. \"The correlation is **0.05**\" — basically nothing. These numbers are everywhere: in every exploratory analysis, every feature-selection step, every research headline.\n\nBut here's the trap. Two datasets can share the *exact same* correlation while looking nothing alike on a plot. A correlation near 1 can be produced by a single stray point, or be completely meaningless, or reverse the moment you account for a hidden third variable. This topic is about the number everyone reaches for — and the handful of ways it quietly lies."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Covariance, rescaled to a fixed range",
+              "body": "Covariance had one fatal flaw: its size depended on the units, so \"0.33\" or \"50\" meant nothing on its own. The fix is elegant — **divide the covariance by both standard deviations.** That cancels out the units and squeezes the result into a fixed, universal range:\n\n$$-1 \\le r \\le +1.$$\n\nThis standardized quantity is the **correlation coefficient**, usually written **r**. Now the magnitude finally means something:\n\n- **r = +1** — a perfect upward line: every point on a straight, rising line.\n- **r = −1** — a perfect downward line.\n- **r = 0** — no *linear* relationship.\n- **|r| near 1** — a tight linear pattern; **|r| near 0** — a loose, scattered one.\n\nBecause it's unitless, you can compare the correlation of height-and-weight against the correlation of price-and-demand directly. That comparability is what made r the universal currency of \"how related are these two things.\"\n\nBut the power comes with three permanent warnings, and every data scientist must have them tattooed on their brain."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The coefficient, and its three warnings",
+              "body": "$$r = \\frac{\\text{Cov}(X, Y)}{\\sigma_X\\, \\sigma_Y}, \\qquad r \\in [-1, +1].$$\n\nTake the covariance of 0.33 from the last topic and divide by the two standard deviations and you'd land on a specific r in that range — now interpretable, where 0.33 was not.\n\n**Warning 1 — Correlation is not causation.** Ice-cream sales and drownings are strongly correlated. Neither causes the other; **summer heat** drives both. A hidden third variable (a *confounder*) can manufacture a strong correlation between things with no causal link. Correlation is a statement about *association*, never about *why*.\n\n**Warning 2 — Correlation only sees straight lines.** r measures *linear* association. Take a perfect parabola, $Y = X^2$ with X centred at zero: Y is *completely determined* by X, yet **r ≈ 0**, because the relationship curves. A correlation of zero means \"no linear trend,\" not \"no relationship.\"\n\n**Warning 3 — The same r can hide totally different data.** Famous datasets exist with *identical* correlations (and identical means and variances) that look completely different when plotted — one a clean line, one a curve, one a flat cloud with a single outlier dragging r upward. **The number can never replace the picture.** Always plot before you trust r."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where correlation shows up",
+              "body": "- **It's the first thing you compute on a new dataset.** A correlation heatmap across all columns is the standard opening move — it shows at a glance which features relate to the target (candidates for prediction) and which relate to *each other* (**multicollinearity**, which destabilises linear models).\n- **Feature selection and redundancy.** Features with near-zero correlation to the target look uninformative (with the linear caveat!); two features correlated ~1 with each other are redundant — keep one.\n- **Recommendation and similarity.** \"Users like you also bought…\" often measures how correlated your ratings are with other users' — correlation as a similarity score.\n- **It underlies linear regression.** The slope of a best-fit line is correlation rescaled by the spreads; $r^2$ is the fraction of variance the line explains.\n\nThe professional habit that separates good analysts from bad: **never report a correlation without looking at the scatter plot.**"
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Inferring causation.** The cardinal sin. A correlation can come from X causing Y, Y causing X, or a confounder causing both — and r cannot tell you which. \"Correlated\" is the beginning of an investigation, not a conclusion.\n- **Trusting r without plotting.** A single outlier can create or destroy a correlation; a curved relationship can hide behind r ≈ 0. The number without the picture is dangerous.\n- **Reading r = 0 as \"independent.\"** It only means no *linear* trend. Strong nonlinear dependence lives comfortably at r = 0.\n- **Using the wrong tool.** Ordinary (Pearson) correlation assumes a linear, roughly well-behaved relationship. For monotonic-but-curved or ranked data, rank-based measures (Spearman) are more honest — reaching for Pearson everywhere is a common error."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. How is correlation built from covariance, and why does that rescaling help?\n2. What are the possible values of r, and what do +1, 0, and −1 each mean?\n3. State the three warnings about correlation, with an example of each.\n4. A dataset shows correlation ≈ 0 between two variables. Give two different scenarios this is consistent with.\n5. Why should you *always* plot the data before trusting a correlation number?\n\n> ✍️ **Explain it back:** Explain to a friend why \"ice-cream sales and drownings are correlated, so ice cream causes drowning\" is wrong, naming the real mechanism. If they can articulate the confounder and the correlation-≠-causation rule, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "Cov(X, Y) = 6, with standard deviations σ_X = 3 and σ_Y = 4. Compute the correlation and describe the strength.",
+              "solution": "$r = \\dfrac{6}{3 \\times 4} = \\dfrac{6}{12} = \\mathbf{0.5}$ — a moderate positive linear relationship."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "A study finds that cities with more police officers have more crime (positive correlation). Does hiring police cause crime? Explain using the vocabulary of this topic.",
+              "solution": "No — this is **correlation, not causation**. A **confounder**, city population, drives both: bigger cities have both more police *and* more crime. The correlation is real but the causal story (\"police cause crime\") is wrong. (Reverse causation also plays in: more crime leads cities to hire more police.)"
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "Let X take values −2, −1, 0, 1, 2 (equally likely) and Y = X². Show that the correlation is 0, and explain why that's true despite Y being completely determined by X.",
+              "solution": "By symmetry $\\mu_X = 0$. $\\text{Cov}(X, Y) = E[XY] - E[X]E[Y] = E[X \\cdot X^2] - 0 = E[X^3]$. The values of $X^3$ are −8, −1, 0, 1, 8, which average to **0**, so covariance = 0 and therefore **r = 0**. Yet Y is a perfect function of X. The reason: correlation only detects **linear** association, and the relationship here is a symmetric parabola — perfectly dependent, but not at all linear. A vivid reminder that r = 0 ≠ independent."
+            }
+          ]
+        },
+        {
+          "id": "conditional-expectation",
+          "number": "04.4",
+          "title": "Conditional Expectation & the Best Prediction",
+          "oneLiner": "The average of Y for each value of X is the best possible prediction of Y from X — and estimating it is exactly what regression does.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Not the average — the average for people like this",
+              "body": "You want to predict someone's weight from their height. The overall average weight is a weak guess — it ignores the height you were just told. What you really want is a **height-specific** average: among people who are 180 cm tall, what's the typical weight? Among 160 cm, what's *their* typical weight?\n\nThat \"average of Y among everyone with this particular X\" is the most useful object in all of predictive modelling. It has a name — the **conditional expectation** — and a remarkable property: it is provably the **best possible prediction** of Y from X. Nearly every regression model you'll ever train is an attempt to estimate it."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A different average for every slice",
+              "body": "Conditioning (Module 01) meant *shrinking the universe*. Apply that to an average: **E[Y | X = x]** is the mean of Y computed *only over the slice of data where X = x.* Slice the population at height 180, average the weights in that slice — that's E[weight | height = 180].\n\nAs x sweeps across its values, this slice-average traces out a **curve**: how the typical Y shifts as X changes. Statisticians call it the **regression function**, and it's the shape a scatter plot's \"trend line\" is trying to follow.\n\nTwo facts make it central:\n\n- **It's the best predictor.** If you must guess Y from X and you're judged on squared error, no function of X beats E[Y | X]. This is *why* regression exists — it estimates this curve.\n- **It reveals dependence directly.** If X and Y are **independent**, the slice-average never moves: E[Y | X] = E[Y], because knowing X tells you nothing. If they're dependent, the conditional mean *bends* with X. And unlike correlation, this catches **nonlinear** dependence too — a U-shaped conditional mean screams \"related\" even when correlation reads zero."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The slice-average, and the tower rule",
+              "body": "For discrete variables, the conditional expectation is an ordinary expectation taken inside the conditional distribution:\n\n$$E[Y \\mid X = x] = \\sum_y y \\cdot P(Y = y \\mid X = x).$$\n\nIt is a **function of x** — one number for each slice — not a single constant like $E[Y]$.\n\nA beautiful identity connects the slices back to the whole, the **law of total expectation** (or \"tower rule\"):\n\n$$E[Y] = E\\big[\\,E[Y \\mid X]\\,\\big].$$\n\nIn words: average the slice-averages (weighted by how common each slice is) and you recover the overall average — the expectation cousin of the law of total probability from Module 01.\n\nAnd the headline property, stated precisely: among *all* possible prediction functions g(X), the conditional expectation is the one that minimises the expected squared error,\n\n$$E[Y \\mid X] = \\arg\\min_{g}\\ E\\big[(Y - g(X))^2\\big].$$\n\n**Worked example.** A joint table of study-hours X ∈ {1, 2} and a pass-score Y:\n\n| | Y = 40 | Y = 60 | Y = 80 |\n|---|---|---|---|\n| **X = 1 hr** | 0.20 | 0.10 | 0.00 |\n| **X = 2 hr** | 0.05 | 0.25 | 0.40 |\n\nSlice X = 1 (row total 0.30): the conditional probabilities are $\\left(\\tfrac{0.20}{0.30}, \\tfrac{0.10}{0.30}\\right) = \\left(\\tfrac23, \\tfrac13\\right)$, so $E[Y \\mid X{=}1] = \\tfrac23(40) + \\tfrac13(60) = \\mathbf{46.7}$.\nSlice X = 2 (row total 0.70): the conditional probabilities are $\\left(\\tfrac{0.05}{0.70}, \\tfrac{0.25}{0.70}, \\tfrac{0.40}{0.70}\\right)$, so $E[Y \\mid X{=}2] \\approx 0.071(40) + 0.357(60) + 0.571(80) = \\mathbf{70.9}$.\n\nThe conditional mean jumps from 46.7 to 70.9 as study hours rise — that upward movement *is* the dependence, and a regression model's whole job is to learn that curve."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where conditional expectation shows up",
+              "body": "- **It is supervised regression, full stop.** A regression model is an estimate of E[Y | X]. Linear regression assumes that curve is a straight line; trees, forests, and neural networks estimate it more flexibly. When someone says \"predict the target from the features,\" they mean *estimate the conditional expectation*.\n- **Classification is the same idea.** With a 0/1 label, E[Y | X] = P(Y = 1 | X) — the class probability a classifier outputs. Predicting a probability is predicting a conditional mean.\n- **\"Controlling for\" a variable** — the phrase from every research paper — is conditioning: looking at E[Y | X] within levels of a third factor to strip out its influence.\n- **The tower rule powers decompositions** you'll meet again in bias–variance analysis and in reasoning about nested expectations.\n\nThis single object — \"the average outcome given what you know\" — is the cleanest one-sentence definition of what predictive modelling is trying to compute."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Confusing E[Y | X] with E[Y].** One is a *curve* (a different prediction for every X); the other is a single number. The whole value of features is that the conditional mean *moves*.\n- **Reading \"uncorrelated\" as \"conditional mean is flat.\"** A zero correlation only rules out a *linear* trend. A U-shaped conditional mean has correlation ≈ 0 yet is strongly non-constant — the conditional expectation sees dependence that correlation misses.\n- **Forgetting the loss function sets the target.** E[Y | X] is best under *squared* error. Under absolute error, the best predictor is the conditional *median* (callback to Module 03.4). \"Best prediction\" always presumes a loss.\n- **Extrapolating the curve.** The conditional mean is only trustworthy inside the range of X you actually observed; predicting Y for heights no one in your data has is a guess dressed as a model. And when Y is very spread or multi-modal within a slice, its mean can be a poor summary of any individual."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define E[Y | X = x] in words. Why is it a function of x rather than a single number?\n2. What is the \"best prediction\" property of the conditional expectation, and under which loss does it hold?\n3. State the tower rule and say what it means intuitively.\n4. From the study-hours table, confirm that the conditional mean increases with X — and explain why that reflects dependence.\n5. Why can a relationship have correlation ≈ 0 yet a strongly non-constant conditional mean?\n\n> ✍️ **Explain it back:** Explain to a friend why \"training a model to predict Y from X\" is really \"estimating the average Y for each value of X.\" If they connect regression to the conditional expectation — and see that it's the best guess under squared error — this topic, and the whole Dependence module, is ✅.\n\n---\n\n*Module complete. Head to the exercises, then onward — next comes Phase III's finale: the two limit theorems that turn all of this into working statistics.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "In a dataset, E[income | education = \"degree\"] = ₹9 lakh and E[income | education = \"no degree\"] = ₹5 lakh. What does the fact that these two numbers differ tell you?",
+              "solution": "That income and education are **dependent** — the average of income *changes* depending on the value of education. If they were independent, the conditional averages would both equal the overall average."
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "Using the study-hours table from topic 04.4 (E[Y | X=1] = 46.7, E[Y | X=2] = 70.9, with P(X=1) = 0.30, P(X=2) = 0.70), use the tower rule to find the overall E[Y].",
+              "solution": "Law of total expectation: $E[Y] = E[Y{\\mid}X{=}1]P(X{=}1) + E[Y{\\mid}X{=}2]P(X{=}2) = 46.7(0.30) + 70.9(0.70) \\approx 14.0 + 49.6 = \\mathbf{63.6}$. Averaging the slice-averages, weighted by slice sizes, recovers the overall mean."
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "A regression model predicts house price from size. In the language of this module, what is the model actually estimating, and why is that the \"best\" thing to predict?",
+              "solution": "It's estimating the **conditional expectation** E[price | size] — the average price for each house size, traced out as a curve over size. It's the \"best\" prediction because, among *all* functions of size, the conditional mean **minimises the expected squared error** — so any model trained on squared-error loss is trying to approximate exactly this curve. (Linear regression assumes the curve is a straight line; flexible models estimate its true shape.)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "05-limit-theorems",
+      "number": "05",
+      "phase": "Phase III — When Variables Interact",
+      "title": "Limit Theorems: The Law of Large Numbers & the CLT",
+      "summary": "The two theorems that turn probability into working statistics: the Law of Large Numbers (averages converge to the truth), the Central Limit Theorem (averages become Normal whatever the data's shape), sampling distributions and the standard error, and the margin of error that puts honest bounds on any estimate.",
+      "topics": [
+        {
+          "id": "law-of-large-numbers",
+          "number": "05.1",
+          "title": "The Law of Large Numbers",
+          "oneLiner": "Average enough independent draws and the average converges to the true mean — the law that makes learning from data possible.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "It evens out — but not the way you think",
+              "body": "Flip a fair coin 10 times and you might get 7 heads — a wild 70%. Flip it 10,000 times and you'll be pinned near 50%. Everyone has the gut sense that results \"even out\" with more trials.\n\nBut *what exactly* is guaranteed? Here's the trap that catches almost everyone: the coin is **not** keeping score and \"owing\" you tails to balance the books. So how does 70% turn into 50% without the coin compensating? Pinning down the real mechanism — and what it does and doesn't promise — is one of the most clarifying moments in probability."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Deviations get diluted, not corrected",
+              "body": "The **Law of Large Numbers (LLN)** says: as you collect more and more independent observations of a random quantity, their **running average converges to the true expectation** and stays there. The jumpy average of a small sample settles onto μ as the sample grows.\n\nThe crucial *why*: it isn't that later flips correct earlier ones (a coin has no memory). It's that **early deviations become a vanishingly small fraction of a growing total.** Those 7-out-of-10 heads are loud when the denominator is 10; by the time the denominator is 10,000, even a big early streak is a rounding error. Convergence happens by **dilution**, not compensation. That single distinction dissolves the gambler's fallacy.\n\n🖼️ *Picture:* the running-average line you saw informally back in Module 00 — violently jumpy for the first few dozen trials, then tightening onto the true mean like a rope pulling taut and never coming loose again."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The average converges because its spread vanishes",
+              "body": "For independent draws $X_1, \\dots, X_n$ from a distribution with mean $\\mu$, the sample mean\n\n$$\\bar{X}_n = \\frac{1}{n}\\sum_{i=1}^{n} X_i \\ \\longrightarrow\\ \\mu \\quad \\text{as } n \\to \\infty.$$\n\nThe reason sits right in Module 03's algebra. The sample mean is **always centred on the truth**, $E[\\bar{X}_n] = \\mu$, and its spread **shrinks to nothing**:\n\n$$\\text{Var}(\\bar{X}_n) = \\frac{\\sigma^2}{n} \\ \\longrightarrow\\ 0.$$\n\nAn estimator centred on μ whose spread collapses to zero has no choice but to close in on μ. That's the LLN in one line.\n\n**Worked example — a fair die** ($\\mu = 3.5$). The average of 10 rolls might be 4.1 (noisy). The average of 1,000 rolls sits around 3.49. The average of 100,000 rolls is about 3.501. The *destination* never changes; only the wobble around it shrinks.\n\n(One thing the LLN does *not* tell you: how fast, or how the average is distributed on its way to μ. That's the next topic's job.)"
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the LLN shows up",
+              "body": "- **It's the licence to learn from samples.** The reason a sample mean estimates a population mean at all — the reason a measured click-through rate approaches the true rate — is the LLN. Without it, data would be noise with no destination.\n- **Casinos and insurance are LLN machines.** Any single spin or policy is pure chance, but averaged over millions the payout is essentially certain. The house edge is *guaranteed* not by luck but by the LLN: the casino is the one entity playing enough games for the average to be law.\n- **It grounds \"frequency → probability.\"** Module 00's frequentist definition — probability is the long-run fraction — is literally a statement of the LLN.\n- **It's why more data helps.** Every \"collect more observations to get a better estimate\" instinct is the LLN, and its variance-shrinking mechanism is exactly the √n effect from Module 03."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **The gambler's fallacy.** The LLN does **not** make any outcome \"due.\" A run of reds doesn't raise the chance of black; the average converges by diluting past deviations, never by reversing them.\n- **The \"law of small numbers.\"** Expecting a *small* sample to already reflect the true mean. Ten rolls averaging 4.1 is not a loaded die — small samples are simply noisy, exactly the overconfidence trap from Module 00.\n- **Forgetting the assumptions.** The LLN needs independent draws and a *finite* mean. Certain heavy-tailed quantities (some wealth or network models) have no finite mean, and their running average never settles at all.\n- **Expecting individual outcomes to become predictable.** The *average* converges; the next single outcome stays as random as ever. Convergence is a statement about aggregates, not individuals."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the Law of Large Numbers in one plain sentence.\n2. Explain *why* the running average converges — and why that is not the gambler's fallacy.\n3. Which quantity from Module 03 shrinking to zero forces the convergence, and why?\n4. How is a casino's guaranteed profit an application of the LLN?\n5. Give one situation where the LLN's assumptions fail so the average never settles.\n\n> ✍️ **Explain it back:** A friend at a roulette table says \"it's landed on red five times, black is due — the law of averages!\" Explain what the law of large numbers actually promises, and why their reasoning is wrong. If they see dilution-not-compensation, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "You roll a fair die 100,000 times and average the results. Roughly what number do you expect, and which theorem guarantees it?",
+              "solution": "About **3.5** — the die's expectation. The **Law of Large Numbers** guarantees the sample average converges to the true mean as the number of rolls grows."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "A gambler says: \"The roulette wheel has hit red 8 times in a row, so by the law of large numbers, black is now more likely.\" What's wrong with this reasoning?",
+              "solution": "It's the **gambler's fallacy**. The LLN says the *long-run proportion* of red approaches ½, but it achieves this by **diluting** past streaks under a growing number of future spins — not by making black \"due.\" Each spin is independent; the wheel has no memory, so black stays at its usual probability regardless of the streak."
+            },
+            {
+              "id": "A3",
+              "difficulty": "stretch",
+              "prompt": "Explain, using a fact from Module 03, *why* the sample mean converges to μ as n grows.",
+              "solution": "The sample mean is always centred on the truth, $E[\\bar{X}] = \\mu$, and its variance is $\\text{Var}(\\bar{X}) = \\sigma^2/n$, which **shrinks to 0** as $n \\to \\infty$. An estimator that is centred at μ and whose spread collapses to zero must close in on μ — that is precisely the LLN."
+            }
+          ]
+        },
+        {
+          "id": "central-limit-theorem",
+          "number": "05.2",
+          "title": "The Central Limit Theorem",
+          "oneLiner": "Add or average enough independent pieces and the result is Normal, whatever shape the pieces had — why the bell curve rules statistics.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Flat ingredients, a bell-shaped result",
+              "body": "A single die is about as un-bell-like as it gets: faces 1 through 6, each equally likely — a perfectly flat distribution, no hump anywhere.\n\nNow roll **fifty** dice and take the average. Do it again and again, and plot those averages. You get a gorgeous, symmetric **bell curve** — every single time. The ingredients were flat; the result is a Gaussian. Nothing about a die suggests a bell, yet averaging conjures one out of nowhere. Where does it come from? The answer is the theorem that quietly underpins nearly all of statistics."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "The shape of a sum is always the bell",
+              "body": "The **Central Limit Theorem (CLT)** says: the **sum or average of many independent random pieces is approximately Normal — regardless of the shape of the individual pieces.** Skewed, flat, spiky, lopsided — it doesn't matter. Pile enough of them together and the idiosyncrasies cancel out; only the bell survives.\n\nThis finally answers Module 02's dangling mystery — *why is the Normal everywhere?* Because so many real quantities are **sums of many small independent effects**:\n\n- A person's height is the accumulation of countless genetic and environmental nudges.\n- A measurement error is the sum of many tiny, independent disturbances.\n- A daily total is thousands of small independent contributions added up.\n\nEach is a sum of many pieces → each is approximately Normal. The bell isn't a coincidence; it's the fingerprint of *addition*.\n\n🖼️ *Picture:* start with any lumpy, ugly distribution. Average two draws — a little smoother. Average ten — smoother and more symmetric. Average fifty — an unmistakable bell, centred where the data was centred but far narrower."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The average is approximately Normal",
+              "body": "For independent draws $X_1, \\dots, X_n$ with mean $\\mu$ and standard deviation $\\sigma$, the sample mean is approximately Normal for large $n$:\n\n$$\\bar{X}_n \\ \\approx\\ \\text{Normal}\\!\\left(\\mu,\\ \\frac{\\sigma^2}{n}\\right), \\qquad\\text{equivalently}\\qquad \\frac{\\bar{X}_n - \\mu}{\\sigma/\\sqrt{n}} \\ \\approx\\ \\text{Normal}(0, 1).$$\n\nTwo features to hold together: the centre stays at $\\mu$ (the LLN), and the spread is the standard error $\\sigma/\\sqrt{n}$ (Module 03). The CLT adds the *shape*: **Normal**.\n\nA rough rule of thumb: **n ≥ 30** is often \"large enough.\" Fewer suffice if the underlying data is already symmetric; more are needed if it's badly skewed.\n\n**Worked example — averaging dice.** One die has $\\mu = 3.5$, $\\sigma \\approx 1.71$. The average of 50 dice is therefore about $\\text{Normal}(3.5,\\ 1.71^2/50)$, i.e. a bell centred at 3.5 with standard error $1.71/\\sqrt{50} \\approx 0.24$. By the 68–95–99.7 rule, about 95% of 50-die averages land within $3.5 \\pm 2(0.24)$ — roughly **3.0 to 4.0** — even though a single die scatters flatly across 1–6. The average is far tamer, and bell-shaped, than any individual roll."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the CLT shows up",
+              "body": "- **It is the engine of statistical inference.** Because sample means are Normal *even when the raw data isn't*, the confidence intervals and hypothesis tests of the next phase can use clean Normal-based formulas universally. Nearly all of classical statistics runs on this permission slip.\n- **A/B testing depends on it.** Your conversion metric is an average over many users, so by the CLT it's Normal — which is exactly why you can put error bars on it and test whether B beat A.\n- **It justifies the Gaussian assumption everywhere** — measurement models, regression residuals, sensor fusion. When you average or aggregate noisy signals, the CLT promises a clean bell to work with.\n- **It's why ensembling and aggregation produce stable, predictable results** rather than the chaos of the individual noisy pieces."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Thinking the CLT makes the *raw data* Normal.** It does not. Incomes stay skewed; dice stay flat. The CLT is about the distribution of the **sum or average**, not the individuals. The *average* of many incomes is Normal; the incomes themselves are not.\n- **Ignoring \"large enough.\"** For heavily skewed data, n = 10 is nowhere near the bell. And with truly heavy tails and *infinite* variance, the CLT breaks entirely — no finite σ, no bell.\n- **Assuming independence.** Correlated pieces don't tame the same way; the effective sample size is smaller than n (the covariance caveat from Module 04, again with teeth).\n- **Applying it to the wrong statistic.** The CLT is specifically about sums and averages. The maximum, the minimum, or other non-additive statistics follow entirely different limiting shapes."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the Central Limit Theorem in one sentence. What does it *not* require about the original data?\n2. How does the CLT explain why the Normal distribution appears so often in nature?\n3. The average of many dice is bell-shaped, but a single die is flat. Reconcile these.\n4. For the 50-dice example, what are the centre and standard error of the average's distribution?\n5. Name two situations where the CLT does not apply or needs a much larger sample.\n\n> ✍️ **Explain it back:** Explain to a friend how averaging fifty flat, un-bell-shaped dice produces a bell curve — and why that same mechanism makes heights and measurement errors Normal. If they grasp \"the shape of a sum is the bell,\" this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "A variable is heavily right-skewed. You repeatedly take samples of 200 and record the sample mean. What shape will the distribution of those sample means have, and why?",
+              "solution": "Approximately **Normal** (a bell), by the **Central Limit Theorem** — the sample mean of many independent draws is approximately Normal *regardless* of the skewed shape of the original data, provided n is large enough (200 easily qualifies)."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "A single measurement has mean 100 and standard deviation 20. You average 25 independent measurements. What are the mean and standard error of that average, and what's its approximate distribution?",
+              "solution": "Mean stays **100**. Standard error $= \\sigma/\\sqrt{n} = 20/\\sqrt{25} = 20/5 = \\mathbf{4}$. By the CLT the average is approximately **Normal(100, 4²)** — a bell centred at 100 with standard error 4."
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "A friend claims: \"The CLT means that if I collect enough income data, the incomes themselves will look Normal.\" Correct them.",
+              "solution": "Wrong target. The CLT is about the distribution of the **sum or average**, not the raw individuals. No matter how much income data you gather, incomes stay **right-skewed** — the CLT never reshapes the raw data. What *becomes* Normal is the distribution of the **sample mean** across repeated samples. Individuals: skewed. Averages of many: bell."
+            }
+          ]
+        },
+        {
+          "id": "sampling-distributions",
+          "number": "05.3",
+          "title": "Sampling Distributions & the Standard Error",
+          "oneLiner": "A statistic from a sample is itself random; its spread — the standard error — is what lets one sample speak about the whole population.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Poll a thousand people — then a different thousand",
+              "body": "You poll 1,000 people and 52% favour candidate A. Reassuring. But poll a *different* random 1,000 and you'd get 49%. Another, and it's 54%. The headline number **wobbles** every time you draw a fresh sample.\n\nSo how much should you trust *your* 52%? Is A really ahead, or is 52% just this sample's luck? The unlock is a shift in perspective: the statistic you computed is not a fixed fact — it's one **draw from a distribution** of numbers you *could* have gotten. Understand that distribution and you understand exactly how far to trust your estimate. This is the hinge on which all of statistics turns."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Three distributions, don't conflate them",
+              "body": "Keep three distinct things separate — muddling them is the root of most statistical confusion:\n\n1. **The population distribution** — every individual in the whole population. Fixed, and usually *unknown* (it's what you want to learn about).\n2. **The sample** — the specific data you actually collected. One finite draw.\n3. **The sampling distribution** — if you repeated the *entire sampling process* over and over and recorded your statistic (say, the sample mean) each time, this is the histogram of those statistics.\n\nThe sample mean has its own sampling distribution, and from the last two topics we already know its three vital features: it's **centred at the true μ** (LLN — the estimate is unbiased), it's **approximately Normal** (CLT), and its spread is $\\sigma/\\sqrt{n}$. That spread has a special name — the **standard error** — and it is the *typical distance between your estimate and the truth.* Small standard error → trustworthy estimate; large → shaky.\n\nThat's the whole bridge: we can't see the population, but we know precisely how our estimate *behaves* around it, so we can say how wrong it's likely to be."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Standard error, and the one distinction everyone botches",
+              "body": "For a sample mean $\\bar{X}$ from $n$ independent draws:\n\n$$E[\\bar{X}] = \\mu, \\qquad \\text{Standard Error} = \\text{SD}(\\bar{X}) = \\frac{\\sigma}{\\sqrt{n}}, \\qquad \\bar{X} \\approx \\text{Normal}.$$\n\nIn practice $\\sigma$ is unknown, so we estimate it with the sample standard deviation $s$, giving $\\text{SE} \\approx s/\\sqrt{n}$. For a **proportion** $\\hat{p}$ (a fraction of yes/no successes), the standard error is:\n\n$$\\text{SE}(\\hat{p}) = \\sqrt{\\frac{p(1-p)}{n}}.$$\n\n**Worked example — the poll.** $\\hat{p} = 0.52$, $n = 1000$:\n\n$$\\text{SE} = \\sqrt{\\frac{0.52 \\times 0.48}{1000}} = \\sqrt{0.0002496} \\approx 0.0158 \\approx \\mathbf{1.6\\%}.$$\n\nSo the estimate's typical wobble is about ±1.6 points — the 52% is really \"52%, give or take a couple of points.\"\n\n> ⚠️ **The single most confused pair in statistics:** **standard deviation** measures the spread of the *individuals* (how varied people are); **standard error** measures the spread of your *estimate* (how varied the sample mean is). They differ by a factor of $\\sqrt{n}$. SD describes the data; SE describes your certainty about a summary of the data."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where sampling distributions show up",
+              "body": "- **They are the foundation of all inference.** Every confidence interval, every p-value, every A/B-test \"significance\" is, underneath, a statement about a sampling distribution. This topic is the concept the entire next phase is built on.\n- **Standard error is everywhere in the wild.** A poll's \"margin of error,\" the error bars on a chart, the ± on a reported metric — all are standard errors (or small multiples of them).\n- **It powers sample-size planning.** Because SE = σ/√n, you can solve *backwards*: \"how many users do I need for an estimate precise to ±1%?\" — the core calculation behind sizing any experiment.\n- **The SD-vs-SE distinction is a real-world trap.** Reporting a standard deviation when you meant a standard error (or the reverse) mis-states your certainty by a factor of √n — a common and costly reporting error."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Confusing standard deviation with standard error.** The cardinal confusion of the whole subject. One is about people; the other is about your estimate. Always know which you're quoting.\n- **Forgetting the √n.** Standard error falls with $\\sqrt{n}$, not $n$ — so precision improves slowly (four times the data to halve the error).\n- **Treating your one statistic as the exact truth.** Your 52% is a single draw from the sampling distribution, not the population value. It comes with built-in wobble.\n- **Assuming a random, representative sample.** All of this assumes the sample was drawn fairly. A **biased** sample has a small standard error clustered around the *wrong* number — precise but inaccurate, and no amount of data fixes it. (And clustered, non-independent observations make the true SE larger than the formula claims.)"
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Name the three distributions you must keep separate, and say which one is usually unknown.\n2. What is the standard error, in words, and what makes it small or large?\n3. Explain the difference between standard deviation and standard error, with what each describes.\n4. A survey estimates a proportion of 0.40 from n = 400. Compute the standard error.\n5. Why does a biased sample's small standard error give false confidence?\n\n> ✍️ **Explain it back:** Explain to a friend why a poll's 52% comes with a \"give or take\" attached, and what the standard error measures. If they distinguish \"how varied people are\" from \"how varied my estimate is,\" this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "In one sentence each, distinguish the *population distribution*, a *sample*, and the *sampling distribution* of the mean.",
+              "solution": "- **Population distribution:** all individuals in the whole population (fixed, usually unknown).\n- **Sample:** the specific finite set of data you actually collected.\n- **Sampling distribution of the mean:** the distribution of the sample mean you'd see if you repeated the whole sampling process many times."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "A survey of 400 people estimates that 30% prefer option A. Compute the standard error of this proportion.",
+              "solution": "$\\text{SE} = \\sqrt{\\dfrac{p(1-p)}{n}} = \\sqrt{\\dfrac{0.30 \\times 0.70}{400}} = \\sqrt{\\dfrac{0.21}{400}} = \\sqrt{0.000525} \\approx \\mathbf{0.023}$, i.e. about **2.3%**."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "A dataset of individual salaries has a standard deviation of ₹6 lakh. Someone reports the \"standard error of a salary\" as ₹6 lakh. Two things are wrong-headed here — what are they?",
+              "solution": "(1) **SD vs SE confusion:** ₹6 lakh is the **standard deviation** (spread of individual salaries), not a standard error. A standard error describes the spread of an *estimate* (like a sample mean), and equals $s/\\sqrt{n}$ — much smaller. (2) \"Standard error of a salary\" is a category error: standard error attaches to a **statistic computed from a sample**, not to a single individual value. An individual salary has variability (the SD), but not a standard error."
+            }
+          ]
+        },
+        {
+          "id": "margin-of-error",
+          "number": "05.4",
+          "title": "Margin of Error: How Far Off Is Your Estimate?",
+          "oneLiner": "Combine the CLT with the standard error and you can put honest error bars on any estimate — the ±2·SE margin behind every poll.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Where does the ± come from?",
+              "body": "Every poll says \"52%, **margin of error ±3%**.\" Every A/B test writes up \"+5% lift **± 2%**.\" Every serious chart draws error bars. That little ± is doing enormous work — it's the difference between a number you can act on and a number that's just noise.\n\nSo where does it come from, and what does it actually promise? Answering that is the payoff of everything in this phase: it's the exact point where abstract probability becomes a usable, defensible statement about the real world."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Two standard errors, and you've bracketed the truth",
+              "body": "Here's the chain, and every link is something you already have:\n\n- Your estimate (a sample mean or proportion) is approximately **Normal** (CLT),\n- **centred on the truth** (LLN), with spread equal to the **standard error** (last topic).\n\nNow apply the **68–95–99.7 rule** from Module 02 to that bell: your estimate lands within about **2 standard errors** of the truth roughly **95%** of the time. Turn it around — since the estimate is usually within 2 SE of the truth, the truth is usually within **2 SE of your estimate.** That band, **estimate ± 2·SE**, is the **margin of error**: an honest \"how far off could I reasonably be?\"\n\nA bare point estimate hides its uncertainty and invites overreaction. The margin of error makes the uncertainty visible: a **wide** band screams \"small sample, don't over-read this,\" a **narrow** band says \"this is pinned down.\" Same number, very different meaning depending on the width."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Estimate ± 2·SE",
+              "body": "An approximate **95% margin of error** is two standard errors (more precisely 1.96, but 2 is the working number):\n\n$$\\text{margin} \\approx 2 \\times \\text{SE}, \\qquad \\text{interval} = \\text{estimate} \\pm 2\\,\\text{SE}.$$\n\n**Worked example — the poll.** $\\hat{p} = 0.52$, and from the last topic $\\text{SE} \\approx 0.016$. So:\n\n$$\\text{margin} \\approx 2 \\times 0.016 = 0.032 \\approx \\pm 3\\%, \\qquad \\text{interval} \\approx (49\\%,\\ 55\\%).$$\n\nRead \"52% ± 3%.\" Crucially, that interval **includes 50%** — so the poll *cannot* confidently declare A the winner. The lead is within the noise.\n\n**The sample-size lever.** Since $\\text{SE} = \\sigma/\\sqrt{n}$, the margin is proportional to $1/\\sqrt{n}$: **to halve the margin you need four times the sample** (the √n law, one last time). Getting the poll from ±3% down to ±1.5% takes not 2,000 but ~4,000 respondents.\n\n**Worked example — an A/B test.** Variant B shows a **+5%** lift with $\\text{SE} = 2\\%$. Margin $\\approx \\pm 4\\%$, interval $(1\\%,\\ 9\\%)$. This interval **excludes 0**, so B's improvement is very likely real — not just noise. That single check (\"does the interval include the no-effect value?\") is the everyday decision."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the margin of error shows up",
+              "body": "- **It's how estimates are honestly reported.** Polls, A/B lifts, model accuracy, business KPIs — a credible number comes with a ± band. Reporting the point estimate alone is, quietly, malpractice.\n- **The everyday decision rule.** *Does the interval include the \"no effect\" value (0 for a difference, 50% for a two-way race)?* If yes, you can't claim an effect; if no, you probably have one. This is the intuition that becomes hypothesis testing next module.\n- **It stops teams chasing noise.** A \"+2% lift\" with a ±5% margin is *nothing* — the interval straddles zero. The margin is what keeps a dashboard blip from becoming a bad decision.\n- **It sizes experiments.** \"How many users until the margin is small enough to detect the effect I care about?\" comes straight from margin ∝ 1/√n."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Misreading \"95% confident.\"** It refers to the long-run reliability of the *procedure* (95% of such intervals capture the truth), **not** \"a 95% chance the truth is in *this particular* interval.\" The distinction is subtle and important — the next module treats it rigorously; for now, just don't overclaim.\n- **Forgetting the margin only covers *random* error.** It captures sampling noise, and nothing else. A **biased** sample (bad polling, a broken instrument) can be wrong by far more than its margin — the margin is completely silent about systematic error. A tight ± around a biased estimate is confident and wrong.\n- **Reporting a bare number as fact.** A point estimate with no band pretends to a certainty it doesn't have.\n- **Reacting to gaps smaller than the margin.** If the difference is inside the noise band, it isn't yet a signal.\n- **Assuming precision is cheap.** The √n law means shrinking the margin has steeply diminishing returns."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Where does the \"± 2·SE\" margin come from? Trace it back to the CLT and the 68–95–99.7 rule.\n2. A proportion is estimated at 0.60 with a standard error of 0.02. Give the approximate 95% margin and interval.\n3. Why does halving a margin of error require four times the sample size?\n4. An A/B test reports \"+1% ± 3%.\" Should you conclude the variant helped? Why or why not?\n5. What kind of error does the margin of error *fail* to capture, and why does that matter?\n\n> ✍️ **Explain it back:** Explain to a friend what a poll's \"±3%\" actually means, and why a 52%-with-±3% result can't confidently call the race. If they reach for \"the interval includes 50%,\" this topic — and all of Phase III — is ✅. You're ready to learn from data for real.\n\n---\n\n*Module complete. Head to the exercises. Next comes Phase IV — Inference: turning these error bars into rigorous estimation, confidence, and testing.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "An estimate is 0.45 with a standard error of 0.025. Give the approximate 95% margin of error and interval.",
+              "solution": "Margin $\\approx 2 \\times 0.025 = 0.05$. Interval $= 0.45 \\pm 0.05 = \\mathbf{(0.40,\\ 0.50)}$."
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "A poll finds candidate A at 53% with a margin of error of ±3%. Can the poll confidently say A is ahead of a 50/50 split? Explain.",
+              "solution": "The 95% interval is $53\\% \\pm 3\\% = (50\\%,\\ 56\\%)$. Its lower edge just touches **50%**, so the poll **cannot** confidently rule out a tie — the lead is at the boundary of the noise. You'd need a larger sample (smaller margin) to call it with confidence."
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "An A/B test currently reports a lift of +4% with a margin of error of ±4%, from 2,500 users per arm. Your PM wants the margin down to ±1%. Roughly how many users per arm are needed, and can you conclude the variant works *right now*?",
+              "solution": "**Right now:** the interval is $4\\% \\pm 4\\% = (0\\%, 8\\%)$, which **touches 0** — so you cannot yet conclude the variant truly helps. **Sample size:** margin scales as $1/\\sqrt{n}$, so cutting it 4× (from ±4% to ±1%) needs $4^2 = 16$ times the users: about $2{,}500 \\times 16 = \\mathbf{40{,}000}$ per arm. The √n law makes tight margins expensive."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "06-inference",
+      "number": "06",
+      "phase": "Phase IV — Learning From Data",
+      "title": "Inference & Estimation",
+      "summary": "Reversing the arrow from data back to the process: what an estimator is, what makes one good (bias, variance, and their tradeoff — the deepest idea in ML), maximum likelihood (how models are actually fit), and confidence intervals (the rigorous margin of error, and the most misread tool in statistics).",
+      "topics": [
+        {
+          "id": "estimators",
+          "number": "06.1",
+          "title": "Estimators: Guessing the Population from a Sample",
+          "oneLiner": "Inference reverses the arrow: from a sample in hand, estimate the unknown parameter of the whole population — and treat that estimate as random.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "One spoonful for the whole pot",
+              "body": "You taste a single spoonful of soup and decide the whole pot needs more salt. You never taste the entire pot — one small, well-stirred spoonful stands in for all of it, and you confidently act on the whole thing.\n\nThat is the entire logic of statistical inference: use a **sample** you *can* see to make a claim about a **population** you *can't*. Every poll, every A/B test, every model trained on a dataset is a spoonful standing in for a pot. The questions that matter are: how good is that leap, and how do you make it well? All of Phase IV is the answer — and it begins by getting precise about what \"a guess from a sample\" even is."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "The parameter, the estimate, and the arrow reversed",
+              "body": "Phases I–III always ran forwards: assume a coin's bias, then predict the flips. Inference runs **backwards**: watch the flips, then guess the bias.\n\nThe unknown number that describes the whole population — the true average income, the true conversion rate, the true standard deviation — is called a **parameter**. It's *fixed but unknown*, and we name it with a Greek letter (μ, p, σ). Your best guess of it, computed from the sample, is an **estimator**, usually marked with a hat: $\\hat{p}$, $\\hat{\\mu}$.\n\nThe single most important mindset — straight from Module 05 — is this: **your estimate is itself random.** A different sample would have handed you a different number. So an estimator isn't just a value; it's a random variable with its own **sampling distribution**. Judging an estimator means judging that distribution: *does it centre on the truth, and how much does it wobble?* The sample mean estimates μ, the sample proportion estimates p, the sample standard deviation estimates σ — each a spoonful pointing at its pot."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Parameter, estimator, estimate",
+              "body": "Three words, kept distinct:\n\n- **Parameter** $\\theta$ — the true, fixed, unknown value describing the population.\n- **Estimator** $\\hat{\\theta}$ — a *rule* applied to the sample to guess $\\theta$ (e.g. \"take the sample mean\"). Because it depends on the random sample, $\\hat{\\theta}$ is a **random variable** with a sampling distribution.\n- **Estimate** — the single number your estimator produces from the *actual* data in hand.\n\n**Worked example.** A page's true conversion rate $p$ is unknown. You observe **47 conversions in 500 visitors**. The natural estimator is the sample proportion:\n\n$$\\hat{p} = \\frac{47}{500} = 0.094.$$\n\nFrom Module 05 we already know how this estimator behaves: it's centred on the true $p$, with standard error $\\sqrt{p(1-p)/n} \\approx 0.013$. So 0.094 is a *spoonful* — our best point estimate — but it comes with built-in wobble, and it is not the truth itself."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where estimators show up",
+              "body": "- **Every number you compute from data is one.** A click-through rate, an average order value, a model's test accuracy, a fitted regression coefficient — each is an estimate of some true population quantity, carrying a sampling distribution.\n- **Model parameters are estimates.** The weights a model learns are estimates of the \"true\" underlying relationship. Training a model is estimation at scale — the rest of this module is about doing it well.\n- **The mindset is the job.** Recognising \"this dashboard number is an *estimate*, not the truth\" — and asking how much it could be off — is what separates a data scientist from someone reading a spreadsheet literally.\n- **It sets up everything ahead.** Bias, variance, maximum likelihood, and confidence intervals are all about building good estimators and quantifying their uncertainty."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Treating an estimate as the exact truth.** It's one draw from a sampling distribution. The true parameter is fixed and still unknown; your number is a guess with error bars.\n- **Confusing the estimator with the estimate.** The estimator is the *formula* (a random variable); the estimate is the *number* it produced this time. The distinction matters the moment you reason about its distribution.\n- **Assuming any reasonable formula is a good estimator.** \"Sensible-looking\" isn't enough — an estimator has to be *checked* for bias and variance (next topic). Some natural formulas are systematically wrong.\n- **Forgetting the sample must be representative.** No formula rescues a bad sample: an unstirred spoonful from the top of the pot estimates the wrong thing, confidently. Random, representative sampling is the unspoken precondition of all of it."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. In one sentence, how does inference reverse the direction of the earlier phases?\n2. Distinguish *parameter*, *estimator*, and *estimate*.\n3. Why is an estimator a random variable, and what is its distribution called?\n4. You observe 12 defective items in a batch of 300. Give a natural estimator of the true defect rate and its value.\n5. Why can no formula fix a non-representative sample?\n\n> ✍️ **Explain it back:** Explain to a friend why tasting one spoonful to judge a whole pot of soup is exactly what a data scientist does with a sample — and what has to be true about the spoonful for the judgement to be fair. If they land on \"well-stirred / representative,\" this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "You observe 18 clicks from 200 ad impressions. Give a natural estimator of the true click-through rate and its value. Is this number the truth?",
+              "solution": "The sample proportion: $\\hat{p} = 18/200 = \\mathbf{0.09}$ (9%). It is **not** the truth — it's an *estimate*, one draw from a sampling distribution centred on the true rate, and a different 200 impressions would give a different number."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "Explain the difference between a *parameter*, an *estimator*, and an *estimate*, using the click-through example.",
+              "solution": "- **Parameter:** the true, fixed, unknown click-through rate $p$ of the ad.\n- **Estimator:** the *rule* \"take clicks ÷ impressions\" — a random variable, since it depends on which impressions you happened to sample.\n- **Estimate:** the specific number it produced this time, 0.09."
+            },
+            {
+              "id": "A3",
+              "difficulty": "core",
+              "prompt": "Why is an estimator considered a random variable, and what does Module 05 tell us about the sample-proportion estimator's centre and spread?",
+              "solution": "It's random because it's computed from a *random sample* — a different sample yields a different value, so it has a **sampling distribution**. Module 05 tells us that distribution is centred on the true $p$ (unbiased) with standard error $\\sqrt{p(1-p)/n}$, and is approximately Normal by the CLT."
+            }
+          ]
+        },
+        {
+          "id": "bias-and-variance",
+          "number": "06.2",
+          "title": "Bias & Variance: What Makes an Estimator Good",
+          "oneLiner": "A good estimator hits the truth on average (low bias) and doesn't wobble much (low variance) — and their tension is the deepest idea in machine learning.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Two archers",
+              "body": "Archer A puts every arrow in a tight little cluster — impressively consistent — but the cluster sits in the top-left corner, nowhere near the bullseye. Archer B's arrows scatter all over the target, but if you find their average position, it's dead centre on the bullseye.\n\nWho's the better shot? The honest answer is *neither, simply* — they fail in **opposite** ways. Archer A is consistent but wrong; Archer B is right on average but unreliable. Those two failure modes have names, and once you can see them, you can judge any estimator — and diagnose any machine-learning model — at a glance."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Systematically off vs. all over the place",
+              "body": "Two independent things can go wrong with an estimator:\n\n- **Bias** — it's **systematically off**, missing the truth in a consistent direction on average. That's **Archer A**: tight, but centred away from the bullseye.\n- **Variance** — it's **unstable**, swinging a lot from one sample to the next. That's **Archer B**: centred on target, but scattered.\n\nThe ideal estimator is both **unbiased** (its sampling distribution centres on the truth) and **low-variance** (that distribution is narrow). Total accuracy needs both — being right *on average* is useless if any single estimate is wildly off, and being consistent is useless if you're consistently wrong.\n\n🖼️ *The dartboard picture:* **bias** is how far the *centre* of your cluster sits from the bullseye; **variance** is how *spread out* the cluster is. Four combinations: low-bias/low-variance (ideal), low-bias/high-variance (Archer B), high-bias/low-variance (Archer A), and high-both (hopeless).\n\nAnd here's the twist that makes this the central problem of machine learning: you often **can't minimise both at once.** Push an estimator (or a model) to reduce one and the other tends to rise. Managing that tension — the **bias–variance tradeoff** — is the whole game."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The error decomposition, and the n−1 puzzle",
+              "body": "With true parameter $\\theta$ and estimator $\\hat{\\theta}$:\n\n$$\\text{Bias}(\\hat{\\theta}) = E[\\hat{\\theta}] - \\theta \\quad(\\text{0 means unbiased}), \\qquad \\text{Variance}(\\hat{\\theta}) = \\text{spread of its sampling distribution}.$$\n\nThe total error combines them cleanly. The **mean squared error** decomposes into exactly two pieces:\n\n$$\\text{MSE}(\\hat{\\theta}) = E\\big[(\\hat{\\theta} - \\theta)^2\\big] = \\text{Bias}^2 + \\text{Variance}.$$\n\nAn estimator is **consistent** if, as $n \\to \\infty$, both shrink and $\\hat{\\theta} \\to \\theta$ — which the sample mean does, by the LLN.\n\n**Worked example — why you divide by n−1.** The sample mean is unbiased ($E[\\bar{X}] = \\mu$). But the sample *variance* has a famous subtlety: if you measure spread around the *sample* mean and divide by $n$, you get a value that's **biased low** — because the sample mean is itself pulled toward the data, so deviations from it are a little too small. Dividing by $n-1$ instead of $n$ (Bessel's correction) exactly cancels that bias. It's the most common real-world example of *detecting and removing bias* from an estimator, and it's why calculators have two \"standard deviation\" buttons.\n\n**The deeper lesson:** unbiased is not always best. A slightly **biased** estimator with **much lower variance** can have a *smaller* MSE than an unbiased one — deliberately accepting a little bias to buy a lot of stability. That trade has a name in machine learning: **regularization.**"
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where bias & variance show up",
+              "body": "- **It's the framework for all model fitting.** A too-simple model **underfits** — high bias (Archer A): it misses the real pattern the same way every time. A too-complex model **overfits** — high variance (Archer B): it chases the noise and swings wildly between datasets. Good modelling is finding the sweet spot between them.\n- **Regularization is the tradeoff, on purpose.** Techniques like ridge/lasso and dropout *add bias* to *cut variance*, lowering total error — the \"biased-but-lower-MSE\" idea made into an everyday tool.\n- **It explains train-vs-test gaps.** \"Great on training data, terrible on new data\" is the signature of high variance. \"Mediocre everywhere\" is high bias. The diagnosis dictates the fix (more data and simpler models cut variance; richer models cut bias).\n- **Ensembles cut variance;** averaging many high-variance models (random forests) tames the scatter — the √n effect from Module 03, aimed at variance."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Worshipping unbiasedness.** Minimising bias at all costs can leave you with huge variance and worse total error. Often a biased, stable estimator wins on MSE — the entire justification for regularization.\n- **Confusing the two failures.** Bias is *systematic* and does **not** shrink with more data; variance is *random* and does. Collecting more data fixes variance, never bias — the same lesson as Module 03, now central.\n- **Mistaking precision for accuracy.** Low variance means *consistent*, not *correct*. Archer A (and Module 05's tight-but-biased poll) is precise and wrong. A confident, repeatable answer can still be systematically off.\n- **Forgetting a biased sample poisons everything.** No estimator formula can undo a sample that was collected wrong — that shows up as irreducible bias."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define bias and variance for an estimator, and match each to one of the two archers.\n2. Write the MSE decomposition. Why does it mean an unbiased estimator isn't automatically the best?\n3. Why is the sample variance divided by n−1 instead of n?\n4. Translate \"underfitting\" and \"overfitting\" into the language of bias and variance.\n5. Which of the two can be reduced by collecting more data, and which cannot?\n\n> ✍️ **Explain it back:** Explain to a friend why a model that scores 99% on its training data but 60% on new data is failing — using the words bias and variance. If they identify it as high variance (overfitting) and know more data helps, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "Match each archer to bias or variance: Archer A's arrows are tightly clustered but in the corner; Archer B's are scattered but centred on the bullseye.",
+              "solution": "Archer A = **high bias, low variance** (consistent but systematically off). Archer B = **low bias, high variance** (right on average but unstable). The ideal shooter is low on both."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "An estimator has bias 2 and variance 9. What is its mean squared error? Could a *biased* estimator ever beat an unbiased one on this measure?",
+              "solution": "$\\text{MSE} = \\text{Bias}^2 + \\text{Variance} = 2^2 + 9 = \\mathbf{13}$. Yes — a biased estimator with small enough variance can have a *lower* MSE than an unbiased one with large variance. Trading a little bias for a big drop in variance is exactly what **regularization** does."
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "A model gets 98% accuracy on its training data but 64% on new data. Diagnose the problem in bias/variance terms, and name two fixes.",
+              "solution": "The huge train–test gap is the signature of **high variance (overfitting)** — the model has memorised noise in the training set and doesn't generalise. Fixes: **collect more data** (variance shrinks with n), **simplify the model / add regularization** (accept a little bias to cut variance), or use techniques like ensembling or cross-validation. More data helps here because the problem is variance, not bias."
+            }
+          ]
+        },
+        {
+          "id": "maximum-likelihood",
+          "number": "06.3",
+          "title": "Maximum Likelihood Estimation",
+          "oneLiner": "Maximum likelihood picks the parameter that makes your observed data most probable — the recipe behind how nearly every model is fit.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Why does 7 heads scream \"0.7\"?",
+              "body": "You flip a mystery coin 10 times and get **7 heads**. Nobody told you its bias. What's your best guess for its probability of landing heads?\n\n\"0.7\" — instantly, and it's correct. But *why* 0.7? Why not 0.6, which is also plausible, or 0.65? Your brain did a calculation it can't quite explain. Making that instinct precise gives you **the** method behind how models are fit — from a two-parameter regression to a billion-parameter neural network. It all runs on the same logic your gut just used."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Which parameter makes the data least surprising?",
+              "body": "Here's the flip in perspective. For any *candidate* value of the parameter, ask: **\"if this were the true value, how probable would my observed data be?\"** That number — the probability of the data, seen as a function of the parameter — is the **likelihood** of that candidate.\n\n- A coin with p = 0.7 makes \"7 heads in 10\" quite probable — high likelihood.\n- A coin with p = 0.1 makes \"7 heads in 10\" wildly improbable — tiny likelihood.\n- A coin with p = 0.9 also makes it less likely than 0.7 does.\n\n**Maximum Likelihood Estimation (MLE)** simply picks the parameter value with the **highest likelihood** — the value under which what actually happened is *least surprising*. Slide p from 0 to 1, compute the likelihood at each, and the curve rises, peaks, and falls; the peak sits exactly at **0.7**. Your instinct wasn't magic — it was finding the top of the likelihood curve.\n\nThe subtle but vital reframe: ordinary probability holds the parameter fixed and asks about varying data. The **likelihood holds the data fixed** (it already happened) and asks about varying the parameter. Same formula, read backwards."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Maximize the likelihood",
+              "body": "The **likelihood** is the probability of the observed data as a function of the parameter $\\theta$:\n\n$$L(\\theta) = P(\\text{observed data} \\mid \\theta), \\qquad \\hat{\\theta}_{\\text{MLE}} = \\arg\\max_{\\theta}\\, L(\\theta).$$\n\nIn practice we maximise the **log-likelihood** $\\log L(\\theta)$ — the logarithm turns awkward products into friendly sums and behaves better numerically, and since log is increasing, the peak is in the same place.\n\n**Worked example — the coin.** With $k$ heads in $n$ flips, the probability of that exact result (up to a constant that doesn't depend on p) is:\n\n$$L(p) = p^{\\,k}\\,(1-p)^{\\,n-k}.$$\n\nMaximising this over $p$ gives the clean answer $\\hat{p} = k/n$. For 7 heads in 10 → $\\hat{p} = \\mathbf{0.7}$, exactly the gut answer.\n\nAnd here's why the \"obvious\" estimators from the whole course keep reappearing: they are usually the MLEs. The MLE of a Normal distribution's mean is the **sample mean**; the MLE of a Poisson rate $\\lambda$ is the **sample average count**. Maximum likelihood is the principle that *justifies* the natural estimators you'd have picked anyway — and, crucially, it also tells you what to do when the answer *isn't* obvious."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where maximum likelihood shows up",
+              "body": "- **It is how models are trained.** \"Fitting a model\" almost always means \"find the parameters that maximise the likelihood of the training data.\" Logistic regression, Poisson regression, and the training of neural-network classifiers are all MLE.\n- **Least squares is secretly MLE.** Fitting a line by minimising squared errors is *exactly* maximum likelihood when the noise is assumed Normal. The most classic method in statistics is a special case of this one idea.\n- **Loss functions are negative log-likelihoods.** The cross-entropy loss that trains classifiers is the negative log-likelihood of the labels — so \"minimising the loss\" and \"maximising the likelihood\" are the same act (connecting straight back to expected-loss minimisation from Module 03.4).\n- **It demystifies \"training.\"** Once you see training as climbing a likelihood surface to its peak, gradient descent, epochs, and loss curves all snap into a single clear picture."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Overfitting on little data.** MLE trusts the sample *completely*. Flip a coin 3 times, get 0 heads, and the MLE says p = 0 — \"heads is impossible\" — obviously too extreme. Tiny samples make MLE overconfident, which is exactly what priors and regularization (next module) exist to fix.\n- **Confusing likelihood with the posterior.** The likelihood is $P(\\text{data} \\mid \\theta)$, **not** $P(\\theta \\mid \\text{data})$. Swapping them is the transposed-conditional error from Module 01 (Bayes) — turning one into the other requires a prior, which MLE deliberately omits.\n- **Trusting a wrong model.** MLE finds the best parameter *within the model you assumed*. If the assumed distribution is wrong, the estimate is confidently wrong — garbage model in, garbage estimate out.\n- **Sensitivity to outliers under the wrong noise model.** Least squares (Normal-noise MLE) is famously yanked around by outliers; a heavier-tailed likelihood would be more robust. The likelihood you choose *is* an assumption."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define the likelihood. How does it differ from an ordinary probability?\n2. In words, what does maximum likelihood estimation choose, and why is that reasonable?\n3. For k heads in n flips, what is the MLE of p, and why does it match intuition?\n4. Why is fitting a line by least squares an example of MLE?\n5. You flip a coin twice and get two tails. What does the MLE say, and why is that a warning sign?\n\n> ✍️ **Explain it back:** Explain to a friend why \"7 heads out of 10 means the coin is about 70% heads\" is an application of maximum likelihood — and connect it to how a model gets \"trained.\" If they grasp \"pick the parameter that makes the data least surprising,\" this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "A coin is flipped 20 times and lands heads 13 times. What is the maximum likelihood estimate of the probability of heads?",
+              "solution": "$\\hat{p} = k/n = 13/20 = \\mathbf{0.65}$. The MLE of a coin's bias is just the observed proportion of heads."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "In one sentence, what does maximum likelihood estimation choose? Then explain why the likelihood is *not* the same as \"the probability that p = 0.65.\"",
+              "solution": "MLE chooses the parameter value that makes the **observed data most probable**. The likelihood is $P(\\text{data} \\mid p)$ — the probability of the data given a candidate p — **not** $P(p \\mid \\text{data})$, the probability of p given the data. Turning the first into the second requires a prior (Bayes, Module 01); MLE deliberately uses only the likelihood."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "A new coin is flipped 3 times and lands tails all 3 times. What does the MLE say for the probability of heads, and why is that answer a red flag for using MLE on small samples?",
+              "solution": "$\\hat{p} = 0/3 = \\mathbf{0}$ — the MLE declares heads *impossible*. That's clearly too extreme: three flips is far too little to rule heads out entirely. It happens because MLE trusts the sample completely, with no built-in skepticism. The fix is to bring in prior belief (a prior / regularization), which pulls the estimate away from 0 — the motivation for the Bayesian tools in the next module."
+            }
+          ]
+        },
+        {
+          "id": "confidence-intervals",
+          "number": "06.4",
+          "title": "Confidence Intervals",
+          "oneLiner": "A confidence interval turns a point estimate into an honest range — the rigorous margin of error, and the most misinterpreted tool in statistics.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "What does \"95% confident\" actually mean?",
+              "body": "Module 05 handed you \"estimate ± 2·SE\" and a rough 95%. Now the sharp question: what does that **95%** really mean?\n\nHere's a sentence almost everyone says — including many working scientists — that is subtly, importantly *wrong*: *\"I'm 95% confident the true value lies in this interval.\"* It sounds obviously correct. It isn't quite. Untangling why is one of those moments that separates people who *use* statistics from people who *understand* it — and it changes how you read every poll and every experiment for the rest of your career."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "The 95% describes the method, not your interval",
+              "body": "A **confidence interval (CI)** is a range built around your estimate, designed to capture the true parameter with a stated reliability. The trick is *what the reliability refers to.*\n\nThe true parameter is **fixed** — it's a specific unknown number, not something random. Your *interval*, on the other hand, is random: it was built from a random sample, so a different sample would have produced a different interval. So the \"95%\" cannot be a probability about the fixed truth. It's a property of the **procedure**:\n\n> If you repeated the whole \"draw a sample, build an interval\" process many times, about **95% of the intervals you'd construct would contain the true value.**\n\nAny *particular* interval — the one you actually have — either contains the truth or it doesn't; there's no \"95% chance\" about that single interval, because nothing in it is still random. The 95% is the long-run **hit rate of the method**, like a free-throw shooter who sinks 95% of attempts: *this* shot goes in or misses, but the process is 95% reliable.\n\nIn practice you still act on your one interval — but the honest statement is about the procedure. This is exactly Module 05's margin of error, made rigorous."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Estimate ± (multiplier × SE)",
+              "body": "A **95% confidence interval for a mean**:\n\n$$\\bar{X} \\pm 1.96 \\times \\text{SE}, \\qquad \\text{SE} = \\frac{s}{\\sqrt{n}}.$$\n\nThe **1.96** comes straight from the standard Normal (the CLT): 95% of a bell sits within 1.96 standard deviations of its centre. For a **proportion**, $\\hat{p} \\pm 1.96\\sqrt{\\hat{p}(1-\\hat{p})/n}$. Want *more* confidence? Use a bigger multiplier — 99% confidence uses 2.58 — which makes the interval **wider**. You trade precision for reliability: a surer statement is a vaguer one.\n\n**Worked example — the poll.** $\\hat{p} = 0.52$, $\\text{SE} \\approx 0.016$:\n\n$$\\text{95\\% CI} = 0.52 \\pm 1.96(0.016) = 0.52 \\pm 0.031 = (0.489,\\ 0.551).$$\n\nThe interval **includes 0.50**, so a genuine tie can't be ruled out — the lead is inside the noise. And because the width scales like $1/\\sqrt{n}$, quadrupling the sample halves the interval (the √n law, one more time)."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where confidence intervals show up",
+              "body": "- **They're how every serious estimate is reported.** An A/B lift with its CI, a model metric ± its CI, poll results, KPIs — the CI is the honest alternative to a naked point estimate.\n- **The decision rule you already know.** *Does the interval exclude the \"no-effect\" value (0 for a difference, 50% for a race)?* If the whole interval sits above a threshold, act; if it straddles the no-effect value, you can't claim an effect. This is the everyday use.\n- **It's the dual of hypothesis testing** (next module): a 95% CI that excludes the no-effect value corresponds exactly to a result \"significant at the 5% level.\" Two views of the same evidence.\n- **Bootstrapping builds CIs** when tidy formulas don't exist — resample your data many times and watch how the estimate varies. Communicating uncertainty this way builds trust and stops teams from overreacting to noise."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **The famous misreading:** \"there's a 95% probability the truth is in *this* interval.\" The truth is fixed; the interval is what varies; the 95% is the procedure's long-run capture rate. (The Bayesian *credible* interval — next module — is the tool that *does* let you say \"95% probability the truth is in here,\" by using a prior.)\n- **Thinking a wider interval means worse data.** A wide interval is just more *honest* — the result of a smaller sample or a higher confidence level. Narrow isn't automatically better; it must be *earned* with data.\n- **Forgetting the CI only covers random error.** It captures sampling noise and nothing else. A **biased** estimate gets a tight, confident CI around the *wrong* value — the interval is silent about systematic error (the same trap as Module 05).\n- **Over-reading two overlapping CIs.** Two intervals overlapping does *not* reliably mean \"no significant difference\" — that comparison needs its own test, not eyeballing the bars."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State precisely what the \"95%\" in a 95% confidence interval refers to — and what it does *not*.\n2. Why can't you say \"there's a 95% probability the true value is in this particular interval\"?\n3. Build a 95% CI for a proportion of 0.40 estimated from n = 100. (Use SE ≈ 0.049.)\n4. Why does a 99% confidence interval come out wider than a 95% one?\n5. What kind of error does a confidence interval fail to account for, and why is that dangerous?\n\n> ✍️ **Explain it back:** Explain to a friend why \"95% confident\" is a statement about your *method*, not about the one interval in front of you — using the free-throw-shooter analogy. If they stop saying \"95% chance the truth is in here,\" this topic — and the Inference module — is ✅.\n\n---\n\n*Module complete. Head to the exercises. Next comes Hypothesis Testing — turning these intervals into yes/no decisions, p-values, and the machinery of A/B testing.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "A sample mean is 50 with a standard error of 4. Give an approximate 95% confidence interval.",
+              "solution": "$50 \\pm 1.96(4) \\approx 50 \\pm 7.8 = \\mathbf{(42.2,\\ 57.8)}$. (Using the round \"± 2·SE\" gives (42, 58).)"
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "A 95% confidence interval for a conversion rate comes out as (0.03, 0.07). A colleague says \"so there's a 95% chance the true rate is between 3% and 7%.\" Correct them.",
+              "solution": "The true rate is a **fixed** number — it's either in (0.03, 0.07) or it isn't, with no probability attached to *this* interval. The 95% describes the **procedure**: if you repeated the sample-and-build-interval process many times, about 95% of the intervals produced would contain the true rate. It's the method's long-run hit rate, not a probability about this one interval. (The statement they *want* to make is valid for a Bayesian credible interval, which uses a prior.)"
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "Two A/B variants report 95% CIs for their conversion lift: Variant X is (−1%, +5%) and Variant Y is (+2%, +8%). Which, if either, can you confidently call a real improvement, and why?",
+              "solution": "**Variant Y** — its entire interval lies above 0 (from +2% to +8%), so the no-effect value of 0 is excluded, and you can confidently claim a real positive lift. **Variant X**'s interval **includes 0** (it runs from −1% to +5%), so its result is consistent with no effect at all — you cannot yet claim it helps. \"Does the CI exclude the no-effect value?\" is the decision rule."
             }
           ]
         }
