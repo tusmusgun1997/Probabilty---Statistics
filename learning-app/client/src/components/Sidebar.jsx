@@ -3,16 +3,10 @@
 // Upcoming modules from the course roadmap render locked, like the design.
 const UPCOMING = [
   {
-    number: "07",
-    title: "Hypothesis Testing",
-    phase: null, // same phase (IV) as the now-unlocked Inference module
-    topics: ["p-values & Errors", "A/B Testing", "Statistical Power"],
-  },
-  {
-    number: "08",
-    title: "Bayesian Inference",
-    phase: null, // same phase (IV)
-    topics: ["Priors & Posteriors", "Credible Intervals"],
+    number: "09",
+    title: "DS Special Topics",
+    phase: "Phase V — The Data-Science Frontier",
+    topics: ["Entropy & KL Divergence", "Markov Chains"],
   },
 ];
 

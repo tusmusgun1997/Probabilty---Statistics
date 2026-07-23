@@ -1,7 +1,7 @@
 {
   "title": "Probability & Statistics",
   "tagline": "Built for intuition. Aimed at data science.",
-  "generatedAt": "2026-07-23T14:51:53.769Z",
+  "generatedAt": "2026-07-23T15:06:57.611Z",
   "modules": [
     {
       "id": "00-foundations",
@@ -1929,6 +1929,536 @@
               "difficulty": "stretch",
               "prompt": "Two A/B variants report 95% CIs for their conversion lift: Variant X is (−1%, +5%) and Variant Y is (+2%, +8%). Which, if either, can you confidently call a real improvement, and why?",
               "solution": "**Variant Y** — its entire interval lies above 0 (from +2% to +8%), so the no-effect value of 0 is excluded, and you can confidently claim a real positive lift. **Variant X**'s interval **includes 0** (it runs from −1% to +5%), so its result is consistent with no effect at all — you cannot yet claim it helps. \"Does the CI exclude the no-effect value?\" is the decision rule."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "07-hypothesis-testing",
+      "number": "07",
+      "phase": "Phase IV — Learning From Data",
+      "title": "Hypothesis Testing",
+      "summary": "The daily bread of product data science: the courtroom logic of testing, what a p-value really is (and the four ways it's misread), the two error types and statistical power, and putting it all together into A/B testing done honestly.",
+      "topics": [
+        {
+          "id": "logic-of-hypothesis-testing",
+          "number": "07.1",
+          "title": "The Logic of Hypothesis Testing",
+          "oneLiner": "Hypothesis testing is a courtroom for data: assume nothing happened, and reject that only if the evidence would be too surprising by chance.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Real win, or lucky sample?",
+              "body": "Your new checkout flow shows a **3% higher** conversion rate than the old one. Time to celebrate and ship it?\n\nNot so fast. Two stories fit that 3%: maybe the new flow is genuinely better — or maybe it's *identical* to the old one and you simply drew a lucky sample (Module 05 warned you: every estimate wobbles from sample to sample). Eyeballing the numbers can't separate the two. You need a formal way to ask *\"is this bigger than random noise would produce?\"* — and statistics borrows its answer, remarkably, from the logic of a courtroom."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A courtroom for data",
+              "body": "Picture a criminal trial. The defendant is **presumed innocent**, and the prosecution must present evidence so strong that innocence becomes implausible. A hypothesis test works identically:\n\n- The **null hypothesis (H₀)** is the presumption of innocence — the skeptical default that **nothing is going on**: no effect, no difference, the status quo. (\"The new flow converts the same as the old.\")\n- The **alternative hypothesis (H₁)** is the prosecution's claim — that a **real effect exists**. (\"The new flow is different.\")\n\nAnd here is the whole move: **assume the null is true, then ask — if it were, how surprising would my data be?** If the data would be a bizarre fluke under \"nothing is going on,\" you **reject the null**. If the data is perfectly consistent with pure chance, you **fail to reject** it.\n\nTwo subtleties the courtroom makes intuitive. You never *prove* the effect is real — you only decide the evidence against \"nothing\" is strong enough. And \"fail to reject\" is like a verdict of **\"not guilty,\" not \"proven innocent\"**: it means the evidence wasn't sufficient, not that the null is definitely true."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Null, alternative, and a test statistic",
+              "body": "- **H₀** — no effect (e.g. \"μ = μ₀\", \"new rate = old rate\"). The default we try to disprove.\n- **H₁** — an effect exists. What we'd need strong evidence to conclude.\n\nTo measure \"how surprising,\" we compress the data into a single **test statistic** — typically *how far the data sits from what H₀ predicts, measured in standard errors* (Module 05). Because the CLT tells us the sampling distribution of that statistic *under H₀*, we can judge exactly how extreme our observation is.\n\n**Worked example.** H₀: a coin is fair (p = 0.5). You flip it **100 times and get 62 heads**. If H₀ were true, the number of heads is approximately Normal with mean 50 and standard error 5. Our 62 sits\n\n$$z = \\frac{62 - 50}{5} = 2.4 \\text{ standard errors above what \"fair\" predicts.}$$\n\nThat's fairly extreme — a fair coin would rarely stray so far. *How* extreme, as a probability, is the p-value (next topic). (A test can be **two-tailed** — looking for a difference in either direction — or **one-tailed**, for a specific direction decided in advance.)"
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where this logic shows up",
+              "body": "- **It's the skeleton of every experiment.** A/B tests, clinical trials, and \"is this metric change real?\" investigations all run this courtroom procedure. It's how product teams decide whether to ship.\n- **It formalises Module 05's instinct.** \"Does the effect exceed the noise?\" becomes a disciplined yes/no rather than a gut call — the guardrail against chasing random blips.\n- **The null-hypothesis mindset is a professional habit.** Defaulting to \"assume it's nothing until the data forces otherwise\" protects you from wishful thinking and false discoveries — the single most valuable reflex in applied statistics."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **\"Failed to reject\" ≠ \"the null is true.\"** Absence of evidence isn't evidence of absence. A small or underpowered study can miss a real effect entirely (power, topic 07.3). Not guilty is not innocent.\n- **Testing a hypothesis you invented *after* seeing the data.** Forming H₁ to fit the pattern you already spotted, then \"testing\" it on the same data, manufactures false positives (p-hacking, next topics). Decide the hypothesis first.\n- **Forgetting the test only rules out *chance*, not *bias*.** A confounded or badly-run experiment can give a \"significant\" result that's meaningless — significance says \"not random,\" never \"not biased\" (correlation ≠ causation, Module 04).\n- **Thinking rejecting H₀ proves your specific story.** It says the data is inconsistent with \"nothing,\" not that *your* proposed mechanism is the reason."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the null and alternative hypotheses, and match each to a role in the courtroom analogy.\n2. What is the core logical move of a hypothesis test?\n3. Why is \"fail to reject the null\" not the same as \"the null is true\"?\n4. For the coin example, what does the test statistic z = 2.4 mean in plain words?\n5. A confounded experiment produces a \"significant\" result. Why doesn't the test rescue it?\n\n> ✍️ **Explain it back:** Explain to a friend how deciding whether a new feature \"really\" improved conversion is like a criminal trial — including why you can never quite \"prove\" the feature helped. If they grasp presumption-of-null and reject-vs-fail-to-reject, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "A team wants to show a new recommendation algorithm increases average order value. State the null and alternative hypotheses.",
+              "solution": "**H₀ (null):** the new algorithm makes no difference — average order value is the same as before. **H₁ (alternative):** the new algorithm changes (increases) average order value. The test assumes H₀ and looks for evidence strong enough to reject it."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "A test of a new drug returns \"not statistically significant.\" A headline reports \"Drug proven to have no effect.\" What's wrong with the headline?",
+              "solution": "\"Fail to reject H₀\" is **not** \"prove H₀ true.\" The study simply lacked sufficient evidence of an effect — which can happen either because there is no effect *or* because the study was too small to detect one (low power). \"Not guilty\" is not \"innocent.\" The headline overclaims."
+            },
+            {
+              "id": "A3",
+              "difficulty": "core",
+              "prompt": "Why does a \"statistically significant\" result from a confounded (non-randomized) study still fail to establish causation?",
+              "solution": "A hypothesis test only rules out **chance** — it says the pattern is unlikely to be random noise. It says nothing about **bias or confounding**. If a lurking third variable drives the result (Module 04), the effect is real-but-not-causal, and significance can't fix that. Only proper randomization breaks confounders."
+            }
+          ]
+        },
+        {
+          "id": "p-values",
+          "number": "07.2",
+          "title": "p-values & Significance",
+          "oneLiner": "A p-value is the probability of data at least as extreme as yours if nothing were really going on — a measure of surprise under the null, nothing more.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The phrase that ships features",
+              "body": "**\"p < 0.05.\"** Those four characters launch academic papers, greenlight product features, and end arguments in meetings. It's the single most cited number in all of empirical science.\n\nIt's also the most misread. Ask ten smart people what a p-value means and you'll get ten confident answers, most of them wrong — including some that sound authoritative. So what does it *actually* say, and why does the difference between the right and wrong reading matter enough to build a whole topic around it?"
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A measure of surprise, assuming nothing happened",
+              "body": "A p-value answers **one precise question**:\n\n> *If the null hypothesis were true (no real effect), how probable would it be to see data at least as extreme as what I actually got — purely by random chance?*\n\nThat's the whole definition, and every correct use flows from it:\n\n- **Small p-value** → \"my data would be a weird fluke if nothing were really going on\" → **evidence against the null.**\n- **Large p-value** → \"my data is exactly what chance alone routinely produces\" → **no evidence against the null.**\n\nIt is, in one phrase, a measure of **surprise under the null.** The famous **0.05** threshold is just a convention: reject the null if p < 0.05 — a \"would happen less than 1 time in 20 by chance\" line. It's arbitrary (nothing magic separates 0.049 from 0.051), but it's the shared default.\n\nHold tight to what the p-value is **not**: it is *not* the probability the null is true, *not* the probability your result was \"due to chance,\" and *not* a measure of how big or important the effect is. It's the probability of the *data* under the null — nothing more."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The definition and the decision rule",
+              "body": "$$p\\text{-value} = P(\\text{a test statistic at least as extreme as observed} \\mid H_0 \\text{ true}).$$\n\n**Decision rule:** fix a significance level $\\alpha$ (usually 0.05) *in advance*; if $p < \\alpha$, reject $H_0$ and call the result **statistically significant**; otherwise, fail to reject.\n\n**Worked example — the coin.** H₀: p = 0.5; we saw 62 heads in 100 (z = 2.4 from the last topic). The two-tailed p-value is the chance of landing *that far or farther* from 50 in either direction:\n\n$$p = P(|Z| \\ge 2.4) \\approx 0.016.$$\n\nSince 0.016 < 0.05, we **reject H₀** — the coin is likely biased. Contrast a borderline case: 58 heads gives z = 1.6, p ≈ 0.11 > 0.05, so we **fail to reject** — 58 is well within what a fair coin tosses up by luck.\n\nThis connects directly to Module 06: a two-sided p < 0.05 is *equivalent* to the 95% confidence interval **excluding** the null value. Same evidence, two languages — a p-value and a CI are two views of one result."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where p-values show up",
+              "body": "- **They gate real decisions.** Every A/B testing platform, experimentation tool, and published study uses a p-value (or its CI equivalent) to decide whether an effect is \"real enough\" to act on.\n- **The correct reading keeps you honest.** \"Surprise under the null\" is the reading that stops you from shipping a fluke and from over-claiming. The wrong readings are how noise gets mistaken for discovery at scale.\n- **Significance ≠ importance.** With enough data, even a microscopic, useless effect crosses p < 0.05. A p-value tells you an effect is *probably not zero*, never that it's *big enough to matter* — always pair it with the effect size (next module's A/B discipline).\n- **It underpins the reproducibility conversation.** Understanding p-values is what lets you spot p-hacking and publication bias — why so many \"significant\" findings fail to replicate."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "The four cardinal misreadings — memorise that each is **false**:\n\n- p is **not** the probability that H₀ is true.\n- p is **not** \"the probability the result was due to chance.\"\n- p is **not** 1 − (probability H₁ is true).\n- a small p does **not** mean a *large* or important effect — significance is not magnitude.\n\nAnd the process traps:\n\n- **p-hacking.** Trying many analyses, variants, or subgroups until one squeaks under 0.05 inflates false positives enormously (multiple testing, next topic). Decide the analysis before looking.\n- **Worshipping the 0.05 line.** p = 0.049 and p = 0.051 are essentially identical evidence; the threshold is a convenience, not a law of nature.\n- **Reading non-significance as \"no effect.\"** A large p can mean \"no effect\" *or* \"too little data to detect one\" — you can't tell without considering power."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the precise definition of a p-value in one sentence.\n2. Give two of the four common *wrong* interpretations, and say why each is wrong.\n3. A test gives p = 0.002. In correct language, what does that tell you?\n4. How does a two-sided p < 0.05 relate to a 95% confidence interval?\n5. Why can a \"statistically significant\" result still be practically worthless?\n\n> ✍️ **Explain it back:** Explain to a friend what \"p = 0.03\" actually means, *without* saying \"3% chance the result is wrong\" or \"3% chance it's due to chance.\" If they can phrase it as \"surprise assuming nothing is going on,\" this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "A study reports p = 0.5. In correct language, what does that mean, and would you reject the null at α = 0.05?",
+              "solution": "If the null were true, data at least as extreme as observed would occur about **50% of the time** by chance — completely unremarkable. Since 0.5 > 0.05, you **fail to reject** the null: no evidence of an effect."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "A colleague says \"p = 0.03 means there's a 3% chance the null hypothesis is true.\" Correct them precisely.",
+              "solution": "Wrong. The p-value is $P(\\text{data this extreme} \\mid H_0 \\text{ true})$ — it *assumes* the null and measures how surprising the data would be under it. It is **not** $P(H_0 \\text{ true} \\mid \\text{data})$. The p-value says nothing directly about the probability the null is true (getting that would require a prior — Bayes, next module). Correct reading: \"if nothing were going on, data this extreme would occur only 3% of the time.\""
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "With 10 million users, an A/B test finds a 0.01% conversion lift with p = 0.001. Is this a big deal? Explain the significance-vs-magnitude distinction.",
+              "solution": "Statistically, yes — p = 0.001 means the lift is almost certainly not exactly zero. But **practically, probably not**: 0.01% is a rounding error that may not justify the cost of the change. A tiny effect becomes \"significant\" with a large enough sample because the standard error shrinks like 1/√n, so *any* nonzero effect eventually clears the threshold. Significance tells you an effect is **real**, never that it's **large enough to matter** — always check the effect size against business value."
+            }
+          ]
+        },
+        {
+          "id": "errors-and-power",
+          "number": "07.3",
+          "title": "Two Ways to Be Wrong: Errors & Power",
+          "oneLiner": "Every test can fail two ways — a false alarm (Type I) or a missed effect (Type II) — and power is the chance of catching a real effect when it's there.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The smoke detector's dilemma",
+              "body": "A smoke detector can fail two ways. It can **scream when there's no fire** — a false alarm that has you fanning it with a towel at 3 a.m. Or it can **stay silent during a real fire** — a miss that's genuinely dangerous.\n\nA hypothesis test has the *exact* same two failure modes. And here's the cruel part: for a fixed amount of data, making the detector less trigger-happy (fewer false alarms) makes it slower to catch real fires (more misses). You cannot drive both errors to zero at once. Learning to manage that tradeoff is the difference between an experiment that can detect your effect and one that was doomed before it started."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Two errors, and the power to avoid the worse one",
+              "body": "Line up the two ways a test goes wrong:\n\n- **Type I error (false positive):** you reject H₀ when it's actually true — you \"discover\" an effect that isn't there. That's the **false alarm.** Its probability is exactly the significance level **α** you chose (usually 0.05).\n- **Type II error (false negative):** you fail to reject H₀ when a real effect exists — you **miss** it. Its probability is called **β**.\n\nAnd the number that matters most in planning:\n\n- **Power = 1 − β** — the probability of **correctly detecting a real effect** when one truly exists. High power = a sensitive detector.\n\nThe tension: for a *fixed sample*, tightening α (demanding stronger evidence, fewer false alarms) raises β (more misses) — you've made the detector harder to trip, so it trips late. The way to improve *both* at once is **more data**: a larger n shrinks the sampling distributions (the √n effect, Module 03), pulling the two error rates down together. Power also rises when the true effect is **bigger** or the noise is **smaller**.\n\nThe practical punchline: a **low-power test that returns \"not significant\" tells you almost nothing** — it may have missed a real effect. That's why a null result is only meaningful if the test *could* have found the effect."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The 2×2 of truth and decision",
+              "body": "$$\\alpha = P(\\text{Type I}) = P(\\text{reject } H_0 \\mid H_0 \\text{ true}), \\qquad \\beta = P(\\text{Type II}) = P(\\text{fail to reject} \\mid H_1 \\text{ true}), \\qquad \\text{Power} = 1 - \\beta.$$\n\nEvery test outcome is one of four cells:\n\n| | H₀ actually true | H₁ actually true |\n|---|---|---|\n| **Reject H₀** | Type I error (α) | ✓ correct detection (power) |\n| **Fail to reject** | ✓ correct | Type II error (β) |\n\n**Power depends on four things:** the significance level α, the **effect size** (how big the real effect is), the **noise** σ, and the **sample size** n. The standard convention is to design for **power ≥ 0.80** at the smallest effect worth caring about.\n\n**Worked example (the intuition, no heavy arithmetic).** Detecting a *huge* 20% conversion lift takes very few users — it leaps out of the noise. Detecting a *subtle* 1% lift takes an enormous sample, because it barely peeks above the sampling wobble. **Sample-size planning** works backwards from this: given a target effect, target power, and α, solve for the n that makes the standard error (σ/√n) small enough. Skip this step and you may run a test that never had a chance of detecting your effect."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where errors & power show up",
+              "body": "- **Power analysis plans every serious experiment.** \"How many users do I need to reliably detect a 1% lift?\" is answered *before* launch, from α, the target effect, and the noise. It's a core, expected data-science skill.\n- **It explains the empty A/B test.** \"We ran it a week, no significant difference\" very often means \"the test was underpowered and couldn't have found the effect anyway\" — a null result that gets misread as \"B doesn't work.\"\n- **Choosing α is a cost decision.** Which error do you fear more? A false alarm or a miss? That's the expected-cost thinking from Module 03.4: for a cheap, reversible change you might tolerate more Type I error; for an irreversible, expensive one you tighten α.\n- **Multiple tests multiply false alarms.** Run 20 independent tests at α = 0.05 and you *expect* about one false positive by pure chance — the seed of multiple-comparison corrections (next topic)."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Concluding \"no effect\" from an underpowered test.** If the test couldn't have detected the effect, its silence is uninformative — not evidence of absence.\n- **Forgetting α is per-test.** Twenty tests at 0.05 give roughly a 64% chance of *at least one* false positive. Testing many metrics or variants without correction manufactures \"discoveries.\"\n- **Chasing a tiny α without more data.** Demanding α = 0.001 with a small sample crushes your power — you'll miss almost everything real.\n- **Skipping the power analysis.** The single most common real-world failure: launching a test with no idea whether it *could* detect the effect you care about.\n- **Assuming power fixes bias.** Power is about *random* error only. A biased experiment is wrong no matter how large or sensitive."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Define Type I and Type II errors, and match each to the smoke detector's two failures.\n2. What is statistical power, and why is a null result from a low-power test nearly uninformative?\n3. For a fixed sample, why does lowering α raise β — and what improves both at once?\n4. Name the four things power depends on.\n5. You run 40 A/B tests at α = 0.05 and find 2 \"significant.\" Why should you be cautious?\n\n> ✍️ **Explain it back:** Explain to a friend why a week-long A/B test that finds \"no significant difference\" might not mean the variant is useless — using the idea of statistical power. If they connect it to \"the test may have been too small to detect the effect,\" this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "Match to Type I or Type II error: (a) concluding a drug works when it actually doesn't; (b) concluding a drug doesn't work when it actually does.",
+              "solution": "(a) **Type I error** (false positive) — rejecting a true null. (b) **Type II error** (false negative) — failing to reject a false null. Power = 1 − P(Type II) is the chance of avoiding (b) when the drug really works."
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "An A/B test runs for a week and finds no significant difference. Give two very different explanations, and say what number you'd want to know to distinguish them.",
+              "solution": "Either (1) there really is **no effect**, or (2) there **is** an effect but the test was **underpowered** (too few users) to detect it. To distinguish, you'd want the test's **power** for the smallest effect worth caring about — if power was low (say 0.3), the null result is uninformative; if power was high (say 0.9), a true meaningful effect probably would have shown up."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "A data scientist runs 20 independent A/B tests, all on features that genuinely do nothing, each at α = 0.05. Roughly how many \"significant\" results should they expect, and what's the lesson?",
+              "solution": "Each true-null test has a 5% chance of a false positive, so across 20 tests they expect about $20 \\times 0.05 = \\mathbf{1}$ false \"discovery\" — even though *every* feature is useless. (The chance of *at least one* false positive is $1 - 0.95^{20} \\approx 64\\%$.) The lesson: **multiple testing inflates false positives**; running many comparisons without correction manufactures significance from pure noise. Pre-register a primary metric or apply a multiplicity correction."
+            }
+          ]
+        },
+        {
+          "id": "ab-testing",
+          "number": "07.4",
+          "title": "A/B Testing in Practice",
+          "oneLiner": "A/B testing is hypothesis testing in a business suit — and its hardest problems are discipline: peeking, multiple comparisons, and significant-vs-worth-it.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "It's winning on day 2 — do you ship?",
+              "body": "You launch an A/B test. Day 2: the variant is ahead with **p = 0.04**. Ship it and celebrate? Day 5: it's slipped to **p = 0.20**. Now what — kill it, or wait for it to \"come back\"?\n\nEvery one of those instincts — stop when you're ahead, keep waiting for significance — quietly poisons your result. Teams wreck their own experiments this way constantly, and the damage is invisible: the numbers still *look* rigorous. The mathematics of testing is the easy part you've already learned. Using it honestly, in the messy real world, is where data-science careers are actually made."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "A controlled courtroom — and its practical traps",
+              "body": "An A/B test is the courtroom logic of 07.1 run as a **controlled experiment**: randomly split users into **control (A)** and **variant (B)**, measure a metric, and test H₀ \"no difference\" against H₁ \"B differs.\" The magic ingredient is **randomization** — by splitting users at random, you break every confounder by construction, which is what makes the conclusion *causal* rather than merely correlational (the fix for Module 04's correlation-≠-causation problem).\n\nEverything from this module then applies: a p-value or confidence interval decides significance, power dictates the sample size, and the two error types are your risks. But the failures that actually sink experiments are procedural:\n\n- **Peeking / early stopping.** Checking the results over and over and stopping the instant you hit p < 0.05 massively inflates false positives — you've given chance dozens of attempts to cross the line (a sneaky form of multiple testing). **Fix:** fix the sample size and duration *in advance*, or use methods designed for continuous monitoring (sequential testing).\n- **Multiple comparisons.** Test enough variants or metrics and some will look \"significant\" by luck alone. **Fix:** pre-declare one primary metric, or apply a correction.\n- **Statistical vs. practical significance.** With huge traffic, a trivial 0.05% lift can be \"significant\" yet worthless. **Fix:** look at the *effect size* and its business value, not just the p-value.\n- **Everyday gotchas:** novelty effects, weekly seasonality (run full business cycles), and assignment bugs where the split isn't actually 50/50 (sample-ratio mismatch)."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "The two-proportion test",
+              "body": "Randomise N users to A and B; let the difference be $\\Delta = \\text{rate}_B - \\text{rate}_A$. Because the groups are independent, their variances **add** (Module 03/04):\n\n$$\\text{SE}_\\Delta = \\sqrt{\\text{SE}_A^{2} + \\text{SE}_B^{2}}, \\qquad z = \\frac{\\Delta}{\\text{SE}_\\Delta}.$$\n\nThen it's the familiar machinery: get a p-value from z, or build a 95% CI on Δ. **Ship when the CI excludes 0 *and* the effect is practically meaningful** — and size the test up front with a power analysis (07.3).\n\n**Worked example.** A converts 200 of 5,000 (4.0%); B converts 240 of 5,000 (4.8%). So $\\Delta = 0.8\\%$.\n$\\text{SE}_A = \\sqrt{0.04 \\cdot 0.96 / 5000} \\approx 0.0028$; $\\text{SE}_B = \\sqrt{0.048 \\cdot 0.952 / 5000} \\approx 0.0030$; combined $\\text{SE}_\\Delta \\approx \\sqrt{0.0028^2 + 0.0030^2} \\approx 0.0041$.\n\n$$z = \\frac{0.008}{0.0041} \\approx 1.95, \\qquad \\text{95\\% CI on } \\Delta \\approx 0.8\\% \\pm 0.8\\% = (0.0\\%,\\ 1.6\\%).$$\n\nRight on the edge — p ≈ 0.05 and the interval just touches 0. This is *not* a confident win; the honest call is \"promising, collect more data,\" not \"ship it.\""
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where A/B testing shows up",
+              "body": "- **It's the most common applied-statistics job in tech.** Whole teams and dedicated experimentation platforms exist to run it; \"can you design and read an A/B test?\" is a standard interview and on-the-job expectation.\n- **It's this entire course in one workflow.** Randomization (causality, Module 04), sampling distributions and standard error (Module 05), confidence intervals (Module 06), significance and power (this module) — an A/B test uses all of it at once.\n- **Doing it *right* is the hireable skill.** Pre-registered primary metric, power-based sample size, no peeking, and a practical-significance check are what separate a trustworthy experimenter from someone generating false wins — and those decisions steer product bets worth millions.\n- **The discipline generalises.** The same traps (peeking, multiplicity, chasing significance over value) appear in model evaluation, feature launches, and any data-driven decision."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Peeking and stopping early.** The most common real sin — monitoring continuously and stopping at the first p < 0.05 inflates false positives dramatically. Commit to the sample size beforehand.\n- **Many variants/metrics, no correction.** Twenty things tested at α = 0.05 will hand you a \"winner\" from pure noise. Pre-register the primary metric or correct for multiplicity.\n- **Confusing significant with worth it.** A statistically significant 0.05% lift can be a rounding error to the business. Always check the effect size against what matters.\n- **Trusting a broken split.** Randomization is what buys you causality; a bug in assignment (sample-ratio mismatch) silently voids the whole test.\n- **Reading an underpowered null as \"no difference,\"** and ignoring seasonality by not running a full cycle."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. What does randomization buy you in an A/B test that a mere correlation can't?\n2. Explain why \"peeking and stopping at the first p < 0.05\" inflates false positives.\n3. Give an example where a result is statistically significant but not practically significant.\n4. In the worked example, why is z ≈ 1.95 *not* a confident win?\n5. List three disciplines that separate a trustworthy A/B test from a misleading one.\n\n> ✍️ **Explain it back:** Explain to a friend why checking an A/B test every day and shipping the moment it hits p < 0.05 is a way to fool yourself — and what to do instead. If they grasp the peeking/multiple-testing problem, this topic — and the Hypothesis Testing module — is ✅.\n\n---\n\n*Module complete. Head to the exercises. Next comes Bayesian Inference — the other great school of statistics, where you update beliefs with a prior instead of testing a null.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "Why is randomly assigning users to A and B essential — what would happen if you instead gave version B to users who opted in?",
+              "solution": "Randomization makes the two groups comparable on *everything* (measured and unmeasured), so a difference in the metric can be attributed to the version — that's what makes the result **causal**. If users self-selected into B, those users might differ systematically (more engaged, more tech-savvy), confounding the comparison: you'd measure the *kind of user*, not the *effect of B*."
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "An experimenter checks their dashboard every hour and plans to stop as soon as p < 0.05. Why is this a problem, and what should they do instead?",
+              "solution": "Repeatedly peeking and stopping at the first p < 0.05 is a hidden form of **multiple testing** — each look is another chance for random noise to cross the threshold, so the true false-positive rate is far above 5%. Fixes: **decide the sample size / duration in advance** and only evaluate at the end, or use a **sequential testing** method designed for continuous monitoring."
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "Variant A converts 150/3000; variant B converts 180/3000. Estimate the lift and, roughly, whether it's a confident win. (Use SE of each proportion, then combine.)",
+              "solution": "Rates: A = 0.050, B = 0.060, so $\\Delta = 0.010$ (1 percentage point). Standard errors: $\\text{SE}_A = \\sqrt{0.05 \\cdot 0.95 / 3000} \\approx 0.00398$; $\\text{SE}_B = \\sqrt{0.06 \\cdot 0.94 / 3000} \\approx 0.00434$; combined $\\text{SE}_\\Delta = \\sqrt{0.00398^2 + 0.00434^2} \\approx 0.0059$.\n$z = 0.010 / 0.0059 \\approx 1.7$, and the 95% CI on Δ is about $0.010 \\pm 1.96(0.0059) = 0.010 \\pm 0.0116 = (-0.0016,\\ 0.0216)$. The interval **includes 0**, so this is **not** a confident win yet — the improvement is promising but within the noise. Collect more data."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "08-bayesian",
+      "number": "08",
+      "phase": "Phase IV — Learning From Data",
+      "title": "Bayesian Inference",
+      "summary": "The other great school of statistics, closing the loop opened in Module 00: updating beliefs with prior × likelihood → posterior, choosing priors (and seeing regularization as one), reading credible intervals that finally earn the intuitive statement, and knowing when to reach for Bayesian versus frequentist tools.",
+      "topics": [
+        {
+          "id": "updating-beliefs",
+          "number": "08.1",
+          "title": "The Bayesian Idea: Updating Beliefs",
+          "oneLiner": "Bayesian inference treats an unknown as a distribution of belief you update with data: prior, times likelihood, gives posterior.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The coin that \"can't\" land heads",
+              "body": "Back in Module 06, maximum likelihood flipped a coin **3 times, saw 3 tails**, and confidently declared the probability of heads to be **exactly 0** — heads is *impossible*. That's absurd. You knew, *before* touching the coin, that coins are roughly fair; three flips shouldn't erase a lifetime of knowing what coins are like.\n\nMaximum likelihood threw away everything you knew beforehand and trusted three data points completely. What if, instead, you could **start from what you already believed and let the data update it** — nudging your belief rather than replacing it? That is the Bayesian move. And it's not a new theorem: it's the same Bayes' rule from Module 01, now pointed at an unknown *parameter* instead of a disease."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Prior, times likelihood, gives posterior",
+              "body": "The core shift is this: a Bayesian doesn't treat the unknown parameter as a single fixed number to hunt down. They treat it as a **whole distribution of belief** — not \"I'm unsure of one value\" but \"here's a spread of plausible values, each with a weight.\" Inference then has three ingredients:\n\n- **Prior** — what you believed about the parameter *before* this data (\"the coin is probably near fair\").\n- **Likelihood** — how well each candidate value explains the data you actually saw (the maximum-likelihood ingredient from Module 06).\n- **Posterior** — your **updated** belief after combining them.\n\nThe whole method fits in one slogan:\n\n> **posterior ∝ prior × likelihood.**\n\nData doesn't delete your prior; it **reweights** it. Strong data overwhelms a weak prior; weak data barely budges a strong one. 🖼️ *Picture:* start with a belief curve over the coin's bias peaked at 0.5, multiply it by what \"3 tails\" supports (low values), and get a new curve — leaning a bit toward tails, but nowhere near 0, with heads still very much alive. Sane, where maximum likelihood was reckless."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "Bayes' theorem, aimed at a parameter",
+              "body": "For a parameter $\\theta$ and observed data $D$:\n\n$$P(\\theta \\mid D) = \\frac{P(D \\mid \\theta)\\, P(\\theta)}{P(D)} \\ \\propto\\ \\underbrace{P(D \\mid \\theta)}_{\\text{likelihood}}\\ \\underbrace{P(\\theta)}_{\\text{prior}}.$$\n\nIt's *exactly* Module 01's Bayes' theorem with a parameter $\\theta$ in place of a hypothesis: $P(\\theta)$ is the **prior**, $P(D \\mid \\theta)$ the **likelihood**, $P(\\theta \\mid D)$ the **posterior**, and $P(D)$ a normalizing constant that makes the posterior a proper distribution (which is why we usually just write $\\propto$ and drop it). The crucial point: **the answer is the whole posterior distribution**, not a single number.\n\n**Worked example — the 3-tails coin.** Start with a prior gently peaked at 0.5 (\"probably fair\"). The likelihood from 3 tails pushes toward low values of $p$. Multiply them: the posterior is a *compromise* — a curve most plausible somewhere around 0.3–0.4, still carrying real weight near 0.5, and assigning heads a perfectly nonzero chance. Compare the two answers: maximum likelihood gave a single point, **0**; the Bayesian gives a **full curve of belief** that never does anything so silly."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where updating beliefs shows up",
+              "body": "- **Injecting knowledge instead of starting from scratch.** A strong prior from last quarter's data or domain expertise makes a new experiment faster and more stable — you build on what you knew rather than relearning it every time.\n- **The honest tool for small data.** Where maximum likelihood overfits (rare diseases, new products, cold-start), a sensible prior keeps estimates reasonable — exactly the 3-tails fix, at scale.\n- **It powers modern probabilistic methods.** Bayesian A/B testing, Bayesian optimization for hyperparameter tuning, probabilistic programming, and uncertainty estimates in machine learning all run on prior → posterior updating.\n- **It mirrors how reasoning actually works.** Humans update beliefs as evidence arrives; Bayes is that process made precise — and it connects straight to regularization (next topics)."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Thinking the prior is \"cheating.\"** Every analysis has assumptions; the Bayesian just makes them *explicit and auditable*. Refusing to state a prior doesn't remove it — it silently picks a flat one, often the least defensible choice (the same lesson as Module 01's base rates).\n- **Expecting a single answer.** The posterior is a *distribution*. Collapsing it to one number is sometimes necessary but always throws away the uncertainty that was the point.\n- **Letting a strong wrong prior dominate weak data.** If you barely have data, a bad prior drives the conclusion. Priors must be defensible.\n- **Confusing the posterior with the likelihood.** $P(\\theta \\mid D)$ (what you believe now) is not $P(D \\mid \\theta)$ (how well a value explains the data) — the transposed-conditional trap from Module 01, one more time."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. Name the three ingredients of Bayesian inference and the slogan connecting them.\n2. How does the Bayesian approach fix maximum likelihood's \"3 tails → p = 0\" problem?\n3. In what sense is the \"answer\" of a Bayesian analysis a distribution rather than a number?\n4. Why is refusing to choose a prior not the same as having no assumptions?\n5. Which two probabilities must you not confuse, and what does each mean?\n\n> ✍️ **Explain it back:** Explain to a friend why seeing 3 tails in a row shouldn't make you believe a coin never lands heads — and how \"starting from what you already knew and updating\" captures that. If they grasp prior × likelihood → posterior, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "A1",
+              "difficulty": "warm-up",
+              "prompt": "Name the three ingredients of Bayesian inference and write the slogan that connects them.",
+              "solution": "**Prior** (belief before data), **likelihood** (how well each parameter explains the data), **posterior** (updated belief). Slogan: **posterior ∝ prior × likelihood**."
+            },
+            {
+              "id": "A2",
+              "difficulty": "core",
+              "prompt": "A coin is flipped 3 times and lands tails all 3 times. Explain why the Bayesian estimate of P(heads) stays sensible while the maximum-likelihood estimate does not.",
+              "solution": "Maximum likelihood trusts the data completely and returns $\\hat{p} = 0/3 = 0$ — \"heads is impossible,\" clearly absurd from 3 flips. The Bayesian starts with a prior (\"coins are probably near fair\"), and 3 tails is far too little data to overturn it. The posterior shifts *slightly* toward tails but keeps substantial weight near 0.5 and never rules heads out. The prior supplies the built-in skepticism that maximum likelihood lacks."
+            },
+            {
+              "id": "A3",
+              "difficulty": "core",
+              "prompt": "Why is refusing to specify a prior not the same as making \"no assumption\"?",
+              "solution": "Refusing to state a prior doesn't remove it — it implicitly adopts a **flat prior** (all values equally plausible), which is itself an assumption and often a poor one. Being explicit about the prior makes the assumption visible and debatable; leaving it implicit just hides it. (Same lesson as Module 01: ignoring the base rate is choosing to assume one.)"
+            }
+          ]
+        },
+        {
+          "id": "priors",
+          "number": "08.2",
+          "title": "Priors: Encoding What You Knew Before",
+          "oneLiner": "A prior is your belief about a parameter before the data — the ingredient that makes small data behave, and what regularization secretly is.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "You've already used a prior",
+              "body": "A doctor tests a patient for a genuinely rare disease. The test comes back **positive**. Should the doctor take that positive at face value and start treatment?\n\nNo — and you knew that from Module 01. The **base rate** of the disease matters enormously; a positive for a rare condition is usually a false alarm. That base rate — \"how common is this before I see any test result\" — *is a prior.* The prior isn't a Bayesian indulgence bolted on to complicate things; it's the exact quantity that stopped you from panicking over the rare-disease positive. This topic is about choosing priors on purpose, and well."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "What you bring before the data speaks",
+              "body": "A **prior** encodes what you believed about a parameter before seeing *this* dataset. Two flavours anchor the range:\n\n- **Informative prior** — genuine prior knowledge. \"Conversion rates for pages like this run 2–5%.\" \"Coins are near-fair.\" It bakes in history and domain expertise.\n- **Weak / flat (uninformative) prior** — \"I know almost nothing; treat all values as roughly equally plausible.\" It steps back and lets the data speak; with a fully flat prior, the posterior peak lands right on the maximum-likelihood estimate.\n\nWhat matters just as much as *where* the prior sits is *how strong* it is. A **strong** prior is a concentrated, confident belief that takes strong evidence to overturn; a **weak** prior yields quickly to data. Priors come from previous experiments, domain knowledge, hard constraints (a probability *must* live in [0, 1]), or deliberate conservatism. In the 3-tails coin, a mild \"probably fair\" prior keeps the estimate sane; a flat prior would just reproduce maximum likelihood's overconfidence. **The prior is how much skepticism you bring to the table.**"
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "How the prior blends with data — and *is* regularization",
+              "body": "The posterior blends prior and likelihood, and as data accumulates the **likelihood takes over and the prior washes out** — so with enough data a Bayesian estimate converges to the maximum-likelihood one (consistent with Module 06). The prior matters most exactly when data is scarce.\n\n**Worked example — a \"probably fair\" coin.** With a prior peaked at 0.5 and then $k$ heads in $n$ flips, the posterior mean comes out as a **weighted average** of the prior's 0.5 and the data's $k/n$, where the data's weight grows with $n$:\n\n- Small $n$ → the estimate stays close to **0.5** (the prior dominates — this is why 3 tails doesn't drag it to 0).\n- Large $n$ → the estimate approaches **$k/n$** (the data dominates).\n\n**The regularization connection — this is the big one.** Adding a prior that pulls parameters toward zero is *mathematically identical* to **ridge / lasso regularization**. \"Penalize large weights\" and \"believe, a priori, that weights are probably small\" are the same statement. Every time you've used weight decay or an L2 penalty to stop a model overfitting, you were doing Bayesian inference with a prior — whether or not anyone called it that."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where priors show up",
+              "body": "- **Building on what you already know.** Use last quarter's conversion rate as this experiment's prior and you get faster, steadier estimates than starting blank every time.\n- **Regularization — the workhorse.** Ridge, lasso, and weight decay are priors that pull parameters toward zero and prevent overfitting. This is, by a wide margin, the most common practical use of a prior in all of machine learning.\n- **Sane estimates from tiny samples.** Rare diseases, brand-new products, cold-start recommendations — a defensible prior rescues you where the data alone is too thin to trust.\n- **Sharing strength across groups.** Hierarchical / empirical-Bayes models set each group's prior from the overall population, shrinking a noisy per-store or per-user estimate toward the global average — more reliable than trusting each tiny group on its own."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **A strong, wrong prior on weak data.** With little data, the prior *drives* the conclusion — so a bad prior yields a confidently wrong answer. Choose priors you can defend out loud.\n- **Pretending a flat prior is \"no assumption.\"** Flat *is* an assumption, and sometimes a poor one (a flat prior over an unbounded range can quietly misbehave). \"Uninformative\" is not \"neutral.\"\n- **Using the data twice.** Setting your prior from the very same data you then analyze double-counts the evidence and overstates certainty.\n- **Tuning the prior to get the answer you wanted.** That's p-hacking in Bayesian clothing. And conversely — don't over-agonize over the prior when you have *lots* of data, because it washes out anyway."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. What is a prior, and how is a disease's base rate an example of one?\n2. Distinguish an informative prior from a weak/flat prior, and say when each is appropriate.\n3. Why does a mild \"probably fair\" prior keep the 3-tails coin estimate sensible?\n4. Explain the claim \"regularization is a prior.\"\n5. Give one situation where a strong prior would be dangerous, and one where it's exactly what you need.\n\n> ✍️ **Explain it back:** Explain to a friend that using ridge regression to prevent overfitting is secretly \"assuming the model's weights are probably small.\" If they see regularization as a prior, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "B1",
+              "difficulty": "warm-up",
+              "prompt": "Classify each as an informative or a weak/flat prior: (a) \"conversion rates for pages like this are almost always 2–5%\"; (b) \"the rate could be anything from 0% to 100%, I have no idea.\"",
+              "solution": "(a) **Informative** — a concentrated belief built from prior knowledge. (b) **Weak / flat (uninformative)** — spread out, letting the data speak; with a fully flat prior the posterior peak matches the maximum-likelihood estimate."
+            },
+            {
+              "id": "B2",
+              "difficulty": "core",
+              "prompt": "Explain the claim \"ridge regression is really a prior.\"",
+              "solution": "Ridge regression adds a penalty that pulls model weights toward zero. Mathematically, that penalty is *identical* to doing Bayesian inference with a prior belief that the weights are **probably small** (centred at zero). \"Penalize large weights\" and \"assume weights are near zero a priori\" are the same statement — so regularization is Bayesian inference with a shrinkage prior, whether or not it's called that."
+            },
+            {
+              "id": "B3",
+              "difficulty": "stretch",
+              "prompt": "With a \"probably fair\" prior peaked at 0.5, how does the posterior mean of a coin's bias change as you collect more data? Describe the small-n and large-n limits.",
+              "solution": "The posterior mean is a **weighted average** of the prior's 0.5 and the data's observed proportion $k/n$, with the data's weight growing as $n$ grows. **Small n:** the prior dominates, so the estimate stays near 0.5 (which is why 3 tails doesn't drag it to 0). **Large n:** the data dominates, so the estimate approaches $k/n$ — the maximum-likelihood answer. The prior matters most exactly when data is scarce, and washes out with plenty of data."
+            }
+          ]
+        },
+        {
+          "id": "posterior-and-credible-intervals",
+          "number": "08.3",
+          "title": "The Posterior & Credible Intervals",
+          "oneLiner": "The posterior is the whole answer; a credible interval reads a range off it and finally earns the 'probability the truth is in here' statement.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "The interval you actually wanted",
+              "body": "Remember the headache from Module 06? You were forbidden from saying *\"there's a 95% probability the true value lies in this confidence interval.\"* The 95% was about the long-run *procedure*, not your particular interval — and almost everyone got it wrong because the wrong reading is the one that feels natural.\n\nThe Bayesian approach hands you an interval where that natural statement is **exactly right**. It's called a **credible interval**, and it's the answer your intuition was reaching for the whole time. Here's why the Bayesian framework is allowed to say it when the frequentist one wasn't."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Read anything you want off the posterior",
+              "body": "In Bayesian inference the **posterior distribution is the deliverable** — it shows every plausible parameter value with its belief-weight. Once you have it, every summary you might want is just a reading off that curve:\n\n- **A single best guess**, if you're forced to collapse to one number: the **posterior mean** (the balance point of the belief curve) or the **MAP** — *maximum a posteriori*, the posterior's peak, i.e. the single most probable value.\n- **A credible interval** — a range holding, say, 95% of the posterior's probability. And the honest, intuitive reading is valid:\n\n> **\"Given my prior and the data, there's a 95% probability the true value lies in this interval.\"**\n\nWhy is this allowed here but not for a confidence interval? Because in the Bayesian world the parameter genuinely *has* a probability distribution — your belief about it — so you're permitted to make probability statements about it. The frequentist treats the parameter as a fixed unknown with no distribution, so \"95% probability it's in here\" was meaningless there. Same-sounding sentence, and only one framework earns the right to say it.\n\nThis is the clean resolution of Module 06's most confusing point: the interval you *wanted* is the **credible** interval; the interval you *got and misread* was the **confidence** interval."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "MAP, credible intervals, and a link back to MLE",
+              "body": "The posterior $P(\\theta \\mid D)$ summarizes belief after the data. Two summaries:\n\n- **MAP estimate:** $\\hat{\\theta}_{\\text{MAP}} = \\arg\\max_\\theta P(\\theta \\mid D)$ — the peak of the posterior. Since posterior $\\propto$ likelihood $\\times$ prior, **MAP is just MLE with a prior attached** (maximize likelihood × prior instead of likelihood alone). With a *flat* prior, MAP and MLE coincide — the Bayesian and frequentist point estimates meet.\n- **Credible interval:** a range $[a, b]$ with $P(a \\le \\theta \\le b \\mid D) = 0.95$ — often the central 95% of the posterior.\n\n**Worked example.** Suppose after some flips the coin's posterior is peaked around 0.4. A 95% credible interval might be **(0.28, 0.53)**, read as: *\"there's a 95% probability the coin's bias is between 0.28 and 0.53, given my prior and the data.\"* Clean and direct — no talk of hypothetical repeated experiments.\n\nOne practical note: with **lots of data** (and a weak prior), credible and confidence intervals come out **numerically almost identical** — they differ most, in both value and meaning, when data is scarce or the prior is strong. So the philosophical gap is loudest exactly when data is quietest."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where the posterior & credible intervals show up",
+              "body": "- **Reporting uncertainty that stakeholders actually understand.** \"95% probability the lift is between 1% and 6%\" lands far better than the contortions required to state a confidence interval correctly.\n- **Bayesian A/B testing.** Instead of a p-value, you report **\"P(B is better than A) = 0.97\"** or the **expected loss** of each choice — direct probability statements a decision-maker can act on immediately.\n- **The full picture, not just a point.** The posterior reveals whether belief is tight or wide, skewed, or even bimodal — structure that a lone point estimate plus a symmetric CI would hide.\n- **Honest uncertainty in ML.** Bayesian models, Gaussian processes, and Bayesian neural nets output posteriors and credible intervals — increasingly essential where a model's *confidence* matters for safety and decisions, not just its prediction."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Confusing credible with confidence.** A **credible** interval is a probability statement about the *parameter* (Bayesian); a **confidence** interval is a statement about the *procedure* (frequentist). They look alike and mean different things — mixing them up is the single most common error bridging the two schools.\n- **Trusting a credible interval built on a bad prior.** The interval inherits the prior's biases; a confidently wrong prior gives a confidently wrong interval.\n- **Over-relying on MAP.** The peak can badly misrepresent a skewed or multimodal posterior. When the shape is complex, report the distribution, not just its summit.\n- **Collapsing the posterior to one number.** A point estimate discards the uncertainty that was the entire reason to go Bayesian."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. What is a credible interval, and what statement does it let you make that a confidence interval does not?\n2. Why is the Bayesian framework *allowed* to make a probability statement about the parameter?\n3. What is the MAP estimate, and how does it relate to the MLE?\n4. Interpret in plain words: \"a 95% credible interval for the lift is (1%, 6%).\"\n5. When do credible and confidence intervals nearly coincide, and when do they diverge most?\n\n> ✍️ **Explain it back:** Explain to a friend the difference between \"95% of intervals built this way capture the truth\" (confidence) and \"95% probability the truth is in *this* interval\" (credible) — and why only the Bayesian earns the second. If they keep the two straight, this topic is ✅."
+            }
+          ],
+          "questions": [
+            {
+              "id": "C1",
+              "difficulty": "warm-up",
+              "prompt": "A 95% credible interval for a conversion rate is (0.03, 0.07). State, correctly, what this means.",
+              "solution": "Given the prior and the data, there is a **95% probability that the true conversion rate lies between 3% and 7%.** (This is the intuitive statement a *confidence* interval is not allowed to make.)"
+            },
+            {
+              "id": "C2",
+              "difficulty": "core",
+              "prompt": "What is the MAP estimate, and how does it relate to the MLE from Module 06?",
+              "solution": "MAP (maximum a posteriori) is the value that **maximizes the posterior** — the peak of the belief curve. Since posterior ∝ likelihood × prior, MAP maximizes *likelihood × prior*, i.e. it's **MLE with a prior attached**. With a flat prior the prior term is constant, so MAP and MLE coincide."
+            },
+            {
+              "id": "C3",
+              "difficulty": "stretch",
+              "prompt": "A colleague computes a 95% confidence interval of (0.40, 0.50) and says \"there's a 95% probability the true value is between 0.40 and 0.50.\" Is that reading valid for a confidence interval? For a credible interval? Explain the difference.",
+              "solution": "**Not valid for a confidence interval.** There, the parameter is fixed and the 95% describes the *procedure's* long-run coverage — this particular interval either contains the truth or doesn't. The reading **is** valid for a **credible** interval, because the Bayesian treats the parameter as having a belief distribution, so a probability statement about it is meaningful. Same-sounding sentence; only the Bayesian interval earns it. (Numerically the two intervals are often close with lots of data, but their *meanings* differ.)"
+            }
+          ]
+        },
+        {
+          "id": "bayesian-vs-frequentist",
+          "number": "08.4",
+          "title": "Bayesian vs Frequentist: When to Use Which",
+          "oneLiner": "Two schools, one toolkit: frequentist asks how a procedure behaves over many repeats, Bayesian asks what to believe now — use both.",
+          "sections": [
+            {
+              "id": "hook",
+              "icon": "🎣",
+              "title": "Not a holy war",
+              "body": "You've now lived in both worlds. Module 00 introduced the two views of probability — frequentist (\"long-run frequency\") and Bayesian (\"degree of belief\"). Modules 06–07 built the frequentist machinery: estimators, p-values, confidence intervals. This module built the Bayesian one: priors, posteriors, credible intervals.\n\nOnline you'll find people treating this as a religious war, complete with tribes and insults. That's noise. The two frameworks are **two lenses answering two different questions**, each better suited to different situations. Knowing which to pick — and being fluent in both — is a genuine mark of statistical maturity. So let's put them side by side and settle when to use which."
+            },
+            {
+              "id": "intuition",
+              "icon": "💡",
+              "title": "Two questions, two lenses",
+              "body": "- **Frequentist.** The parameter is a **fixed** unknown; the *data* is random. It asks: *\"how would my procedure behave if I repeated this experiment many times?\"* You get estimators, p-values, and confidence intervals — no prior required. It feels objective, dominates classical science, and is the default for standard A/B testing.\n- **Bayesian.** The parameter is **uncertain** — it has a belief distribution; the data is simply what you observed. It asks: *\"given my prior and this data, what should I believe now?\"* You get posteriors, credible intervals, and direct probability statements — at the cost of choosing a prior. It's natural for folding in knowledge, handling small data, and updating as evidence streams in.\n\nThe **MLE-versus-MAP** pairing captures the whole distinction in miniature: maximum likelihood maximizes the likelihood alone (frequentist, no prior); MAP maximizes likelihood × prior (Bayesian). And here's the reassuring part: when data is **plentiful, the two converge** — the prior washes out and both schools land on nearly the same numbers. They diverge most when **data is scarce or prior knowledge is strong.** Neither is \"correct\"; they're built for different circumstances."
+            },
+            {
+              "id": "formalism",
+              "icon": "📐",
+              "title": "A side-by-side, and a rule of thumb",
+              "body": "| | Frequentist | Bayesian |\n|---|---|---|\n| The parameter is… | fixed, unknown | uncertain (a belief distribution) |\n| Needs a prior? | no | yes |\n| Main output | point estimate + confidence interval, p-value | posterior distribution + credible interval |\n| Interval means… | the *procedure's* long-run coverage | *probability* about the parameter |\n| Point estimate | MLE | MAP / posterior mean |\n| Shines when… | lots of data, no strong prior, publication/regulatory norms | small data, real prior knowledge, sequential updating, decision-friendly probabilities |\n| Watch out for… | misread p-values & CIs, ignores prior knowledge | prior-dependent, can be gamed via the prior |\n\n**Rule of thumb.** Reach **frequentist** for standard experiments with ample data, when stakeholders or regulators expect p-values and confidence intervals, and when you have no defensible prior. Reach **Bayesian** for small samples, genuine domain knowledge worth encoding, online/sequential updating, or when you need a *direct* probability statement for a decision (\"97% chance B wins; expected loss ₹X\"). And remember: with big data they largely agree, so don't argue philosophy when it won't change the numbers."
+            },
+            {
+              "id": "ds-payoff",
+              "icon": "🎯",
+              "title": "Where each shows up",
+              "body": "- **Classic A/B testing → usually frequentist:** p-values and confidence intervals are the lingua franca, and many organizations expect them.\n- **Bayesian A/B testing → increasingly popular:** reporting \"P(B > A) = 0.97\" and expected loss is more decision-friendly than a p-value, and handles ongoing monitoring more gracefully (with its own caveats).\n- **Machine learning blends both, constantly.** Cross-validation and the bootstrap are frequentist; regularization, probabilistic models, and Bayesian optimization are Bayesian. Nobody in practice is purely one or the other.\n- **The real meta-skill:** before choosing a method, identify *which question you're actually asking* — \"how does my method behave over repeats?\" or \"what should I believe given this evidence?\" — and pick the tool that answers that question."
+            },
+            {
+              "id": "pitfalls",
+              "icon": "⚠️",
+              "title": "The classic slips",
+              "body": "- **Being dogmatic.** Treating one school as universally right is amateurish. They're tools; tribalism just narrows your toolbox.\n- **Sneaking in a convenient prior.** Choosing a prior to nudge the answer where you wanted it is p-hacking in a Bayesian costume — priors must be defensible.\n- **Misreporting intervals across schools.** Calling a confidence interval \"credible\" (or vice versa) imports the wrong interpretation — the trap from the last topic.\n- **Assuming Bayesian \"cures\" p-hacking.** Continuous monitoring is *less* punishing under Bayesian methods, but priors can still be gamed and multiplicity still bites. No framework replaces honesty.\n- **Debating philosophy when data is abundant.** With lots of data the two agree; arguing the interpretation then changes nothing but your afternoon."
+            },
+            {
+              "id": "recall",
+              "icon": "🔁",
+              "title": "Before you move on",
+              "body": "1. State the different core question each framework answers.\n2. How does the MLE-vs-MAP contrast capture the frequentist-vs-Bayesian distinction?\n3. Under what conditions do the two approaches give nearly the same numbers?\n4. Give one situation where you'd clearly prefer frequentist tools, and one where you'd clearly prefer Bayesian.\n5. Why is it a mistake to be dogmatically loyal to one school?\n\n> ✍️ **Explain it back:** Explain to a friend that \"how would my method behave over many repeats?\" and \"what should I believe given this data?\" are different questions — and that frequentist and Bayesian tools each answer one of them. If they stop seeing it as a war, this topic — and the Bayesian module — is ✅.\n\n---\n\n*Module complete. Head to the exercises. Next comes Phase V — the data-science frontier: entropy, KL divergence, and the probability ideas that live inside machine learning itself.*"
+            }
+          ],
+          "questions": [
+            {
+              "id": "D1",
+              "difficulty": "warm-up",
+              "prompt": "In one sentence each, state the core question the frequentist and Bayesian frameworks answer.",
+              "solution": "**Frequentist:** \"How would my procedure behave if I repeated the experiment many times?\" **Bayesian:** \"Given my prior and this data, what should I believe now?\""
+            },
+            {
+              "id": "D2",
+              "difficulty": "core",
+              "prompt": "For each, say whether you'd lean frequentist or Bayesian, and why: (a) a large-scale web A/B test with millions of users and a stakeholder who expects a p-value; (b) estimating the failure rate of a brand-new part from just 12 tests, with solid engineering knowledge of similar parts.",
+              "solution": "(a) **Frequentist** — plenty of data (so a prior would wash out anyway) and stakeholders expecting standard p-values/confidence intervals. (b) **Bayesian** — tiny sample where maximum likelihood would be unstable, plus genuine prior knowledge from similar parts that a prior can encode to produce a sensible estimate."
+            },
+            {
+              "id": "D3",
+              "difficulty": "stretch",
+              "prompt": "A team says \"we switched to Bayesian A/B testing, so we can peek at the results whenever we want with no penalty.\" What's the kernel of truth, and what's the overstatement?",
+              "solution": "**Kernel of truth:** Bayesian methods don't share the frequentist p-value's specific \"peeking inflates the false-positive rate\" problem in the same way — continuous monitoring is less punishing, since you're reporting a posterior belief rather than a fixed-α reject/accept decision. **Overstatement:** it's not a free pass. A poorly chosen or gamed prior can bias conclusions, stopping rules and decision thresholds still need care, and multiplicity across many metrics still inflates false wins. No framework substitutes for honest experimental discipline."
             }
           ]
         }

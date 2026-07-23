@@ -162,6 +162,14 @@ const ONE_LINERS = {
     "Every test can fail two ways — a false alarm (Type I) or a missed effect (Type II) — and power is the chance of catching a real effect when it's there.",
   "ab-testing":
     "A/B testing is hypothesis testing in a business suit — and its hardest problems are discipline: peeking, multiple comparisons, and significant-vs-worth-it.",
+  "updating-beliefs":
+    "Bayesian inference treats an unknown as a distribution of belief you update with data: prior, times likelihood, gives posterior.",
+  "priors":
+    "A prior is your belief about a parameter before the data — the ingredient that makes small data behave, and what regularization secretly is.",
+  "posterior-and-credible-intervals":
+    "The posterior is the whole answer; a credible interval reads a range off it and finally earns the 'probability the truth is in here' statement.",
+  "bayesian-vs-frequentist":
+    "Two schools, one toolkit: frequentist asks how a procedure behaves over many repeats, Bayesian asks what to believe now — use both.",
 };
 
 const MODULES = [
@@ -249,6 +257,17 @@ const MODULES = [
       "The daily bread of product data science: the courtroom logic of testing, what a p-value really is (and the four ways it's misread), the two error types and statistical power, and putting it all together into A/B testing done honestly.",
     root: APP_DIR,
     dir: "07-hypothesis-testing",
+    partToTopic: ["A", "B", "C", "D"],
+  },
+  {
+    id: "08-bayesian",
+    number: "08",
+    phase: "Phase IV — Learning From Data",
+    title: "Bayesian Inference",
+    summary:
+      "The other great school of statistics, closing the loop opened in Module 00: updating beliefs with prior × likelihood → posterior, choosing priors (and seeing regularization as one), reading credible intervals that finally earn the intuitive statement, and knowing when to reach for Bayesian versus frequentist tools.",
+    root: APP_DIR,
+    dir: "08-bayesian",
     partToTopic: ["A", "B", "C", "D"],
   },
 ];
