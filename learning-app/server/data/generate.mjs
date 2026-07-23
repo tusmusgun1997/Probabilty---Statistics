@@ -179,7 +179,8 @@ const MODULES = [
     phase: "Phase I — The Language of Uncertainty",
     title: "Foundations: The Language of Uncertainty",
     summary:
-      "The mindset shift from certainties to graded belief, the vocabulary of sets and events, the three axioms everything is built on, and the simulation workflow you'll use for the rest of the course.",
+      "The mindset shift from certainties to graded belief, the vocabulary of sets and events, the three axioms everything is built on, and the everyday dialects of chance — the deeply-explained foundation the rest of the course stands on.",
+    root: APP_DIR, // deep app version (theory/00-foundations kept untouched as an orphan)
     dir: "00-foundations",
     partToTopic: ["A", "B", "C", "D"], // question Part letter per topic, in order
   },
